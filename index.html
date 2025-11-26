@@ -1,0 +1,1816 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO CRITIQUE: Titre plus ciblé et descriptif pour ne pas braquer -->
+    <title data-i18n="app_title">Trouver la Foi en Dieu | Guide, Prière et Communauté de Foi</title>
+    <meta name="description" content="Découvrez les étapes concrètes pour une rencontre avec Dieu, faites une prière sincère et trouvez une communauté accueillante. Notre guide utilise l'IA pour répondre à vos questions spirituelles.">
+    <meta name="keywords" content="trouver la foi, prière de conversion, église, témoignage, comment trouver Dieu, aide spirituelle, explorer la bible, Jésus">
+
+    <!-- OPTIMISATION VITESSE (Core Web Vitals) : Préconnexion pour chargement rapide -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://www.gstatic.com">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        /* Configuration de police pour un look moderne et lisible */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+        }
+        .section-separator {
+            height: 1px;
+            background-color: #e0e7ff; /* Bleu très clair */
+            margin: 3rem auto;
+            width: 80%;
+            max-width: 600px;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #4f46e5;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        /* Couleurs pour les boutons sociaux */
+        .btn-facebook { background-color: #1877f2; }
+        .btn-twitter { background-color: #1da1f2; }
+        .btn-whatsapp { background-color: #25d366; }
+        .btn-linkedin { background-color: #0a66c2; }
+        .btn-sms { background-color: #6c757d; }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div id="app" class="min-h-screen flex flex-col items-center">
+
+        <!-- HEADER & NAVIGATION -->
+        <header class="w-full bg-white shadow-md p-4 sticky top-0 z-10">
+            <div class="max-w-4xl mx-auto flex justify-between items-center">
+                <a href="#" class="text-2xl font-bold text-indigo-700 hover:text-indigo-900 transition duration-300" data-i18n="app_name">
+                    Foi Nouvelle
+                </a>
+                <div class="flex items-center">
+                    
+                    <!-- SÉLECTEUR DE LANGUE (i18n) -->
+                    <select id="language-selector" onchange="setLanguage(this.value)" class="p-2 border border-gray-300 rounded-lg text-sm mr-4">
+                        <option value="fr">Français</option>
+                        <option value="en">English</option>
+                        <option value="es">Español</option>
+                        <option value="de">Deutsch</option>
+                        <option value="it">Italiano</option>
+                        <option value="pt">Português</option>
+                        <option value="nl">Nederlands</option>
+                        <option value="pl">Polski</option>
+                    </select>
+
+                    <nav class="hidden sm:flex items-center">
+                        <a href="#message" class="text-sm md:text-base text-gray-600 hover:text-indigo-600 ml-4 transition duration-300" data-i18n="nav_message">Message</a>
+                        <a href="#explore" class="text-sm md:text-base text-gray-600 hover:text-indigo-600 ml-4 transition duration-300" data-i18n="nav_explore">Explorer l'IA</a>
+                        <a href="#find-church" class="text-sm md:text-base text-gray-600 hover:text-indigo-600 ml-4 transition duration-300" data-i18n="nav_community">Communauté</a>
+                        <a href="#temoignages" class="text-sm md:text-base text-gray-600 hover:text-indigo-600 ml-4 transition duration-300" data-i18n="nav_testimonials">Témoignages</a>
+                        <a href="#share" class="text-sm md:text-base text-gray-600 hover:text-indigo-600 ml-4 transition duration-300" data-i18n="nav_share">Partager</a>
+                        <a href="#etapes" class="ml-4 px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-full shadow-lg hover:bg-indigo-700 transition duration-300 transform hover:scale-105" data-i18n="nav_start">Commencer</a>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT (OPTIMISÉ SEO: Utilisation de la balise <main> et <h1>) -->
+        <main class="w-full max-w-4xl mx-auto p-4 md:p-8 flex-grow">
+
+            <!-- SECTION 1: ACCUEIL / MESSAGE CENTRAL -->
+            <section class="text-center py-16 bg-white rounded-xl shadow-lg mb-12">
+                <!-- H1 est la balise la plus importante pour le sujet de la page (Universel) -->
+                <h1 class="4xl md:text-5xl font-extrabold mb-4 text-indigo-800 leading-tight" data-i18n="hero_title">
+                    Découvrez le Chemin vers Dieu et l'Espoir
+                </h1>
+                <!-- Mots-clés pour la longue traîne, répondant à l'intention de recherche sans dénomination -->
+                <p class="text-lg font-medium text-indigo-500 max-w-2xl mx-auto mb-2" data-i18n="hero_subtitle_1">
+                    Vous cherchez un sens à votre vie ? Découvrez comment **trouver la foi en Dieu**, le chemin vers Jésus et une communauté accueillante.
+                </p>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto mb-8" data-i18n="hero_subtitle_2">
+                    Découvrez l'amour inconditionnel et la puissance transformatrice de la foi. Où que vous soyez dans votre recherche, vous êtes le bienvenu.
+                </p>
+                <a href="#message" class="inline-block px-8 py-3 text-lg font-bold text-white bg-green-500 rounded-full shadow-xl hover:bg-green-600 transition duration-300 transform hover:scale-105" data-i18n="hero_button">
+                    Je veux comprendre
+                </a>
+            </section>
+            
+            <div class="section-separator"></div>
+
+            <!-- SECTION 2: LE MESSAGE DU CŒUR (APPROFONDI) -->
+            <section id="message" class="py-12">
+                <!-- H2 optimisé pour la recherche : "fondamentaux de la foi" -->
+                <h2 class="text-3xl font-bold text-center mb-10 text-indigo-700" data-i18n="message_title">Comprendre les Fondamentaux de la Foi en Dieu</h2>
+                
+                <div class="grid md:grid-cols-3 gap-8">
+
+                    <!-- Carte 1: L'Amour Inconditionnel de Dieu (Approfondi) -->
+                    <article class="p-6 bg-white rounded-lg shadow-xl hover:shadow-2xl transition duration-300 border-t-4 border-indigo-500">
+                        <div class="text-indigo-500 text-4xl mb-3">
+                            <span aria-hidden="true">&#9733;</span>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2 text-gray-900" data-i18n="message_card_1_title">1. L'Amour Inconditionnel de Dieu</h3>
+                        <p class="text-gray-600 text-sm" data-i18n="message_card_1_text">
+                            Dieu est la source de toute existence et vous a créé(e) par amour. Son amour n'a pas de condition : il est total et éternel. Il n'attend pas que vous soyez parfait(e), mais que vous acceptiez Sa présence.
+                        </p>
+                        <p class="mt-3 text-xs font-semibold text-indigo-400" data-i18n="message_card_1_footer">
+                            *Le point de départ de tout : Sa grâce est disponible, quel que soit votre passé.*
+                        </p>
+                    </article>
+
+                    <!-- Carte 2: La Séparation et le Péché (Approfondi) -->
+                    <article class="p-6 bg-white rounded-lg shadow-xl hover:shadow-2xl transition duration-300 border-t-4 border-indigo-500">
+                        <div class="text-indigo-500 text-4xl mb-3">
+                            <span aria-hidden="true">&#9900;</span>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2 text-gray-900" data-i18n="message_card_2_title">2. La Réalité de la Séparation (Péché)</h3>
+                        <p class="text-gray-600 text-sm" data-i18n="message_card_2_text">
+                            Bien que nous soyons aimés, nos choix autonomes et nos erreurs (appelés péché) ont créé une distance. Ce n'est pas une liste de fautes, mais un état de séparation qui vous empêche d'atteindre la plénitude et de connaître Dieu intimement. C'est l'origine du vide que beaucoup ressentent.
+                        </p>
+                        <p class="mt-3 text-xs font-semibold text-indigo-400" data-i18n="message_card_2_footer">
+                            *Le péché crée une barrière. C'est pourquoi nous avons besoin d'un pont.*
+                        </p>
+                    </article>
+
+                    <!-- Carte 3: Le Pont du Salut (Jésus) (Approfondi) -->
+                    <article class="p-6 bg-white rounded-lg shadow-xl hover:shadow-2xl transition duration-300 border-t-4 border-indigo-500">
+                        <div class="text-indigo-500 text-4xl mb-3">
+                            <span aria-hidden="true">&#10003;</span>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2 text-gray-900" data-i18n="message_card_3_title">3. Le Pont du Salut : Jésus-Christ</h3>
+                        <p class="text-gray-600 text-sm" data-i18n="message_card_3_text">
+                            Jésus est venu sur Terre pour combler la distance. Sa mort sur la croix et sa résurrection ne sont pas seulement un fait historique, mais l'acte qui rend le pardon total et la réconciliation possible. En L'acceptant comme Seigneur et Sauveur, vous traversez ce pont vers la relation avec Dieu.
+                        </p>
+                        <p class="mt-3 text-xs font-semibold text-indigo-400" data-i18n="message_card_3_footer">
+                            *C'est un cadeau à accepter par la foi, non à mériter par les œuvres.*
+                        </p>
+                    </article>
+                </div>
+            </section>
+
+            <div class="section-separator"></div>
+
+            <!-- NOUVELLE SECTION: PLAN DE LECTURE (UX) -->
+            <section id="bible-plan" class="py-12 bg-white rounded-xl p-8 shadow-lg">
+                <h2 class="text-3xl font-bold text-center mb-8 text-indigo-700" data-i18n="plan_title">Plan de Lecture 7 Jours : Commencer avec Jésus</h2>
+                <div class="grid md:grid-cols-2 gap-6 text-left">
+                    <article class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2" data-i18n="plan_days_1_3_title">Jours 1-3 : L'Amour et le Pardon</h3>
+                        <ul class="list-disc list-inside text-gray-600 space-y-1 text-sm">
+                            <li><strong data-i18n="plan_day_1_label">Jour 1 :</strong> <span data-i18n="plan_day_1_text">L'amour de Dieu - Jean 3:16</span></li>
+                            <li><strong data-i18n="plan_day_2_label">Jour 2 :</strong> <span data-i18n="plan_day_2_text">L'humanité et la nécessité du pardon - Romains 3:23</span></li>
+                            <li><strong data-i18n="plan_day_3_label">Jour 3 :</strong> <span data-i18n="plan_day_3_text">La réponse de Jésus - 1 Jean 1:9</span></li>
+                        </ul>
+                    </article>
+                    <article class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2" data-i18n="plan_days_4_7_title">Jours 4-7 : La Nouvelle Vie</h3>
+                        <ul class="list-disc list-inside text-gray-600 space-y-1 text-sm">
+                            <li><strong data-i18n="plan_day_4_label">Jour 4 :</strong> <span data-i18n="plan_day_4_text">L'assurance du salut - Romains 10:9</span></li>
+                            <li><strong data-i18n="plan_day_5_label">Jour 5 :</strong> <span data-i18n="plan_day_5_text">Le rôle de l'Esprit Saint - Actes 1:8</span></li>
+                            <li><strong data-i18n="plan_day_6_label">Jour 6 :</strong> <span data-i18n="plan_day_6_text">La vie en communauté - Hébreux 10:25</span></li>
+                            <li><strong data-i18n="plan_day_7_label">Jour 7 :</strong> <span data-i18n="plan_day_7_text">Les fondations pour la croissance - Matthieu 7:24-27</span></li>
+                        </ul>
+                    </article>
+                </div>
+                <p class="text-center text-sm text-gray-500 mt-6" data-i18n="plan_footer">
+                    Ces versets sont un point de départ pour une lecture personnelle et quotidienne.
+                </p>
+            </section>
+            
+            <div class="section-separator"></div>
+
+
+            <!-- SECTION 3: EXPLORATION DE LA FOI (GEMINI FEATURE 1 RÉTABLIE) -->
+            <section id="explore" class="py-12 bg-indigo-50 rounded-xl p-8 shadow-lg">
+                <!-- H2 optimisé pour la recherche : "questions sur la bible" -->
+                <h2 class="text-3xl font-bold text-center mb-6 text-indigo-700" data-i18n="explore_title">✨ Poser des Questions sur la Foi (Explorateur IA)</h2>
+                <p class="text-center text-gray-700 mb-6" data-i18n="explore_subtitle">
+                    Posez une question simple sur la foi. Notre IA (recherche assistée) vous fournira une explication claire et bienveillante.
+                </p>
+
+                <div class="max-w-2xl mx-auto">
+                    <!-- Message d'alerte API Key -->
+                    <div id="api-key-alert" class="hidden p-4 mb-4 text-sm text-yellow-700 bg-yellow-100 rounded-lg" role="alert" data-i18n="alert_api_key">
+                        ⚠️ **ATTENTION :** La clé API est manquante ou invalide. Les fonctions d'IA ne fonctionneront pas tant que vous n'aurez pas inséré votre clé.
+                    </div>
+                
+                    <div class="flex flex-col sm:flex-row gap-4 mb-4">
+                        <input type="text" id="faith-query" placeholder="Ex: Comment puis-je prier ?" class="flex-grow p-3 border border-indigo-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" data-i18n="explore_placeholder" />
+                        <button onclick="handleFaithQuery()" id="query-button" class="px-6 py-3 bg-indigo-600 text-white font-bold rounded-lg shadow-md hover:bg-indigo-700 transition duration-300 transform hover:scale-105 disabled:opacity-50" disabled>
+                            <span id="button-text" data-i18n="explore_button_explain">Expliquer</span>
+                            <span id="query-spinner" class="spinner hidden"></span>
+                        </button>
+                    </div>
+
+                    <div id="query-result" class="mt-4 p-4 bg-white border border-indigo-200 rounded-lg shadow-md text-left hidden">
+                        <!-- Résultat de l'IA s'affichera ici -->
+                    </div>
+                </div>
+            </section>
+
+            <div class="section-separator"></div>
+
+            <!-- NOUVELLE SECTION: TROUVER UNE ÉGLISE -->
+            <section id="find-church" class="py-12 bg-gray-100 rounded-xl p-8 shadow-lg">
+                <!-- H2 optimisé pour la recherche (Universel) -->
+                <h2 class="text-3xl font-bold text-center mb-6 text-indigo-700" data-i18n="community_title">Trouver une Communauté de Foi Accueillante</h2>
+                <p class="text-center text-gray-700 mb-6" data-i18n="community_subtitle">
+                    La foi est vécue en communauté. Trouvez une communauté locale pour être mieux accompagné dans votre marche.
+                </p>
+                <div class="max-w-2xl mx-auto flex flex-col sm:flex-row gap-4">
+                    <input type="text" id="church-city" placeholder="Entrez votre ville (Ex: Paris, Ajaccio, Marseille)" class="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" data-i18n="community_placeholder" />
+                    <button onclick="searchForChurch()" class="px-6 py-3 bg-red-600 text-white font-bold rounded-lg shadow-md hover:bg-red-700 transition duration-300 transform hover:scale-105" data-i18n="community_button">
+                        Rechercher
+                    </button>
+                </div>
+            </section>
+
+            <div class="section-separator"></div>
+
+
+            <!-- SECTION 4: TÉMOIGNAGES (Contenu Dynamique) -->
+            <section id="temoignages" class="py-12">
+                <!-- H2 optimisé pour la recherche : "histoires de conversion" (Universel) -->
+                <h2 class="text-3xl font-bold text-center mb-10 text-indigo-700" data-i18n="testimonials_title">Histoires de Vie Transformée et Témoignages</h2>
+                
+                <div class="space-y-6" id="testimonial-list">
+                    <!-- Les témoignages seront ajoutés ici par JS (statiques et dynamiques) -->
+                </div>
+
+                <!-- Sous-section: Ajouter un témoignage -->
+                <div class="mt-16 p-8 bg-green-50 rounded-xl shadow-lg border-t-4 border-green-500">
+                    <h3 class="text-2xl font-bold text-green-700 mb-4 text-center" data-i18n="submit_title">Partagez Votre Histoire !</h3>
+                    <p class="text-center text-gray-700 mb-6" data-i18n="submit_subtitle">
+                        Votre expérience peut inspirer quelqu'un d'autre. Racontez-nous comment votre rencontre avec Dieu a transformé votre vie.
+                    </p>
+                    <div class="max-w-xl mx-auto space-y-4">
+                        <input type="text" id="new-testimonial-name" placeholder="Votre nom ou pseudonyme" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" required data-i18n="submit_name_placeholder" />
+                        <textarea id="new-testimonial-story" placeholder="Votre témoignage de vie..." rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" required data-i18n="submit_story_placeholder"></textarea>
+                        <button onclick="submitTestimonial()" id="submit-testimonial-button" class="w-full px-6 py-3 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700 transition duration-300 transform hover:scale-105 disabled:opacity-50" disabled>
+                            <span id="submit-button-text" data-i18n="submit_button">Soumettre le Témoignage</span>
+                            <span id="submit-spinner" class="spinner hidden"></span>
+                        </button>
+                    </div>
+                    <div id="submit-message" class="mt-4 p-3 text-center rounded-lg hidden"></div>
+                </div>
+            </section>
+
+            <div class="section-separator"></div>
+            
+            <!-- NOUVELLE SECTION: PARTAGE SOCIAL -->
+            <section id="share" class="py-12 bg-white rounded-xl p-8 shadow-lg">
+                <h2 class="text-3xl font-bold text-center mb-6 text-indigo-700" data-i18n="share_title">Partager le Message avec vos Proches</h2>
+                <p class="text-center text-gray-700 mb-8 max-w-2xl mx-auto" data-i18n="share_subtitle">
+                    Aidez d'autres personnes à découvrir la foi ! Cliquez sur un bouton pour partager cette page.
+                </p>
+                <div class="flex flex-wrap justify-center gap-4 max-w-2xl mx-auto">
+                    
+                    <!-- Bouton Copier le Lien (pour SMS, E-mail, etc.) -->
+                    <button onclick="copyLink(this)" class="px-5 py-3 text-white font-semibold rounded-lg shadow-md transition duration-300 transform hover:scale-105 bg-gray-500 hover:bg-gray-600" data-i18n="share_copy_button">
+                        🔗 Copier le Lien
+                    </button>
+                    
+                    <!-- Boutons Réseaux Sociaux -->
+                    <button onclick="shareOnSocial('facebook')" class="px-5 py-3 text-white font-semibold rounded-lg shadow-md transition duration-300 transform hover:scale-105 btn-facebook">
+                        <span aria-hidden="true">&#xf09a;</span> Facebook
+                    </button>
+                    <button onclick="shareOnSocial('twitter')" class="px-5 py-3 text-white font-semibold rounded-lg shadow-md transition duration-300 transform hover:scale-105 btn-twitter">
+                        <span aria-hidden="true">&#x1f5c6;</span> X / Twitter
+                    </button>
+                    <button onclick="shareOnSocial('whatsapp')" class="px-5 py-3 text-white font-semibold rounded-lg shadow-md transition duration-300 transform hover:scale-105 btn-whatsapp">
+                        <span aria-hidden="true">&#xf232;</span> WhatsApp
+                    </button>
+                    <button onclick="shareOnSocial('email')" class="px-5 py-3 text-white font-semibold rounded-lg shadow-md transition duration-300 transform hover:scale-105 bg-red-500 hover:bg-red-600">
+                        ✉️ E-mail
+                    </button>
+                    <button onclick="shareOnSocial('sms')" class="px-5 py-3 text-white font-semibold rounded-lg shadow-md transition duration-300 transform hover:scale-105 btn-sms">
+                        💬 SMS
+                    </button>
+                </div>
+            </section>
+            
+            <div class="section-separator"></div>
+
+            <!-- SECTION 5: PROCHAINES ÉTAPES (Call to Action principal) -->
+            <section id="etapes" class="py-12 text-center bg-indigo-50 rounded-xl p-8 shadow-inner">
+                <h2 class="text-3xl font-bold mb-4 text-indigo-700" data-i18n="steps_title">Prière de Conversion : Faire le Premier Pas</h2>
+                <p class="text-lg text-gray-700 mb-6" data-i18n="steps_subtitle">
+                    Si le message résonne en vous, voici les étapes simples pour commencer votre voyage de foi.
+                </p>
+                <div class="flex flex-col md:flex-row justify-center items-center gap-4">
+                    <button onclick="displayMessage('prayer')" class="w-full md:w-auto px-6 py-3 bg-indigo-600 text-white font-bold rounded-lg shadow-md hover:bg-indigo-700 transition duration-300 transform hover:scale-105" data-i18n="steps_button_prayer">
+                        Faire une Prière
+                    </button>
+                    <button onclick="displayMessage('contact')" class="w-full md:w-auto px-6 py-3 bg-gray-200 text-indigo-600 font-bold rounded-lg shadow-md hover:bg-gray-300 transition duration-300 transform hover:scale-105" data-i18n="steps_button_contact">
+                        Contacter Quelqu'un
+                    </button>
+                </div>
+
+                <div id="action-message" class="mt-8 p-4 bg-white border border-indigo-200 rounded-lg shadow-md text-left hidden">
+                    <!-- Le message de l'action s'affichera ici -->
+                </div>
+            </section>
+
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="w-full bg-gray-800 text-white p-6 mt-12">
+            <div class="max-w-4xl mx-auto text-center text-sm">
+                <p>&copy; 2025 <span data-i18n="app_name_footer">Foi Nouvelle</span>. <span data-i18n="footer_rights">Tous droits réservés.</span></p>
+                <p class="mt-2" data-i18n="footer_subtitle">Ce site est optimisé pour la recherche et le partage du message de la foi.</p>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script type="module">
+        // Import des fonctionnalités Firebase (ajout de collection, onSnapshot, query, addDoc)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // --- FIREBASE SETUP ---
+        setLogLevel('debug'); 
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+        // CORRECTION DE L'ERREUR : Déclaration unique des variables de service.
+        let db, auth, userId; 
+        let isAuthReady = false;
+        
+        // Chemin des collections
+        const TESTIMONIALS_COLLECTION = `artifacts/${appId}/public/data/user_testimonials`;
+        const ACTIVITY_COLLECTION = `artifacts/${appId}/public/data/user_activity`; // NOUVELLE COLLECTION POUR LE JOURNAL
+
+        // --- GESTION MULTI-LANGUE (i18n) ---
+        const PRAYER_TEXT = {
+            fr: `Père Céleste, je viens humblement devant Toi. Je reconnais que j'ai péché et que je me suis éloigné de Ton chemin. Je me repens sincèrement de toutes mes fautes et je Te demande pardon. Je crois que Jésus-Christ est Ton Fils, qu'Il est mort sur la croix pour mes péchés et qu'Il est ressuscité. Aujourd'hui, je T'ouvre mon cœur et je L'accepte comme mon Seigneur et mon Sauveur personnel. Je Te donne ma vie et je Te prie de me guider par Ton Saint-Esprit dès maintenant. Je veux vivre pour Toi. Au nom de Jésus, amen.`,
+            en: `Heavenly Father, I humbly come before You. I confess that I have sinned and gone astray from Your path. I sincerely repent of all my faults and ask for Your forgiveness. I believe that Jesus Christ is Your Son, that He died on the cross for my sins and rose again. Today, I open my heart to You and accept Him as my Lord and personal Savior. I give You my life and ask You to guide me by Your Holy Spirit from this moment on. I want to live for You. In Jesus' name, Amen.`,
+            es: `Padre Celestial, vengo humildemente ante Ti. Confieso que he pecado y me he desviado de Tu camino. Me arrepiento sinceramente de todas mis faltas y Te pido perdón. Creo que Jesucristo es Tu Hijo, que murió en la cruz por mis pecados y resucitó. Hoy, abro mi corazón a Ti y lo acepto como mi Señor y Salvador personal. Te entrego mi vida y Te pido que me guíes por Tu Espíritu Santo desde ahora. Quiero vivir para Ti. En el nombre de Jesús, Amén.`,
+            de: `Himmlischer Vater, ich komme demütig vor Dich. Ich erkenne, dass ich gesündigt habe und mich von Deinem Weg entfernt habe. Ich bereue aufrichtig alle meine Fehler und bitte Dich um Vergebung. Ich glaube, dass Jesus Christus Dein Sohn ist, dass Er am Kreuz für meine Sünden gestorben und auferstanden ist. Heute öffne ich Dir mein Herz und nehme Ihn als meinen Herrn und persönlichen Retter an. Ich gebe Dir mein Leben und bitte Dich, mich von diesem Moment an durch Deinen Heiligen Geist zu führen. Ich möchte für Dich leben. Im Namen Jesu, Amen.`,
+            it: `Padre Celeste, vengo umilmente davanti a Te. Riconosco di aver peccato e di essermi allontanato dal Tuo cammino. Mi pento sinceramente di tutti i miei errori e Ti chiedo perdono. Credo che Gesù Cristo è Tuo Figlio, che è morto sulla croce per i miei peccati ed è risorto. Oggi, apro il mio cuore a Te e Lo accetto come mio Signore e Salvatore personale. Ti do la mia vita e Ti prego di guidarmi con il Tuo Santo Spirito da questo momento in poi. Voglio vivere per Te. Nel nome di Gesù, Amen.`,
+            pt: `Pai Celestial, venho humildemente diante de Ti. Reconheço que pequei e me afastei do Teu caminho. Arrependo-me sinceramente de todas as minhas faltas e peço-Te perdão. Creio que Jesus Cristo é Teu Filho, que Ele morreu na cruz pelos meus pecados e ressuscitou. Hoje, abro o meu coração a Ti e aceito-O como meu Senhor e Salvador pessoal. Dou-Te a minha vida e peço-Te que me guies pelo Teu Espírito Santo a partir de agora. Quero viver para Ti. Em nome de Jesus, Ámen.`,
+            nl: `Hemelse Vader, ik kom nederig voor U. Ik erken dat ik gezondigd heb en van Uw pad ben afgedwaald. Ik heb oprecht berouw over al mijn fouten en vraag U om vergeving. Ik geloof dat Jezus Christus Uw Zoon is, dat Hij aan het kruis stierf voor mijn zonden en opstond. Vandaag open ik mijn hart voor U en accepteer Hem als mijn Heer en persoonlijke Verlosser. Ik geef U mijn leven en vraag U om mij vanaf nu te leiden door Uw Heilige Geest. Ik wil voor U leven. In de naam van Jezus, Amen.`,
+            pl: `Niebiański Ojcze, przychodzę pokornie przed Ciebie. Uznaję, że zgrzeszyłem i oddaliłem się od Twojej drogi. Szczerze żałuję wszystkich moich błędów i proszę Cię o przebaczenie. Wierzę, że Jezus Chrystus jest Twoim Synem, że umarł na krzyżu za moje grzechy i zmartwychwstał. Dziś otwieram przed Tobą moje serce i przyjmuję Go jako mojego Pana i osobistego Zbawiciela. Oddaję Ci moje życie i proszę Cię, abyś prowadził mnie przez Twojego Ducha Świętego od teraz. Chcę żyć dla Ciebie. W imię Jezusa, Amen.`
+        };
+
+        const translations = {
+            fr: {
+                // Navigation
+                app_title: "Trouver la Foi en Dieu | Guide, Prière et Communauté de Foi",
+                app_name: "Foi Nouvelle", nav_message: "Message", nav_explore: "Explorer l'IA", nav_community: "Communauté", nav_testimonials: "Témoignages", nav_share: "Partager", nav_start: "Commencer",
+                // Hero
+                hero_title: "Découvrez le Chemin vers Dieu et l'Espoir", hero_subtitle_1: "Vous cherchez un sens à votre vie ? Découvrez comment **trouver la foi en Dieu**, le chemin vers Jésus et une communauté accueillante.", hero_subtitle_2: "Découvrez l'amour inconditionnel et la puissance transformatrice de la foi. Où que vous soyez dans votre recherche, vous êtes le bienvenu.", hero_button: "Je veux comprendre",
+                // Message
+                message_title: "Comprendre les Fondamentaux de la Foi en Dieu", 
+                message_card_1_title: "1. L'Amour Inconditionnel de Dieu", message_card_1_text: "Dieu est la source de toute existence et vous a créé(e) par amour. Son amour n'a pas de condition : il est total et éternel. Il n'attend pas que vous soyez parfait(e), mais que vous acceptiez Sa présence.", message_card_1_footer: "*Le point de départ de tout : Sa grâce est disponible, quel que soit votre passé.*",
+                message_card_2_title: "2. La Réalité de la Séparation (Péché)", message_card_2_text: "Bien que nous soyons aimés, nos choix autonomes et nos erreurs (appelés péché) ont créé une distance. Ce n'est pas une liste de fautes, mais un état de séparation qui vous empêche d'atteindre la plénitude et de connaître Dieu intimement. C'est l'origine du vide que beaucoup ressentent.", message_card_2_footer: "*Le péché crée une barrière. C'est pourquoi nous avons besoin d'un pont.*",
+                message_card_3_title: "3. Le Pont du Salut : Jésus-Christ", message_card_3_text: "Jésus est venu sur Terre pour combler la distance. Sa mort sur la croix et sa résurrection ne sont pas seulement un fait historique, mais l'acte qui rend le pardon total et la réconciliation possible. En L'acceptant comme Seigneur et Sauveur, vous traversez ce pont vers la relation avec Dieu.", message_card_3_footer: "*C'est un cadeau à accepter par la foi, non à mériter par les œuvres.*",
+                // Plan de lecture
+                plan_title: "Plan de Lecture 7 Jours : Commencer avec Jésus", plan_days_1_3_title: "Jours 1-3 : L'Amour et le Pardon", plan_days_4_7_title: "Jours 4-7 : La Nouvelle Vie", plan_day_1_label: "Jour 1 :", plan_day_1_text: "L'amour de Dieu - Jean 3:16", plan_day_2_label: "Jour 2 :", plan_day_2_text: "L'humanité et la nécessité du pardon - Romains 3:23", plan_day_3_label: "Jour 3 :", plan_day_3_text: "La réponse de Jésus - 1 Jean 1:9", plan_day_4_label: "Jour 4 :", plan_day_4_text: "L'assurance du salut - Romains 10:9", plan_day_5_label: "Jour 5 :", plan_day_5_text: "Le rôle de l'Esprit Saint - Actes 1:8", plan_day_6_label: "Jour 6 :", plan_day_6_text: "La vie en communauté - Hébreux 10:25", plan_day_7_label: "Jour 7 :", plan_day_7_text: "Les fondations pour la croissance - Matthieu 7:24-27", plan_footer: "Ces versets sont un point de départ pour une lecture personnelle et quotidienne.",
+                // Explorateur IA
+                explore_title: "✨ Poser des Questions sur la Foi (Explorateur IA)", explore_subtitle: "Posez une question simple sur la foi. Notre IA (recherche assistée) vous fournira une explication claire et bienveillante.", explore_placeholder: "Ex: Comment puis-je prier ?", explore_button_explain: "Expliquer",
+                explore_button_searching: "Recherche...",
+                explore_response_to: "Réponse à",
+                explore_sources: "Sources (via Google Search)",
+                explore_no_sources: "Information générée par IA (sans source externe trouvée).",
+                explore_next_steps_title: "Prochaines Étapes pour Aller Plus Loin",
+
+                // Communauté
+                community_title: "Trouver une Communauté de Foi Accueillante", community_subtitle: "La foi est vécue en communauté. Trouvez une communauté locale pour être mieux accompagné dans votre marche.", community_placeholder: "Entrez votre ville (Ex: Paris, Ajaccio, Marseille)", community_button: "Rechercher",
+                
+                // Témoignages
+                testimonials_title: "Histoires de Vie Transformée et Témoignages", submit_title: "Partagez Votre Histoire !", submit_subtitle: "Votre expérience peut inspirer quelqu'un d'autre. Racontez-nous comment votre rencontre avec Dieu a transformé votre vie.", submit_name_placeholder: "Votre nom ou pseudonyme", submit_story_placeholder: "Votre témoignage de vie...", submit_button: "Soumettre le Témoignage",
+                testimonial_label: "Témoignage",
+                testimonial_static_label: "(inspiré)",
+                testimonial_user_label: "(utilisateur)",
+                testimonial_published_in: "publié en",
+                testimonial_on: "le",
+                testimonial_recently: "récemment",
+
+
+                // Partage
+                share_title: "Partager le Message avec vos Proches", share_subtitle: "Aidez d'autres personnes à découvrir la foi ! Cliquez sur un bouton pour partager cette page.", share_copy_button: "🔗 Copier le Lien",
+                share_message: "J'ai trouvé un guide simple pour découvrir la foi en Dieu et le chemin vers Jésus. Partagez-le ! #FoiEnDieu #CheminVersJésus",
+                share_email_subject: "Découvrez la Foi en Dieu",
+
+                // Prochaines Étapes
+                steps_title: "Prière de Conversion : Faire le Premier Pas", steps_subtitle: "Si le message résonne en vous, voici les étapes simples pour commencer votre voyage de foi.", steps_button_prayer: "Faire une Prière", steps_button_contact: "Contacter Quelqu'un",
+                steps_button_loading: "Chargement...",
+                steps_title_prayer_section: "Votre Prière de Premier Pas",
+                steps_prayer_prompt: "Si vous souhaitez accepter ce cadeau, vous pouvez faire cette prière simple, avec sincérité :",
+                steps_button_prayer_audio: "Lire la Prière (Audio)",
+                steps_footer: "C'est le début d'une nouvelle aventure !",
+                steps_title_contact_section: "Nous Contacter",
+                steps_contact_prompt: "Nous serions ravis de discuter avec vous et de répondre à vos questions. N'hésitez pas à nous appeler ou à nous écrire.",
+                steps_contact_email_label: "Email",
+                steps_contact_phone_label: "Téléphone",
+                
+                // Alerts & Errors
+                alert_api_key: "⚠️ ATTENTION : La clé API est manquante ou invalide. Les fonctions d'IA ne fonctionneront pas tant que vous n'aurez pas inséré votre clé.",
+                alert_api_key_error: "Erreur : La clé API semble invalide. Veuillez vérifier votre clé Gemini.",
+                alert_empty_query: "Veuillez entrer une question.",
+                alert_link_copied: "Lien Copié ! ✅",
+                alert_copy_error: "Impossible de copier. Veuillez copier le lien manuellement.",
+                alert_empty_city: "Veuillez entrer une ville pour la recherche.",
+                alert_empty_testimonial: "Veuillez remplir votre nom et votre histoire.",
+                alert_submit_success: "Merci ! Votre témoignage a été soumis et apparaît maintenant ci-dessus.",
+                alert_submit_error: "Erreur lors de la soumission. Veuillez réessayer.",
+                alert_testimonial_rejected: "Merci pour votre témoignage. Après évaluation, nous ne pouvons pas le publier car il ne correspond pas aux critères de notre communauté.",
+                submit_button_evaluating: "Évaluation en cours...",
+                alert_tts_error: "Erreur : Clé API Gemini manquante. La lecture audio n'est pas disponible.",
+                alert_tts_disabled: "⚠️ Lecture audio désactivée : La clé API Gemini est manquante ou invalide.",
+                alert_tts_playback_error: "Impossible de jouer l'audio. Vérifiez les permissions du navigateur.",
+                alert_tts_gen_error: "Erreur lors de la génération de l'audio. Réponse API invalide ou clé API incorrecte.",
+                alert_tts_connection_error: "Erreur de connexion lors de la requête audio.",
+                submit_button_sending: "Envoi...",
+                alert_api_missing: "Erreur : La clé API Gemini est manquante ou invalide. Veuillez l'insérer dans le code.",
+                alert_api_invalid: "Erreur : La clé API semble invalide. Veuillez vérifier votre clé Gemini.",
+                alert_generation_failed: "Désolé, je n'ai pas pu générer de réponse claire. Veuillez réessayer ou reformuler.",
+                alert_ai_error: "Une erreur est survenue lors de l'appel à l'IA",
+                alert_firestore_error: "Firestore non initialisé ou utilisateur non connecté.",
+                alert_max_retries: "Maximum retries exceeded.",
+                alert_api_key_invalid_code: "API Key ou requête invalide",
+                church_search_query: "église évangélique proche de",
+
+                // Footer
+                app_name_footer: "Foi Nouvelle", footer_rights: "Tous droits réservés.", footer_subtitle: "Ce site est optimisé pour la recherche et le partage du message de la foi.",
+            },
+            en: {
+                // Navigation
+                app_title: "Find Faith in God | Guide, Prayer and Faith Community",
+                app_name: "New Faith", nav_message: "Message", nav_explore: "Explore AI", nav_community: "Community", nav_testimonials: "Testimonials", nav_share: "Share", nav_start: "Start",
+                // Hero
+                hero_title: "Discover the Path to God and Hope", hero_subtitle_1: "Are you looking for meaning in your life? Discover how to **find faith in God**, the way to Jesus, and a welcoming community.", hero_subtitle_2: "Discover unconditional love and the transformative power of faith. Wherever you are in your search, you are welcome.", hero_button: "I want to understand",
+                // Message
+                message_title: "Understanding the Fundamentals of Faith in God", 
+                message_card_1_title: "1. Unconditional Love of God", message_card_1_text: "God is the source of all existence and created you out of love. His love has no conditions: it is total and eternal. He doesn't wait for you to be perfect, but for you to accept His presence.", message_card_1_footer: "*The starting point of everything: His grace is available, regardless of your past.*",
+                message_card_2_title: "2. The Reality of Separation (Sin)", message_card_2_text: "Although we are loved, our autonomous choices and mistakes (called sin) have created a distance. This is not a list of faults, but a state of separation that prevents you from reaching fullness and knowing God intimately. It is the origin of the emptiness many feel.", message_card_2_footer: "*Sin creates a barrier. That's why we need a bridge.*",
+                message_card_3_title: "3. The Bridge of Salvation: Jesus Christ", message_card_3_text: "Jesus came to Earth to bridge the distance. His death on the cross and resurrection are not just historical facts, but the act that makes total forgiveness and reconciliation possible. By accepting Him as Lord and Savior, you cross this bridge to a relationship with God.", message_card_3_footer: "*It is a gift to be accepted by faith, not earned by works.*",
+                // Plan de lecture
+                plan_title: "7-Day Reading Plan: Starting with Jesus", plan_days_1_3_title: "Days 1-3: Love and Forgiveness", plan_days_4_7_title: "Days 4-7: The New Life", plan_day_1_label: "Day 1:", plan_day_1_text: "God's love - John 3:16", plan_day_2_label: "Day 2:", plan_day_2_text: "Humanity and the need for forgiveness - Romans 3:23", plan_day_3_label: "Day 3:", plan_day_3_text: "Jesus' response - 1 John 1:9", plan_day_4_label: "Day 4:", plan_day_4_text: "Assurance of salvation - Romans 10:9", plan_day_5_label: "Day 5:", plan_day_5_text: "The role of the Holy Spirit - Acts 1:8", plan_day_6_label: "Day 6:", plan_day_6_text: "Life in community - Hebrews 10:25", plan_day_7_label: "Day 7:", plan_day_7_text: "Foundations for growth - Matthew 7:24-27", plan_footer: "These verses are a starting point for personal and daily reading.",
+                 // Explorateur IA
+                explore_title: "✨ Ask Questions about Faith (AI Explorer)", explore_subtitle: "Ask a simple question about faith. Our AI (search-assisted) will provide a clear and benevolent explanation.", explore_placeholder: "Ex: How can I pray?", explore_button_explain: "Explain",
+                explore_button_searching: "Searching...",
+                explore_response_to: "Response to",
+                explore_sources: "Sources (via Google Search)",
+                explore_no_sources: "AI generated information (no external source found).",
+                explore_next_steps_title: "Next Steps to Go Further",
+
+
+                // Communauté
+                community_title: "Find a Welcoming Faith Community", community_subtitle: "Faith is lived in community. Find a local community to be better guided in your walk.", community_placeholder: "Enter your city (e.g., London, New York, Sydney)", community_button: "Search",
+                
+                // Témoignages
+                testimonials_title: "Stories of Transformed Lives and Testimonials", submit_title: "Share Your Story!", submit_subtitle: "Your experience can inspire someone else. Tell us how your encounter with God transformed your life.", submit_name_placeholder: "Your name or nickname", submit_story_placeholder: "Your life story...", submit_button: "Submit Testimonial",
+                testimonial_label: "Testimony",
+                testimonial_static_label: "(inspired)",
+                testimonial_user_label: "(user)",
+                testimonial_published_in: "published in",
+                testimonial_on: "on",
+                testimonial_recently: "recently",
+
+                // Partage
+                share_title: "Share the Message with Your Loved Ones", share_subtitle: "Help others discover faith! Click a button to share this page.", share_copy_button: "🔗 Copy Link",
+                share_message: "I found a simple guide to discover faith in God and the way to Jesus. Share it! #FaithInGod #PathToJesus",
+                share_email_subject: "Discovering Faith in God",
+
+                // Prochaines Étapes
+                steps_title: "Prayer of Conversion: Taking the First Step", steps_subtitle: "If the message resonates with you, here are simple steps to begin your faith journey.", steps_button_prayer: "Say a Prayer", steps_button_contact: "Contact Someone",
+                steps_button_loading: "Loading...",
+                steps_title_prayer_section: "Your First Step Prayer",
+                steps_prayer_prompt: "If you wish to accept this gift, you can say this simple prayer, with sincerity:",
+                steps_button_prayer_audio: "Read Prayer (Audio)",
+                steps_footer: "It's the beginning of a new adventure!",
+                steps_title_contact_section: "Contact Us",
+                steps_contact_prompt: "We would be delighted to talk with you and answer your questions. Feel free to call or write to us.",
+                steps_contact_email_label: "Email",
+                steps_contact_phone_label: "Phone",
+
+                // Alerts & Errors
+                alert_api_key: "⚠️ WARNING: The Gemini API key is missing or invalid. AI functions will not work until you insert your key.",
+                alert_api_key_error: "Error: The API key seems invalid. Please check your Gemini key.",
+                alert_empty_query: "Please enter a question.",
+                alert_link_copied: "Link Copied! ✅",
+                alert_copy_error: "Unable to copy. Please copy the link manually.",
+                alert_empty_city: "Please enter a city for the search.",
+                alert_empty_testimonial: "Please fill in your name and story.",
+                alert_submit_success: "Thank you! Your testimonial has been submitted and now appears above.",
+                alert_submit_error: "Error during submission. Please try again.",
+                alert_testimonial_rejected: "Thank you for your testimonial. After evaluation, we cannot publish it as it does not meet our community criteria.",
+                submit_button_evaluating: "Evaluating...",
+                alert_tts_error: "Error: Gemini API key missing. Audio playback is unavailable.",
+                alert_tts_disabled: "⚠️ Audio playback disabled: The Gemini API key is missing or invalid.",
+                alert_tts_playback_error: "Cannot play audio. Check browser permissions.",
+                alert_tts_gen_error: "Error generating audio. Invalid API response or incorrect API key.",
+                alert_tts_connection_error: "Connection error during audio request.",
+                submit_button_sending: "Sending...",
+                alert_api_missing: "Error: The Gemini API key is missing or invalid. Please insert it in the code.",
+                alert_api_invalid: "Error: The API key seems invalid. Please check your Gemini key.",
+                alert_generation_failed: "Sorry, I couldn't generate a clear response. Please try again or rephrase.",
+                alert_ai_error: "An error occurred during the AI call",
+                alert_firestore_error: "Firestore not initialized or user not connected.",
+                alert_max_retries: "Maximum retries exceeded.",
+                alert_api_key_invalid_code: "Invalid API Key or request",
+                church_search_query: "evangelical church near",
+
+                // Footer
+                app_name_footer: "New Faith", footer_rights: "All rights reserved.", footer_subtitle: "This site is optimized for search and sharing the message of faith.",
+            },
+            es: {
+                // Navigation
+                app_title: "Encontrar la Fe en Dios | Guía, Oración y Comunidad de Fe",
+                app_name: "Nueva Fe", nav_message: "Mensaje", nav_explore: "Explorar IA", nav_community: "Comunidad", nav_testimonials: "Testimonios", nav_share: "Compartir", nav_start: "Comenzar",
+                // Hero
+                hero_title: "Descubre el Camino a Dios y la Esperanza", hero_subtitle_1: "¿Buscas un sentido en tu vida? Descubre cómo **encontrar la fe en Dios**, el camino a Jesús y una comunidad acogedora.", hero_subtitle_2: "Descubre el amor incondicional y el poder transformador de la fe. Dondequiera que estés en tu búsqueda, eres bienvenido.", hero_button: "Quiero entender",
+                // Message
+                message_title: "Comprender los Fundamentos de la Fe en Dios", 
+                message_card_1_title: "1. Amor Incondicional de Dios", message_card_1_text: "Dios es la fuente de toda existencia y te creó por amor. Su amor no tiene condición: es total y eterno. No espera que seas perfecto(a), sino que aceptes Su presencia.", message_card_1_footer: "*El punto de partida de todo: Su gracia está disponible, sin importar tu pasado.*",
+                message_card_2_title: "2. La Realidad de la Separación (Pecado)", message_card_2_text: "Aunque somos amados, nuestras elecciones y errores (llamados pecado) han creado una distancia. No es una lista de fallas, sino un estado de separación que te impide alcanzar la plenitud y conocer a Dios íntimamente. Es el origen del vacío que muchos sienten.", message_card_2_footer: "*El pecado crea una barrera. Por eso necesitamos un puente.*",
+                message_card_3_title: "3. El Puente de la Salvación: Jesucristo", message_card_3_text: "Jesús vino a la Tierra para salvar la distancia. Su muerte en la cruz y resurrección no son solo hechos históricos, sino el acto que hace posible el perdón total y la reconciliación. Al aceptarlo como Señor y Salvador, cruzas este puente hacia la relación con Dios.", message_card_3_footer: "*Es un regalo para ser aceptado por fe, no ganado por obras.*",
+                // Plan de lectura
+                plan_title: "Plan de Lectura de 7 Días: Comenzando con Jesús", plan_days_1_3_title: "Días 1-3: Amor y Perdón", plan_days_4_7_title: "Días 4-7: La Nueva Vida", plan_day_1_label: "Día 1:", plan_day_1_text: "El amor de Dios - Juan 3:16", plan_day_2_label: "Día 2:", plan_day_2_text: "La humanidad y la necesidad de perdón - Romanos 3:23", plan_day_3_label: "Día 3:", plan_day_3_text: "La respuesta de Jesús - 1 Juan 1:9", plan_day_4_label: "Día 4:", plan_day_4_text: "Seguridad de la salvación - Romanos 10:9", plan_day_5_label: "Día 5:", plan_day_5_text: "El papel del Espíritu Santo - Hechos 1:8", plan_day_6_label: "Día 6:", plan_day_6_text: "Vida en comunidad - Hebreos 10:25", plan_day_7_label: "Día 7:", plan_day_7_text: "Fundamentos para el crecimiento - Mateo 7:24-27", plan_footer: "Estos versículos son un punto de partida para la lectura personal y diaria.",
+                // Explorateur IA
+                explore_title: "✨ Haz Preguntas sobre la Fe (Explorador IA)", explore_subtitle: "Haz una pregunta simple sobre la fe. Nuestra IA (asistida por búsqueda) proporcionará una explicación clara y benévola.", explore_placeholder: "Ej: ¿Cómo puedo orar?", explore_button_explain: "Explicar",
+                explore_button_searching: "Buscando...",
+                explore_response_to: "Respuesta a",
+                explore_sources: "Fuentes (vía Búsqueda de Google)",
+                explore_no_sources: "Información generada por IA (no se encontró fuente externa).",
+                explore_next_steps_title: "Próximos Pasos para ir más Allá",
+
+                // Communauté
+                community_title: "Encuentra una Comunidad de Fe Acogedora", community_subtitle: "La fe se vive en comunidad. Encuentra una comunidad local para ser mejor guiado en tu caminar.", community_placeholder: "Ingresa tu ciudad (Ej: Madrid, Buenos Aires, México)", community_button: "Buscar",
+                
+                // Témoignages
+                testimonials_title: "Historias de Vidas Transformadas y Testimonios", submit_title: "¡Comparte tu Historia!", submit_subtitle: "Tu experiencia puede inspirar a otra persona. Cuéntanos cómo tu encuentro con Dios transformó tu vida.", submit_name_placeholder: "Tu nombre o apodo", submit_story_placeholder: "Tu historia de vida...", submit_button: "Enviar Testimonio",
+                testimonial_label: "Testimonio",
+                testimonial_static_label: "(inspirado)",
+                testimonial_user_label: "(usuario)",
+                testimonial_published_in: "publicado en",
+                testimonial_on: "el",
+                testimonial_recently: "recientemente",
+
+                // Partage
+                share_title: "Comparte el Mensaje con tus Seres Queridos", share_subtitle: "¡Ayuda a otros a descubrir la fe! Haz clic en un botón para compartir esta página.", share_copy_button: "🔗 Copiar Enlace",
+                share_message: "Encontré una guía sencilla para descubrir la fe en Dios y el camino a Jesús. ¡Compártela! #FeEnDios #CaminoAJesus",
+                share_email_subject: "Descubriendo la Fe en Dios",
+
+                // Prochaines Étapes
+                steps_title: "Oración de Conversión: Dando el Primer Paso", steps_subtitle: "Si el mensaje resuena contigo, aquí tienes pasos sencillos para comenzar tu viaje de fe.", steps_button_prayer: "Hacer una Oración", steps_button_contact: "Contactar a Alguien",
+                steps_button_loading: "Cargando...",
+                steps_title_prayer_section: "Tu Oración de Primer Paso",
+                steps_prayer_prompt: "Si deseas aceptar este regalo, puedes hacer esta sencilla oración, con sinceridad:",
+                steps_button_prayer_audio: "Leer Oración (Audio)",
+                steps_footer: "¡Es el comienzo de una nueva aventura!",
+                steps_title_contact_section: "Contáctanos",
+                steps_contact_prompt: "Estaremos encantados de hablar contigo y responder tus preguntas. No dudes en llamarnos o escribirnos.",
+                steps_contact_email_label: "Correo electrónico",
+                steps_contact_phone_label: "Teléfono",
+
+                // Alerts & Errors
+                alert_api_key: "⚠️ ADVERTENCIA: La clave de la API Gemini falta o es inválida. Las funciones de IA no funcionarán hasta que insertes tu clave.",
+                alert_api_key_error: "Error: La clave de la API parece inválida. Por favor, verifica tu clave Gemini.",
+                alert_empty_query: "Por favor, ingresa una pregunta.",
+                alert_link_copied: "¡Enlace Copiado! ✅",
+                alert_copy_error: "No se pudo copiar. Por favor, copia el enlace manualmente.",
+                alert_empty_city: "Por favor, ingresa una ciudad para la búsqueda.",
+                alert_empty_testimonial: "Por favor, completa tu nombre e historia.",
+                alert_submit_success: "¡Gracias! Tu testimonio ha sido enviado y ahora aparece arriba.",
+                alert_submit_error: "Error durante el envío. Por favor, inténtalo de nuevo.",
+                alert_testimonial_rejected: "Gracias por tu testimonio. Después de la evaluación, no podemos publicarlo ya que no cumple con los criterios de nuestra comunidad.",
+                submit_button_evaluating: "Evaluando...",
+                alert_tts_error: "Error: Falta la clave de la API Gemini. La reproducción de audio no está disponible.",
+                alert_tts_disabled: "⚠️ Reproducción de audio deshabilitada: La clave de la API Gemini falta o es inválida.",
+                alert_tts_playback_error: "No se puede reproducir el audio. Verifica los permisos del navegador.",
+                alert_tts_gen_error: "Error al generar audio. Respuesta de API inválida o clave de API incorrecta.",
+                alert_tts_connection_error: "Error de conexión durante la solicitud de audio.",
+                submit_button_sending: "Enviando...",
+                alert_api_missing: "Error: La clave de la API Gemini falta o es inválida. Por favor, insértala en el código.",
+                alert_api_invalid: "Error: La clave de la API parece inválida. Por favor, verifica tu clave Gemini.",
+                alert_generation_failed: "Lo siento, no pude generar una respuesta clara. Por favor, inténtalo de nuevo o reformula.",
+                alert_ai_error: "Ocurrió un error durante la llamada a la IA",
+                alert_firestore_error: "Firestore no inicializado o usuario no conectado.",
+                alert_max_retries: "Se excedió el número máximo de reintentos.",
+                alert_api_key_invalid_code: "Clave de API o solicitud inválida",
+                church_search_query: "iglesia evangélica cerca de",
+
+                // Footer
+                app_name_footer: "Nueva Fe", footer_rights: "Todos los derechos reservados.", footer_subtitle: "Este sitio está optimizado para la búsqueda y el intercambio del mensaje de fe.",
+            },
+            de: {
+                // Navigation
+                app_title: "Glauben an Gott finden | Leitfaden, Gebet und Glaubensgemeinschaft",
+                app_name: "Neuer Glaube", nav_message: "Botschaft", nav_explore: "KI erkunden", nav_community: "Gemeinschaft", nav_testimonials: "Zeugnisse", nav_share: "Teilen", nav_start: "Beginnen",
+                // Hero
+                hero_title: "Entdecke den Weg zu Gott und zur Hoffnung", hero_subtitle_1: "Suchst du einen Sinn in deinem Leben? Entdecke, wie du **Glauben an Gott findest**, den Weg zu Jesus und eine einladende Gemeinschaft.", hero_subtitle_2: "Entdecke die bedingungslose Liebe und die transformative Kraft des Glaubens. Wo immer du in deiner Suche bist, du bist willkommen.", hero_button: "Ich möchte verstehen",
+                // Message
+                message_title: "Die Grundlagen des Glaubens an Gott verstehen",
+                message_card_1_title: "1. Die bedingungslose Liebe Gottes", message_card_1_text: "Gott ist die Quelle allen Seins und hat dich aus Liebe geschaffen. Seine Liebe hat keine Bedingungen: Sie ist vollständig und ewig. Er wartet nicht darauf, dass du perfekt bist, sondern dass du Seine Gegenwart annimmst.", message_card_1_footer: "*Der Ausgangspunkt von allem: Seine Gnade ist verfügbar, unabhängig von deiner Vergangenheit.*",
+                message_card_2_title: "2. Die Realität der Trennung (Sünde)", message_card_2_text: "Obwohl wir geliebt werden, haben unsere autonomen Entscheidungen und Fehler (Sünde genannt) eine Distanz geschaffen. Es ist keine Liste von Fehlern, sondern ein Zustand der Trennung, der dich daran hindert, Fülle zu erreichen und Gott intim zu kennen. Es ist der Ursprung der Leere, die viele empfinden.", message_card_2_footer: "*Sünde schafft eine Barriere. Deshalb brauchen wir eine Brücke.*",
+                message_card_3_title: "3. Die Brücke der Erlösung: Jesus Christus", message_card_3_text: "Jesus kam auf die Erde, um die Distanz zu überbrücken. Sein Tod am Kreuz und Seine Auferstehung sind nicht nur historische Fakten, sondern die Tat, die vollständige Vergebung und Versöhnung möglich macht. Indem du Ihn als Herrn und Retter annimmst, überquerst du diese Brücke zu einer Beziehung mit Gott.", message_card_3_footer: "*Es ist ein Geschenk, das durch Glauben angenommen wird, nicht durch Werke verdient.*",
+                // Plan de lecture
+                plan_title: "7-Tage-Leseplan: Mit Jesus beginnen", plan_days_1_3_title: "Tag 1-3: Liebe und Vergebung", plan_days_4_7_title: "Tag 4-7: Das neue Leben", plan_day_1_label: "Tag 1:", plan_day_1_text: "Die Liebe Gottes - Johannes 3:16", plan_day_2_label: "Tag 2:", plan_day_2_text: "Die Menschheit und die Notwendigkeit der Vergebung - Römer 3:23", plan_day_3_label: "Tag 3:", plan_day_3_text: "Die Antwort Jesu - 1. Johannes 1:9", plan_day_4_label: "Tag 4:", plan_day_4_text: "Die Gewissheit der Erlösung - Römer 10:9", plan_day_5_label: "Tag 5:", plan_day_5_text: "Die Rolle des Heiligen Geistes - Apostelgeschichte 1:8", plan_day_6_label: "Tag 6:", plan_day_6_text: "Leben in Gemeinschaft - Hebräer 10:25", plan_day_7_label: "Tag 7:", plan_day_7_text: "Die Grundlagen für das Wachstum - Matthäus 7:24-27", plan_footer: "Diese Verse sind ein Ausgangspunkt für persönliches und tägliches Lesen.",
+                // Explorateur IA
+                explore_title: "✨ Fragen zum Glauben stellen (KI-Explorer)", explore_subtitle: "Stelle eine einfache Frage zum Glauben. Unsere KI (suchgestützt) wird dir eine klare und wohlwollende Erklärung geben.", explore_placeholder: "Z.B.: Wie kann ich beten?", explore_button_explain: "Erklären",
+                explore_button_searching: "Suche...",
+                explore_response_to: "Antwort auf",
+                explore_sources: "Quellen (über Google Suche)",
+                explore_no_sources: "KI-generierte Informationen (keine externe Quelle gefunden).",
+                explore_next_steps_title: "Nächste Schritte, um weiter zu gehen",
+                // Communauté
+                community_title: "Eine einladende Glaubensgemeinschaft finden", community_subtitle: "Glaube wird in Gemeinschaft gelebt. Finde eine lokale Gemeinschaft, um besser in deinem Weg begleitet zu werden.", community_placeholder: "Gib deine Stadt ein (z.B.: Berlin, München, Hamburg)", community_button: "Suchen",
+                // Témoignages
+                testimonials_title: "Geschichten verwandelter Leben und Zeugnisse", submit_title: "Teile deine Geschichte!", submit_subtitle: "Deine Erfahrung kann jemand anderen inspirieren. Erzähle uns, wie deine Begegnung mit Gott dein Leben verwandelt hat.", submit_name_placeholder: "Dein Name oder Pseudonym", submit_story_placeholder: "Dein Lebenszeugnis...", submit_button: "Zeugnis einreichen",
+                testimonial_label: "Zeugnis",
+                testimonial_static_label: "(inspiriert)",
+                testimonial_user_label: "(Benutzer)",
+                testimonial_published_in: "veröffentlicht in",
+                testimonial_on: "am",
+                testimonial_recently: "kürzlich",
+                // Partage
+                share_title: "Teile die Botschaft mit deinen Lieben", share_subtitle: "Hilf anderen, den Glauben zu entdecken! Klicke auf einen Button, um diese Seite zu teilen.", share_copy_button: "🔗 Link kopieren",
+                share_message: "Ich habe einen einfachen Leitfaden gefunden, um den Glauben an Gott und den Weg zu Jesus zu entdecken. Teile es! #GlaubeAnGott #WegZuJesus",
+                share_email_subject: "Glauben an Gott entdecken",
+                // Prochaines Étapes
+                steps_title: "Bekehrungsgebet: Den ersten Schritt tun", steps_subtitle: "Wenn die Botschaft in dir widerhallt, hier sind einfache Schritte, um deine Glaubensreise zu beginnen.", steps_button_prayer: "Ein Gebet sprechen", steps_button_contact: "Jemanden kontaktieren",
+                steps_button_loading: "Laden...",
+                steps_title_prayer_section: "Dein Gebet des ersten Schritts",
+                steps_prayer_prompt: "Wenn du dieses Geschenk annehmen möchtest, kannst du dieses einfache Gebet mit Aufrichtigkeit sprechen:",
+                steps_button_prayer_audio: "Gebet vorlesen (Audio)",
+                steps_footer: "Es ist der Beginn eines neuen Abenteuers!",
+                steps_title_contact_section: "Kontaktiere uns",
+                steps_contact_prompt: "Wir würden uns freuen, mit dir zu sprechen und deine Fragen zu beantworten. Zögere nicht, uns anzurufen oder zu schreiben.",
+                steps_contact_email_label: "E-Mail",
+                steps_contact_phone_label: "Telefon",
+                // Alerts & Errors
+                alert_api_key: "⚠️ WARNUNG: Der Gemini API-Schlüssel fehlt oder ist ungültig. KI-Funktionen funktionieren nicht, bis du deinen Schlüssel einfügst.",
+                alert_api_key_error: "Fehler: Der API-Schlüssel scheint ungültig zu sein. Bitte überprüfe deinen Gemini-Schlüssel.",
+                alert_empty_query: "Bitte gib eine Frage ein.",
+                alert_link_copied: "Link kopiert! ✅",
+                alert_copy_error: "Kopieren nicht möglich. Bitte kopiere den Link manuell.",
+                alert_empty_city: "Bitte gib eine Stadt für die Suche ein.",
+                alert_empty_testimonial: "Bitte fülle deinen Namen und deine Geschichte aus.",
+                alert_submit_success: "Danke! Dein Zeugnis wurde eingereicht und erscheint jetzt oben.",
+                alert_submit_error: "Fehler beim Einreichen. Bitte versuche es erneut.",
+                alert_testimonial_rejected: "Vielen Dank für dein Zeugnis. Nach der Bewertung können wir es nicht veröffentlichen, da es nicht unseren Gemeinschaftskriterien entspricht.",
+                submit_button_evaluating: "Bewertung läuft...",
+                alert_tts_error: "Fehler: Gemini API-Schlüssel fehlt. Audio-Wiedergabe ist nicht verfügbar.",
+                alert_tts_disabled: "⚠️ Audio-Wiedergabe deaktiviert: Der Gemini API-Schlüssel fehlt oder ist ungültig.",
+                alert_tts_playback_error: "Audio kann nicht abgespielt werden. Überprüfe die Browser-Berechtigungen.",
+                alert_tts_gen_error: "Fehler beim Generieren des Audios. Ungültige API-Antwort oder falscher API-Schlüssel.",
+                alert_tts_connection_error: "Verbindungsfehler während der Audio-Anfrage.",
+                submit_button_sending: "Senden...",
+                alert_api_missing: "Fehler: Der Gemini API-Schlüssel fehlt oder ist ungültig. Bitte füge ihn in den Code ein.",
+                alert_api_invalid: "Fehler: Der API-Schlüssel scheint ungültig zu sein. Bitte überprüfe deinen Gemini-Schlüssel.",
+                alert_generation_failed: "Entschuldigung, ich konnte keine klare Antwort generieren. Bitte versuche es erneut oder formuliere um.",
+                alert_ai_error: "Ein Fehler ist beim KI-Aufruf aufgetreten",
+                alert_firestore_error: "Firestore nicht initialisiert oder Benutzer nicht verbunden.",
+                alert_max_retries: "Maximale Wiederholungen überschritten.",
+                alert_api_key_invalid_code: "Ungültiger API-Schlüssel oder Anfrage",
+                church_search_query: "evangelische Kirche in der Nähe von",
+                // Footer
+                app_name_footer: "Neuer Glaube", footer_rights: "Alle Rechte vorbehalten.", footer_subtitle: "Diese Website ist für die Suche und das Teilen der Glaubensbotschaft optimiert.",
+            },
+            it: {
+                // Navigation
+                app_title: "Trovare la Fede in Dio | Guida, Preghiera e Comunità di Fede",
+                app_name: "Nuova Fede", nav_message: "Messaggio", nav_explore: "Esplora IA", nav_community: "Comunità", nav_testimonials: "Testimonianze", nav_share: "Condividi", nav_start: "Inizia",
+                // Hero
+                hero_title: "Scopri il Cammino verso Dio e la Speranza", hero_subtitle_1: "Stai cercando un significato nella tua vita? Scopri come **trovare la fede in Dio**, il cammino verso Gesù e una comunità accogliente.", hero_subtitle_2: "Scopri l'amore incondizionato e il potere trasformativo della fede. Ovunque tu sia nella tua ricerca, sei il benvenuto.", hero_button: "Voglio capire",
+                // Message
+                message_title: "Comprendere i Fondamenti della Fede in Dio",
+                message_card_1_title: "1. L'Amore Incondizionato di Dio", message_card_1_text: "Dio è la fonte di ogni esistenza e ti ha creato per amore. Il Suo amore non ha condizioni: è totale ed eterno. Non aspetta che tu sia perfetto, ma che accetti la Sua presenza.", message_card_1_footer: "*Il punto di partenza di tutto: La Sua grazia è disponibile, indipendentemente dal tuo passato.*",
+                message_card_2_title: "2. La Realtà della Separazione (Peccato)", message_card_2_text: "Anche se siamo amati, le nostre scelte autonome e i nostri errori (chiamati peccato) hanno creato una distanza. Non è un elenco di colpe, ma uno stato di separazione che ti impedisce di raggiungere la pienezza e conoscere Dio intimamente. È l'origine del vuoto che molti sentono.", message_card_2_footer: "*Il peccato crea una barriera. Ecco perché abbiamo bisogno di un ponte.*",
+                message_card_3_title: "3. Il Ponte della Salvezza: Gesù Cristo", message_card_3_text: "Gesù è venuto sulla Terra per colmare la distanza. La Sua morte sulla croce e la Sua risurrezione non sono solo fatti storici, ma l'atto che rende possibile il perdono totale e la riconciliazione. AccettandoLo come Signore e Salvatore, attraversi questo ponte verso la relazione con Dio.", message_card_3_footer: "*È un dono da accettare per fede, non da guadagnare con le opere.*",
+                // Plan de lecture
+                plan_title: "Piano di Lettura di 7 Giorni: Iniziare con Gesù", plan_days_1_3_title: "Giorni 1-3: Amore e Perdono", plan_days_4_7_title: "Giorni 4-7: La Nuova Vita", plan_day_1_label: "Giorno 1:", plan_day_1_text: "L'amore di Dio - Giovanni 3:16", plan_day_2_label: "Giorno 2:", plan_day_2_text: "L'umanità e la necessità del perdono - Romani 3:23", plan_day_3_label: "Giorno 3:", plan_day_3_text: "La risposta di Gesù - 1 Giovanni 1:9", plan_day_4_label: "Giorno 4:", plan_day_4_text: "La certezza della salvezza - Romani 10:9", plan_day_5_label: "Giorno 5:", plan_day_5_text: "Il ruolo dello Spirito Santo - Atti 1:8", plan_day_6_label: "Giorno 6:", plan_day_6_text: "La vita in comunità - Ebrei 10:25", plan_day_7_label: "Giorno 7:", plan_day_7_text: "Le fondamenta per la crescita - Matteo 7:24-27", plan_footer: "Questi versetti sono un punto di partenza per la lettura personale e quotidiana.",
+                // Explorateur IA
+                explore_title: "✨ Fai Domande sulla Fede (Esploratore IA)", explore_subtitle: "Fai una domanda semplice sulla fede. La nostra IA (assistita dalla ricerca) ti fornirà una spiegazione chiara e benevola.", explore_placeholder: "Es: Come posso pregare?", explore_button_explain: "Spiega",
+                explore_button_searching: "Ricerca...",
+                explore_response_to: "Risposta a",
+                explore_sources: "Fonti (tramite Ricerca Google)",
+                explore_no_sources: "Informazioni generate da IA (nessuna fonte esterna trovata).",
+                explore_next_steps_title: "Prossimi Passi per Andare Oltre",
+                // Communauté
+                community_title: "Trova una Comunità di Fede Accogliente", community_subtitle: "La fede si vive in comunità. Trova una comunità locale per essere meglio guidato nel tuo cammino.", community_placeholder: "Inserisci la tua città (Es: Roma, Milano, Napoli)", community_button: "Cerca",
+                // Témoignages
+                testimonials_title: "Storie di Vite Trasformate e Testimonianze", submit_title: "Condividi la Tua Storia!", submit_subtitle: "La tua esperienza può ispirare qualcun altro. Raccontaci come il tuo incontro con Dio ha trasformato la tua vita.", submit_name_placeholder: "Il tuo nome o soprannome", submit_story_placeholder: "La tua testimonianza di vita...", submit_button: "Invia Testimonianza",
+                testimonial_label: "Testimonianza",
+                testimonial_static_label: "(ispirata)",
+                testimonial_user_label: "(utente)",
+                testimonial_published_in: "pubblicato in",
+                testimonial_on: "il",
+                testimonial_recently: "recentemente",
+                // Partage
+                share_title: "Condividi il Messaggio con i Tuoi Cari", share_subtitle: "Aiuta altre persone a scoprire la fede! Clicca su un pulsante per condividere questa pagina.", share_copy_button: "🔗 Copia Link",
+                share_message: "Ho trovato una guida semplice per scoprire la fede in Dio e il cammino verso Gesù. Condividila! #FedeInDio #CamminoVersoGesù",
+                share_email_subject: "Scoprire la Fede in Dio",
+                // Prochaines Étapes
+                steps_title: "Preghiera di Conversione: Fare il Primo Passo", steps_subtitle: "Se il messaggio risuona in te, ecco i passi semplici per iniziare il tuo viaggio di fede.", steps_button_prayer: "Fare una Preghiera", steps_button_contact: "Contattare Qualcuno",
+                steps_button_loading: "Caricamento...",
+                steps_title_prayer_section: "La Tua Preghiera del Primo Passo",
+                steps_prayer_prompt: "Se desideri accettare questo dono, puoi fare questa semplice preghiera, con sincerità:",
+                steps_button_prayer_audio: "Leggi Preghiera (Audio)",
+                steps_footer: "È l'inizio di una nuova avventura!",
+                steps_title_contact_section: "Contattaci",
+                steps_contact_prompt: "Saremmo felici di parlare con te e rispondere alle tue domande. Non esitare a chiamarci o scriverci.",
+                steps_contact_email_label: "Email",
+                steps_contact_phone_label: "Telefono",
+                // Alerts & Errors
+                alert_api_key: "⚠️ ATTENZIONE: La chiave API Gemini manca o non è valida. Le funzioni IA non funzioneranno finché non inserisci la tua chiave.",
+                alert_api_key_error: "Errore: La chiave API sembra non valida. Controlla la tua chiave Gemini.",
+                alert_empty_query: "Inserisci una domanda.",
+                alert_link_copied: "Link Copiato! ✅",
+                alert_copy_error: "Impossibile copiare. Copia il link manualmente.",
+                alert_empty_city: "Inserisci una città per la ricerca.",
+                alert_empty_testimonial: "Compila il tuo nome e la tua storia.",
+                alert_submit_success: "Grazie! La tua testimonianza è stata inviata e ora appare sopra.",
+                alert_submit_error: "Errore durante l'invio. Riprova.",
+                alert_testimonial_rejected: "Grazie per la tua testimonianza. Dopo la valutazione, non possiamo pubblicarla perché non corrisponde ai criteri della nostra comunità.",
+                submit_button_evaluating: "Valutazione in corso...",
+                alert_tts_error: "Errore: Chiave API Gemini mancante. La riproduzione audio non è disponibile.",
+                alert_tts_disabled: "⚠️ Riproduzione audio disabilitata: La chiave API Gemini manca o non è valida.",
+                alert_tts_playback_error: "Impossibile riprodurre l'audio. Controlla i permessi del browser.",
+                alert_tts_gen_error: "Errore durante la generazione dell'audio. Risposta API non valida o chiave API errata.",
+                alert_tts_connection_error: "Errore di connessione durante la richiesta audio.",
+                submit_button_sending: "Invio...",
+                alert_api_missing: "Errore: La chiave API Gemini manca o non è valida. Inseriscila nel codice.",
+                alert_api_invalid: "Errore: La chiave API sembra non valida. Controlla la tua chiave Gemini.",
+                alert_generation_failed: "Scusa, non sono riuscito a generare una risposta chiara. Riprova o riformula.",
+                alert_ai_error: "Si è verificato un errore durante la chiamata IA",
+                alert_firestore_error: "Firestore non inizializzato o utente non connesso.",
+                alert_max_retries: "Numero massimo di tentativi superato.",
+                alert_api_key_invalid_code: "Chiave API o richiesta non valida",
+                church_search_query: "chiesa evangelica vicino a",
+                // Footer
+                app_name_footer: "Nuova Fede", footer_rights: "Tutti i diritti riservati.", footer_subtitle: "Questo sito è ottimizzato per la ricerca e la condivisione del messaggio di fede.",
+            },
+            pt: {
+                // Navigation
+                app_title: "Encontrar a Fé em Deus | Guia, Oração e Comunidade de Fé",
+                app_name: "Nova Fé", nav_message: "Mensagem", nav_explore: "Explorar IA", nav_community: "Comunidade", nav_testimonials: "Depoimentos", nav_share: "Compartilhar", nav_start: "Começar",
+                // Hero
+                hero_title: "Descubra o Caminho para Deus e a Esperança", hero_subtitle_1: "Está procurando um sentido para a sua vida? Descubra como **encontrar a fé em Deus**, o caminho para Jesus e uma comunidade acolhedora.", hero_subtitle_2: "Descubra o amor incondicional e o poder transformador da fé. Onde quer que esteja na sua busca, você é bem-vindo.", hero_button: "Quero entender",
+                // Message
+                message_title: "Compreender os Fundamentos da Fé em Deus",
+                message_card_1_title: "1. O Amor Incondicional de Deus", message_card_1_text: "Deus é a fonte de toda existência e criou você por amor. O Seu amor não tem condições: é total e eterno. Ele não espera que você seja perfeito, mas que aceite a Sua presença.", message_card_1_footer: "*O ponto de partida de tudo: A Sua graça está disponível, independentemente do seu passado.*",
+                message_card_2_title: "2. A Realidade da Separação (Pecado)", message_card_2_text: "Embora sejamos amados, as nossas escolhas autônomas e erros (chamados pecado) criaram uma distância. Não é uma lista de faltas, mas um estado de separação que o impede de alcançar a plenitude e conhecer Deus intimamente. É a origem do vazio que muitos sentem.", message_card_2_footer: "*O pecado cria uma barreira. É por isso que precisamos de uma ponte.*",
+                message_card_3_title: "3. A Ponte da Salvação: Jesus Cristo", message_card_3_text: "Jesus veio à Terra para preencher a distância. A Sua morte na cruz e ressurreição não são apenas fatos históricos, mas o ato que torna possível o perdão total e a reconciliação. Ao aceitá-Lo como Senhor e Salvador, você cruza esta ponte para a relação com Deus.", message_card_3_footer: "*É um presente para ser aceito pela fé, não ganho por obras.*",
+                // Plan de lecture
+                plan_title: "Plano de Leitura de 7 Dias: Começando com Jesus", plan_days_1_3_title: "Dias 1-3: Amor e Perdão", plan_days_4_7_title: "Dias 4-7: A Nova Vida", plan_day_1_label: "Dia 1:", plan_day_1_text: "O amor de Deus - João 3:16", plan_day_2_label: "Dia 2:", plan_day_2_text: "A humanidade e a necessidade de perdão - Romanos 3:23", plan_day_3_label: "Dia 3:", plan_day_3_text: "A resposta de Jesus - 1 João 1:9", plan_day_4_label: "Dia 4:", plan_day_4_text: "A certeza da salvação - Romanos 10:9", plan_day_5_label: "Dia 5:", plan_day_5_text: "O papel do Espírito Santo - Atos 1:8", plan_day_6_label: "Dia 6:", plan_day_6_text: "A vida em comunidade - Hebreus 10:25", plan_day_7_label: "Dia 7:", plan_day_7_text: "Os fundamentos para o crescimento - Mateus 7:24-27", plan_footer: "Estes versículos são um ponto de partida para a leitura pessoal e diária.",
+                // Explorateur IA
+                explore_title: "✨ Faça Perguntas sobre a Fé (Explorador IA)", explore_subtitle: "Faça uma pergunta simples sobre a fé. A nossa IA (assistida por pesquisa) fornecerá uma explicação clara e benevolente.", explore_placeholder: "Ex: Como posso orar?", explore_button_explain: "Explicar",
+                explore_button_searching: "Pesquisando...",
+                explore_response_to: "Resposta a",
+                explore_sources: "Fontes (via Pesquisa Google)",
+                explore_no_sources: "Informação gerada por IA (nenhuma fonte externa encontrada).",
+                explore_next_steps_title: "Próximos Passos para Ir Mais Longe",
+                // Communauté
+                community_title: "Encontre uma Comunidade de Fé Acolhedora", community_subtitle: "A fé é vivida em comunidade. Encontre uma comunidade local para ser melhor guiado na sua caminhada.", community_placeholder: "Digite a sua cidade (Ex: Lisboa, Porto, São Paulo)", community_button: "Pesquisar",
+                // Témoignages
+                testimonials_title: "Histórias de Vidas Transformadas e Depoimentos", submit_title: "Partilhe a Sua História!", submit_subtitle: "A sua experiência pode inspirar outra pessoa. Conte-nos como o seu encontro com Deus transformou a sua vida.", submit_name_placeholder: "O seu nome ou pseudónimo", submit_story_placeholder: "O seu testemunho de vida...", submit_button: "Submeter Depoimento",
+                testimonial_label: "Depoimento",
+                testimonial_static_label: "(inspirado)",
+                testimonial_user_label: "(utilizador)",
+                testimonial_published_in: "publicado em",
+                testimonial_on: "no",
+                testimonial_recently: "recentemente",
+                // Partage
+                share_title: "Partilhe a Mensagem com os Seus Entes Queridos", share_subtitle: "Ajude outras pessoas a descobrir a fé! Clique num botão para partilhar esta página.", share_copy_button: "🔗 Copiar Link",
+                share_message: "Encontrei um guia simples para descobrir a fé em Deus e o caminho para Jesus. Partilhe! #FéEmDeus #CaminhoParaJesus",
+                share_email_subject: "Descobrir a Fé em Deus",
+                // Prochaines Étapes
+                steps_title: "Oração de Conversão: Dar o Primeiro Passo", steps_subtitle: "Se a mensagem ressoa em si, aqui estão os passos simples para começar a sua jornada de fé.", steps_button_prayer: "Fazer uma Oração", steps_button_contact: "Contactar Alguém",
+                steps_button_loading: "A carregar...",
+                steps_title_prayer_section: "A Sua Oração do Primeiro Passo",
+                steps_prayer_prompt: "Se deseja aceitar este presente, pode fazer esta oração simples, com sinceridade:",
+                steps_button_prayer_audio: "Ler Oração (Áudio)",
+                steps_footer: "É o início de uma nova aventura!",
+                steps_title_contact_section: "Contacte-nos",
+                steps_contact_prompt: "Teríamos muito prazer em falar consigo e responder às suas perguntas. Não hesite em ligar-nos ou escrever-nos.",
+                steps_contact_email_label: "Email",
+                steps_contact_phone_label: "Telefone",
+                // Alerts & Errors
+                alert_api_key: "⚠️ AVISO: A chave API Gemini está em falta ou é inválida. As funções IA não funcionarão até inserir a sua chave.",
+                alert_api_key_error: "Erro: A chave API parece inválida. Verifique a sua chave Gemini.",
+                alert_empty_query: "Por favor, insira uma pergunta.",
+                alert_link_copied: "Link Copiado! ✅",
+                alert_copy_error: "Não foi possível copiar. Copie o link manualmente.",
+                alert_empty_city: "Por favor, insira uma cidade para a pesquisa.",
+                alert_empty_testimonial: "Por favor, preencha o seu nome e história.",
+                alert_submit_success: "Obrigado! O seu depoimento foi submetido e aparece agora acima.",
+                alert_submit_error: "Erro durante a submissão. Tente novamente.",
+                alert_testimonial_rejected: "Obrigado pelo seu depoimento. Após avaliação, não podemos publicá-lo pois não corresponde aos critérios da nossa comunidade.",
+                submit_button_evaluating: "Avaliando...",
+                alert_tts_error: "Erro: Chave API Gemini em falta. A reprodução de áudio não está disponível.",
+                alert_tts_disabled: "⚠️ Reprodução de áudio desativada: A chave API Gemini está em falta ou é inválida.",
+                alert_tts_playback_error: "Não é possível reproduzir o áudio. Verifique as permissões do navegador.",
+                alert_tts_gen_error: "Erro ao gerar áudio. Resposta API inválida ou chave API incorreta.",
+                alert_tts_connection_error: "Erro de ligação durante o pedido de áudio.",
+                submit_button_sending: "A enviar...",
+                alert_api_missing: "Erro: A chave API Gemini está em falta ou é inválida. Insira-a no código.",
+                alert_api_invalid: "Erro: A chave API parece inválida. Verifique a sua chave Gemini.",
+                alert_generation_failed: "Desculpe, não consegui gerar uma resposta clara. Tente novamente ou reformule.",
+                alert_ai_error: "Ocorreu um erro durante a chamada IA",
+                alert_firestore_error: "Firestore não inicializado ou utilizador não ligado.",
+                alert_max_retries: "Número máximo de tentativas excedido.",
+                alert_api_key_invalid_code: "Chave API ou pedido inválido",
+                church_search_query: "igreja evangélica perto de",
+                // Footer
+                app_name_footer: "Nova Fé", footer_rights: "Todos os direitos reservados.", footer_subtitle: "Este site está otimizado para pesquisa e partilha da mensagem de fé.",
+            },
+            nl: {
+                // Navigation
+                app_title: "Geloof in God Vinden | Gids, Gebed en Geloofsgemeenschap",
+                app_name: "Nieuw Geloof", nav_message: "Boodschap", nav_explore: "AI Verkennen", nav_community: "Gemeenschap", nav_testimonials: "Getuigenissen", nav_share: "Delen", nav_start: "Beginnen",
+                // Hero
+                hero_title: "Ontdek het Pad naar God en Hoop", hero_subtitle_1: "Zoek je betekenis in je leven? Ontdek hoe je **geloof in God kunt vinden**, de weg naar Jezus en een gastvrije gemeenschap.", hero_subtitle_2: "Ontdek onvoorwaardelijke liefde en de transformerende kracht van geloof. Waar je ook bent in je zoektocht, je bent welkom.", hero_button: "Ik wil begrijpen",
+                // Message
+                message_title: "De Grondbeginselen van Geloof in God Begrijpen",
+                message_card_1_title: "1. Onvoorwaardelijke Liefde van God", message_card_1_text: "God is de bron van alle bestaan en heeft je uit liefde geschapen. Zijn liefde heeft geen voorwaarden: ze is totaal en eeuwig. Hij wacht niet tot je perfect bent, maar tot je Zijn aanwezigheid accepteert.", message_card_1_footer: "*Het startpunt van alles: Zijn genade is beschikbaar, ongeacht je verleden.*",
+                message_card_2_title: "2. De Realiteit van Scheiding (Zonde)", message_card_2_text: "Hoewel we geliefd zijn, hebben onze autonome keuzes en fouten (zonde genoemd) een afstand gecreëerd. Het is geen lijst van fouten, maar een staat van scheiding die je verhindert volheid te bereiken en God intiem te kennen. Het is de oorsprong van de leegte die velen voelen.", message_card_2_footer: "*Zonde creëert een barrière. Daarom hebben we een brug nodig.*",
+                message_card_3_title: "3. De Brug van Verlossing: Jezus Christus", message_card_3_text: "Jezus kwam naar de aarde om de afstand te overbruggen. Zijn dood aan het kruis en opstanding zijn niet alleen historische feiten, maar de daad die volledige vergeving en verzoening mogelijk maakt. Door Hem als Heer en Verlosser te accepteren, steek je deze brug over naar een relatie met God.", message_card_3_footer: "*Het is een geschenk om door geloof te accepteren, niet door werken te verdienen.*",
+                // Plan de lecture
+                plan_title: "7-Dagen Leesplan: Beginnen met Jezus", plan_days_1_3_title: "Dag 1-3: Liefde en Vergeving", plan_days_4_7_title: "Dag 4-7: Het Nieuwe Leven", plan_day_1_label: "Dag 1:", plan_day_1_text: "De liefde van God - Johannes 3:16", plan_day_2_label: "Dag 2:", plan_day_2_text: "De mensheid en de noodzaak van vergeving - Romeinen 3:23", plan_day_3_label: "Dag 3:", plan_day_3_text: "Het antwoord van Jezus - 1 Johannes 1:9", plan_day_4_label: "Dag 4:", plan_day_4_text: "De zekerheid van verlossing - Romeinen 10:9", plan_day_5_label: "Dag 5:", plan_day_5_text: "De rol van de Heilige Geest - Handelingen 1:8", plan_day_6_label: "Dag 6:", plan_day_6_text: "Leven in gemeenschap - Hebreeën 10:25", plan_day_7_label: "Dag 7:", plan_day_7_text: "De fundamenten voor groei - Matteüs 7:24-27", plan_footer: "Deze verzen zijn een startpunt voor persoonlijk en dagelijks lezen.",
+                // Explorateur IA
+                explore_title: "✨ Stel Vragen over Geloof (AI Verkenner)", explore_subtitle: "Stel een eenvoudige vraag over geloof. Onze AI (zoekondersteund) geeft je een duidelijke en welwillende uitleg.", explore_placeholder: "Bijv: Hoe kan ik bidden?", explore_button_explain: "Uitleggen",
+                explore_button_searching: "Zoeken...",
+                explore_response_to: "Antwoord op",
+                explore_sources: "Bronnen (via Google Zoeken)",
+                explore_no_sources: "AI-gegenereerde informatie (geen externe bron gevonden).",
+                explore_next_steps_title: "Volgende Stappen om Verder te Gaan",
+                // Communauté
+                community_title: "Vind een Gastvrije Geloofsgemeenschap", community_subtitle: "Geloof wordt in gemeenschap geleefd. Vind een lokale gemeenschap om beter begeleid te worden in je wandel.", community_placeholder: "Voer je stad in (Bijv: Amsterdam, Rotterdam, Den Haag)", community_button: "Zoeken",
+                // Témoignages
+                testimonials_title: "Verhalen van Getransformeerde Levens en Getuigenissen", submit_title: "Deel Je Verhaal!", submit_subtitle: "Je ervaring kan iemand anders inspireren. Vertel ons hoe je ontmoeting met God je leven heeft getransformeerd.", submit_name_placeholder: "Je naam of bijnaam", submit_story_placeholder: "Je levensgetuigenis...", submit_button: "Getuigenis Indienen",
+                testimonial_label: "Getuigenis",
+                testimonial_static_label: "(geïnspireerd)",
+                testimonial_user_label: "(gebruiker)",
+                testimonial_published_in: "gepubliceerd in",
+                testimonial_on: "op",
+                testimonial_recently: "recent",
+                // Partage
+                share_title: "Deel de Boodschap met Je Dierbaren", share_subtitle: "Help anderen geloof te ontdekken! Klik op een knop om deze pagina te delen.", share_copy_button: "🔗 Link Kopiëren",
+                share_message: "Ik heb een eenvoudige gids gevonden om geloof in God en de weg naar Jezus te ontdekken. Deel het! #GeloofInGod #WegNaarJezus",
+                share_email_subject: "Geloof in God Ontdekken",
+                // Prochaines Étapes
+                steps_title: "Bekering Gebed: De Eerste Stap Zetten", steps_subtitle: "Als de boodschap bij je resoneert, hier zijn eenvoudige stappen om je geloofsreis te beginnen.", steps_button_prayer: "Een Gebed Doen", steps_button_contact: "Iemand Contacten",
+                steps_button_loading: "Laden...",
+                steps_title_prayer_section: "Je Gebed van de Eerste Stap",
+                steps_prayer_prompt: "Als je dit geschenk wilt accepteren, kun je dit eenvoudige gebed met oprechtheid doen:",
+                steps_button_prayer_audio: "Lees Gebed (Audio)",
+                steps_footer: "Het is het begin van een nieuw avontuur!",
+                steps_title_contact_section: "Neem Contact Op",
+                steps_contact_prompt: "We zouden graag met je praten en je vragen beantwoorden. Aarzel niet om ons te bellen of te schrijven.",
+                steps_contact_email_label: "E-mail",
+                steps_contact_phone_label: "Telefoon",
+                // Alerts & Errors
+                alert_api_key: "⚠️ WAARSCHUWING: De Gemini API-sleutel ontbreekt of is ongeldig. AI-functies werken niet totdat je je sleutel invoegt.",
+                alert_api_key_error: "Fout: De API-sleutel lijkt ongeldig. Controleer je Gemini-sleutel.",
+                alert_empty_query: "Voer een vraag in.",
+                alert_link_copied: "Link Gekopieerd! ✅",
+                alert_copy_error: "Kopiëren niet mogelijk. Kopieer de link handmatig.",
+                alert_empty_city: "Voer een stad in voor de zoekopdracht.",
+                alert_empty_testimonial: "Vul je naam en verhaal in.",
+                alert_submit_success: "Bedankt! Je getuigenis is ingediend en verschijnt nu hierboven.",
+                alert_submit_error: "Fout tijdens indienen. Probeer het opnieuw.",
+                alert_testimonial_rejected: "Bedankt voor je getuigenis. Na evaluatie kunnen we het niet publiceren omdat het niet voldoet aan de criteria van onze gemeenschap.",
+                submit_button_evaluating: "Beoordelen...",
+                alert_tts_error: "Fout: Gemini API-sleutel ontbreekt. Audio-afspelen is niet beschikbaar.",
+                alert_tts_disabled: "⚠️ Audio-afspelen uitgeschakeld: De Gemini API-sleutel ontbreekt of is ongeldig.",
+                alert_tts_playback_error: "Kan audio niet afspelen. Controleer browserrechten.",
+                alert_tts_gen_error: "Fout bij genereren audio. Ongeldige API-reactie of onjuiste API-sleutel.",
+                alert_tts_connection_error: "Verbindingsfout tijdens audio-verzoek.",
+                submit_button_sending: "Verzenden...",
+                alert_api_missing: "Fout: De Gemini API-sleutel ontbreekt of is ongeldig. Voeg deze in de code in.",
+                alert_api_invalid: "Fout: De API-sleutel lijkt ongeldig. Controleer je Gemini-sleutel.",
+                alert_generation_failed: "Sorry, ik kon geen duidelijke reactie genereren. Probeer het opnieuw of herformuleer.",
+                alert_ai_error: "Er is een fout opgetreden tijdens de AI-aanroep",
+                alert_firestore_error: "Firestore niet geïnitialiseerd of gebruiker niet verbonden.",
+                alert_max_retries: "Maximum aantal pogingen overschreden.",
+                alert_api_key_invalid_code: "Ongeldige API-sleutel of verzoek",
+                church_search_query: "evangelische kerk in de buurt van",
+                // Footer
+                app_name_footer: "Nieuw Geloof", footer_rights: "Alle rechten voorbehouden.", footer_subtitle: "Deze site is geoptimaliseerd voor zoeken en delen van de geloofsboodschap.",
+            },
+            pl: {
+                // Navigation
+                app_title: "Znajdź Wiarę w Bogu | Przewodnik, Modlitwa i Wspólnota Wiary",
+                app_name: "Nowa Wiara", nav_message: "Przesłanie", nav_explore: "Poznaj AI", nav_community: "Wspólnota", nav_testimonials: "Świadectwa", nav_share: "Udostępnij", nav_start: "Zacznij",
+                // Hero
+                hero_title: "Odkryj Drogę do Boga i Nadziei", hero_subtitle_1: "Szukasz sensu w swoim życiu? Odkryj, jak **znaleźć wiarę w Bogu**, drogę do Jezusa i gościnną wspólnotę.", hero_subtitle_2: "Odkryj bezwarunkową miłość i transformującą moc wiary. Gdziekolwiek jesteś w swoim poszukiwaniu, jesteś mile widziany.", hero_button: "Chcę zrozumieć",
+                // Message
+                message_title: "Zrozumienie Podstaw Wiary w Boga",
+                message_card_1_title: "1. Bezwarunkowa Miłość Boga", message_card_1_text: "Bóg jest źródłem całego istnienia i stworzył cię z miłości. Jego miłość nie ma warunków: jest całkowita i wieczna. Nie czeka, aż będziesz doskonały, ale aż zaakceptujesz Jego obecność.", message_card_1_footer: "*Punkt wyjścia wszystkiego: Jego łaska jest dostępna, niezależnie od twojej przeszłości.*",
+                message_card_2_title: "2. Rzeczywistość Separacji (Grzech)", message_card_2_text: "Chociaż jesteśmy kochani, nasze autonomiczne wybory i błędy (zwane grzechem) stworzyły dystans. To nie jest lista win, ale stan separacji, który uniemożliwia osiągnięcie pełni i intymne poznanie Boga. To jest źródło pustki, którą wielu odczuwa.", message_card_2_footer: "*Grzech tworzy barierę. Dlatego potrzebujemy mostu.*",
+                message_card_3_title: "3. Most Zbawienia: Jezus Chrystus", message_card_3_text: "Jezus przyszedł na Ziemię, aby pokonać dystans. Jego śmierć na krzyżu i zmartwychwstanie to nie tylko fakty historyczne, ale akt, który czyni możliwym całkowite przebaczenie i pojednanie. Akceptując Go jako Pana i Zbawiciela, przekraczasz ten most do relacji z Bogiem.", message_card_3_footer: "*To jest dar do przyjęcia przez wiarę, nie do zdobycia przez uczynki.*",
+                // Plan de lecture
+                plan_title: "7-Dniowy Plan Czytania: Zaczynając od Jezusa", plan_days_1_3_title: "Dzień 1-3: Miłość i Przebaczenie", plan_days_4_7_title: "Dzień 4-7: Nowe Życie", plan_day_1_label: "Dzień 1:", plan_day_1_text: "Miłość Boga - Jan 3:16", plan_day_2_label: "Dzień 2:", plan_day_2_text: "Ludzkość i potrzeba przebaczenia - Rzymian 3:23", plan_day_3_label: "Dzień 3:", plan_day_3_text: "Odpowiedź Jezusa - 1 Jana 1:9", plan_day_4_label: "Dzień 4:", plan_day_4_text: "Pewność zbawienia - Rzymian 10:9", plan_day_5_label: "Dzień 5:", plan_day_5_text: "Rola Ducha Świętego - Dzieje Apostolskie 1:8", plan_day_6_label: "Dzień 6:", plan_day_6_text: "Życie we wspólnocie - Hebrajczyków 10:25", plan_day_7_label: "Dzień 7:", plan_day_7_text: "Fundamenty wzrostu - Mateusz 7:24-27", plan_footer: "Te wersety są punktem wyjścia do osobistego i codziennego czytania.",
+                // Explorateur IA
+                explore_title: "✨ Zadawaj Pytania o Wiarę (Eksplorator AI)", explore_subtitle: "Zadaj proste pytanie o wiarę. Nasza AI (wspomagana wyszukiwaniem) zapewni jasne i życzliwe wyjaśnienie.", explore_placeholder: "Np: Jak mogę się modlić?", explore_button_explain: "Wyjaśnij",
+                explore_button_searching: "Szukanie...",
+                explore_response_to: "Odpowiedź na",
+                explore_sources: "Źródła (przez Wyszukiwarkę Google)",
+                explore_no_sources: "Informacje wygenerowane przez AI (nie znaleziono zewnętrznego źródła).",
+                explore_next_steps_title: "Następne Kroki, Aby Pójść Dalej",
+                // Communauté
+                community_title: "Znajdź Gościnną Wspólnotę Wiary", community_subtitle: "Wiara jest przeżywana we wspólnocie. Znajdź lokalną wspólnotę, aby być lepiej prowadzonym w swojej drodze.", community_placeholder: "Wprowadź swoje miasto (Np: Warszawa, Kraków, Gdańsk)", community_button: "Szukaj",
+                // Témoignages
+                testimonials_title: "Historie Przekształconych Żyć i Świadectwa", submit_title: "Podziel Się Swoją Historią!", submit_subtitle: "Twoje doświadczenie może zainspirować kogoś innego. Opowiedz nam, jak twoje spotkanie z Bogiem przekształciło twoje życie.", submit_name_placeholder: "Twoje imię lub pseudonim", submit_story_placeholder: "Twoje świadectwo życia...", submit_button: "Prześlij Świadectwo",
+                testimonial_label: "Świadectwo",
+                testimonial_static_label: "(inspirowane)",
+                testimonial_user_label: "(użytkownik)",
+                testimonial_published_in: "opublikowane w",
+                testimonial_on: "w",
+                testimonial_recently: "ostatnio",
+                // Partage
+                share_title: "Udostępnij Przesłanie Swoim Bliskim", share_subtitle: "Pomóż innym odkryć wiarę! Kliknij przycisk, aby udostępnić tę stronę.", share_copy_button: "🔗 Kopiuj Link",
+                share_message: "Znalazłem prosty przewodnik, aby odkryć wiarę w Bogu i drogę do Jezusa. Udostępnij to! #WiaraWBogu #DrogaDoJezusa",
+                share_email_subject: "Odkrywanie Wiary w Bogu",
+                // Prochaines Étapes
+                steps_title: "Modlitwa Nawrócenia: Zrobienie Pierwszego Kroku", steps_subtitle: "Jeśli przesłanie rezonuje w tobie, oto proste kroki, aby rozpocząć swoją podróż wiary.", steps_button_prayer: "Odmów Modlitwę", steps_button_contact: "Skontaktuj Się z Kimś",
+                steps_button_loading: "Ładowanie...",
+                steps_title_prayer_section: "Twoja Modlitwa Pierwszego Kroku",
+                steps_prayer_prompt: "Jeśli chcesz przyjąć ten dar, możesz odmówić tę prostą modlitwę, z szczerością:",
+                steps_button_prayer_audio: "Przeczytaj Modlitwę (Audio)",
+                steps_footer: "To początek nowej przygody!",
+                steps_title_contact_section: "Skontaktuj Się z Nami",
+                steps_contact_prompt: "Bylibyśmy zachwyceni porozmawiać z tobą i odpowiedzieć na twoje pytania. Nie wahaj się do nas zadzwonić lub napisać.",
+                steps_contact_email_label: "E-mail",
+                steps_contact_phone_label: "Telefon",
+                // Alerts & Errors
+                alert_api_key: "⚠️ OSTRZEŻENIE: Klucz API Gemini brakuje lub jest nieprawidłowy. Funkcje AI nie będą działać, dopóki nie wstawisz swojego klucza.",
+                alert_api_key_error: "Błąd: Klucz API wydaje się nieprawidłowy. Sprawdź swój klucz Gemini.",
+                alert_empty_query: "Wprowadź pytanie.",
+                alert_link_copied: "Link Skopiowany! ✅",
+                alert_copy_error: "Nie można skopiować. Skopiuj link ręcznie.",
+                alert_empty_city: "Wprowadź miasto do wyszukiwania.",
+                alert_empty_testimonial: "Wypełnij swoje imię i historię.",
+                alert_submit_success: "Dziękuję! Twoje świadectwo zostało przesłane i pojawia się teraz powyżej.",
+                alert_submit_error: "Błąd podczas przesyłania. Spróbuj ponownie.",
+                alert_testimonial_rejected: "Dziękujemy za świadectwo. Po ocenie nie możemy go opublikować, ponieważ nie spełnia kryteriów naszej społeczności.",
+                submit_button_evaluating: "Ocenianie...",
+                alert_tts_error: "Błąd: Brak klucza API Gemini. Odtwarzanie audio jest niedostępne.",
+                alert_tts_disabled: "⚠️ Odtwarzanie audio wyłączone: Klucz API Gemini brakuje lub jest nieprawidłowy.",
+                alert_tts_playback_error: "Nie można odtworzyć audio. Sprawdź uprawnienia przeglądarki.",
+                alert_tts_gen_error: "Błąd podczas generowania audio. Nieprawidłowa odpowiedź API lub nieprawidłowy klucz API.",
+                alert_tts_connection_error: "Błąd połączenia podczas żądania audio.",
+                submit_button_sending: "Wysyłanie...",
+                alert_api_missing: "Błąd: Klucz API Gemini brakuje lub jest nieprawidłowy. Wstaw go w kodzie.",
+                alert_api_invalid: "Błąd: Klucz API wydaje się nieprawidłowy. Sprawdź swój klucz Gemini.",
+                alert_generation_failed: "Przepraszam, nie mogłem wygenerować jasnej odpowiedzi. Spróbuj ponownie lub przeformułuj.",
+                alert_ai_error: "Wystąpił błąd podczas wywołania AI",
+                alert_firestore_error: "Firestore nie zainicjalizowany lub użytkownik nie połączony.",
+                alert_max_retries: "Przekroczono maksymalną liczbę prób.",
+                alert_api_key_invalid_code: "Nieprawidłowy klucz API lub żądanie",
+                church_search_query: "kościół ewangeliczny w pobliżu",
+                // Footer
+                app_name_footer: "Nowa Wiara", footer_rights: "Wszelkie prawa zastrzeżone.", footer_subtitle: "Ta strona jest zoptymalizowana pod kątem wyszukiwania i udostępniania przesłania wiary.",
+            }
+        };
+
+        let currentLang = 'fr'; // Langue par défaut
+        
+        /**
+         * Applique la traduction en changeant les attributs data-i18n.
+         * @param {string} lang - La langue cible ('fr', 'en', 'es').
+         */
+        function applyTranslations(lang) {
+            const elements = document.querySelectorAll('[data-i18n]');
+            if (!translations[lang]) return;
+
+            // Mise à jour de l'attribut lang du document pour le SEO/accessibilité
+            document.documentElement.setAttribute('lang', lang);
+            currentLang = lang;
+
+            elements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    // Les inputs doivent mettre à jour leur placeholder
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                        el.setAttribute('placeholder', translations[lang][key]);
+                    } 
+                    // Les autres éléments mettent à jour leur contenu textuel
+                    else {
+                        // Attention à ne pas écraser les éléments HTML enfants si nécessaire
+                        // Ici, on remplace le texte directement car ce sont des éléments simples ou des titres
+                        el.textContent = translations[lang][key];
+
+                        // Traitement spécial pour le titre de la page (balise <title>)
+                        if (el.tagName === 'TITLE') {
+                            document.title = translations[lang][key];
+                        }
+                    }
+                }
+            });
+            
+            // Mise à jour du contenu des messages d'action (doit être fait ici car il est stocké dans actionContents)
+            updateActionContents(lang);
+            
+            // Si la section de message d'action est déjà affichée, la mettre à jour avec la nouvelle langue
+            const messageBox = document.getElementById('action-message');
+            if (messageBox && !messageBox.classList.contains('hidden')) {
+                // Déterminer quel type de message est affiché (prayer ou contact)
+                const prayerQuote = messageBox.querySelector('#prayer-quote');
+                const contactSection = messageBox.querySelector('a[href^="mailto:"]');
+                
+                if (prayerQuote) {
+                    // C'est la section de prière, mettre à jour avec le nouveau contenu
+                    messageBox.innerHTML = actionContents.prayer;
+                } else if (contactSection) {
+                    // C'est la section de contact, mettre à jour avec le nouveau contenu
+                    messageBox.innerHTML = actionContents.contact;
+                }
+            }
+            
+            // Re-render les témoignages si nécessaire pour mettre à jour les dates et les textes statiques des témoignages si on implémente plus tard la traduction dynamique.
+            if (isAuthReady) {
+                // On relance le listener ou le render si les données sont prêtes
+                setupTestimonialListener(); 
+            } else {
+                 renderTestimonials(staticTestimonials.filter(t => t.isStatic)); 
+            }
+        }
+        
+        /**
+         * Met à jour le contenu des messages affichés par displayMessage.
+         */
+        function updateActionContents(lang) {
+            const t = translations[lang];
+            const prayerTextLocalized = PRAYER_TEXT[lang] || PRAYER_TEXT.fr;
+
+            actionContents.prayer = `
+                <h3 class="text-2xl font-bold text-indigo-700 mb-3">${t.steps_title_prayer_section}</h3>
+                <p class="text-gray-700">
+                    ${t.steps_prayer_prompt}
+                </p>
+                <blockquote id="prayer-quote" class="my-4 p-4 border-l-4 border-green-500 bg-green-50 italic text-gray-800 whitespace-pre-wrap">
+                    « ${prayerTextLocalized} »
+                </blockquote>
+                <p class="text-sm text-gray-500 mt-3">
+                    ${t.steps_footer}
+                </p>
+            `;
+
+            actionContents.contact = `
+                <h3 class="2xl font-bold text-indigo-700 mb-3">${t.steps_title_contact_section}</h3>
+                <p class="text-gray-700">
+                    ${t.steps_contact_prompt}
+                </p>
+                <p class="mt-4">
+                    <span class="font-semibold text-indigo-600">${t.steps_contact_email_label} :</span> 
+                    <a href="mailto:${CONTACT_EMAIL}" class="text-blue-600 hover:underline">${CONTACT_EMAIL}</a>
+                </p>
+                <p>
+                    <span class="font-semibold text-indigo-600">${t.steps_contact_phone_label} :</span> 
+                    <a href="tel:${CONTACT_PHONE.replace(/\s/g, '')}" class="text-blue-600 hover:underline">${CONTACT_PHONE}</a>
+                </p>
+            `;
+        }
+        
+        // Fonction exposée pour le sélecteur HTML
+        window.setLanguage = function(lang) {
+            applyTranslations(lang);
+        };
+
+
+        // Fin de la section i18n
+        // =====================================================================
+
+
+        // La variable `prayerText` n'est plus utilisée directement ici, mais conservée pour référence si besoin.
+        // const prayerText = PRAYER_TEXT.fr; 
+        
+        // =====================================================================
+        // 🚨 CLÉ API FOURNIE : Utilisation de la clé Gemini
+        // =====================================================================
+        const API_KEY = "AIzaSyCBluPCMBtBZWM0ODd10r1OMSS6P8H_2gI"; // Clé Gemini insérée
+        
+        // Rétablissement des configurations Gemini (URL de base implicite, modèles explicites)
+        const GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
+        const LLM_TEXT_MODEL = "gemini-2.5-flash-preview-09-2025"; // Modèle Gemini avec Search Grounding
+        const LLM_TTS_MODEL = "gemini-2.5-flash-preview-tts"; // Modèle Gemini pour l'audio
+
+        // Contacts mis à jour avec les informations de l'utilisateur
+        const CONTACT_EMAIL = "bethelcorse@gmail.com";
+        const CONTACT_PHONE = "04 95 20 76 43";
+        // EMAIL DE NOTIFICATION DEMANDÉE PAR L'UTILISATEUR (pour journalisation)
+        const ADMIN_NOTIFICATION_EMAIL = "jean.maillot14@gmail.com";
+
+        // Variable pour vérifier si l'API Key est valide (non-vide)
+        let isApiKeyValid = API_KEY && API_KEY !== "VOTRE_CLÉ_API_ICI";
+        
+        // --- NOUVELLE FONCTION DE JOURNALISATION D'ACTIVITÉ ---
+        async function logActivity(action, details = {}) {
+            if (!db || !userId) return; // Ne pas loguer si Firestore n'est pas prêt
+            
+            // Note: Nous n'envoyons pas d'e-mail ici, mais nous enregistrons l'événement.
+            try {
+                await addDoc(collection(db, ACTIVITY_COLLECTION), {
+                    action: action,
+                    userId: userId,
+                    details: details,
+                    timestamp: serverTimestamp(),
+                    // Ajout d'une référence explicite pour l'administrateur
+                    admin_notification_target: ADMIN_NOTIFICATION_EMAIL 
+                });
+                console.log(`Activité enregistrée: ${action}`);
+            } catch (e) {
+                console.error(`Erreur lors de l'enregistrement de l'activité (${action}):`, e);
+            }
+        }
+
+        /**
+         * Fonction d'initialisation de Firebase et d'authentification.
+         */
+        async function initFirebase() {
+            try {
+                if (!isApiKeyValid) {
+                    // Afficher l'alerte si la clé est manquante
+                    document.getElementById('api-key-alert').classList.remove('hidden');
+                }
+
+                if (Object.keys(firebaseConfig).length > 0) {
+                    const app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
+                    
+                    onAuthStateChanged(auth, async (user) => {
+                        if (user) {
+                            userId = user.uid;
+                            console.log("Authenticated as:", userId);
+                        } else {
+                            if (initialAuthToken) {
+                                await signInWithCustomToken(auth, initialAuthToken);
+                            } else {
+                                await signInAnonymously(auth);
+                            }
+                            userId = auth.currentUser?.uid || crypto.randomUUID();
+                            console.log("Logged in/Signed in anonymously:", userId);
+                        }
+                        isAuthReady = true;
+                        
+                        // Enregistrer la connexion
+                        logActivity('USER_CONNECTED'); // APPEL AJOUTÉ
+                        
+                        // Activer le bouton de requête IA SEULEMENT si la clé API est valide
+                        if (isApiKeyValid) {
+                            document.getElementById('query-button').disabled = false;
+                        }
+                        document.getElementById('submit-testimonial-button').disabled = false;
+                        
+                        // Lancer l'écoute des témoignages seulement après l'authentification
+                        setupTestimonialListener();
+                    });
+
+                } else {
+                    console.error("Firebase config not available. Running in local mode.");
+                    isAuthReady = true;
+                    // Activer le bouton de requête IA SEULEMENT si la clé API est valide
+                    if (isApiKeyValid) {
+                         document.getElementById('query-button').disabled = false;
+                    }
+                    // Désactiver le formulaire de soumission si Firestore n'est pas dispo
+                    document.getElementById('submit-testimonial-button').disabled = true; 
+                    renderTestimonials(staticTestimonials); // Affiche au moins les statiques
+                }
+            } catch (error) {
+                console.error("Firebase initialization failed:", error);
+                document.getElementById('query-button').disabled = true;
+                document.getElementById('submit-testimonial-button').disabled = true;
+            }
+        }
+
+        // --- UTILS GEMINI API ---
+
+        async function fetchWithExponentialBackoff(url, options, maxRetries = 5) {
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (response.ok) {
+                        return response;
+                    } else if (response.status === 429 && i < maxRetries - 1) {
+                        const delay = Math.pow(2, i) * 1000 + Math.random() * 1000;
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    } else {
+                        if (response.status >= 400 && response.status < 500) {
+                            const errorBody = await response.text();
+                            console.error(`Client side error (${response.status}): ${errorBody}`);
+                            const errorMsg = translations[currentLang]?.alert_api_key_invalid_code || "API Key ou requête invalide";
+                            throw new Error(`${errorMsg} (Code: ${response.status}).`);
+                        }
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                } catch (error) {
+                    if (i === maxRetries - 1) throw error;
+                    const delay = Math.pow(2, i) * 1000 + Math.random() * 1000;
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            }
+            const errorMsg = translations[currentLang]?.alert_max_retries || "Maximum retries exceeded.";
+            throw new Error(errorMsg);
+        }
+
+        async function generateContentWithSearch(prompt, systemInstruction) {
+            if (!isApiKeyValid) {
+                 return { text: translations[currentLang]?.alert_api_missing || "Erreur : La clé API Gemini est manquante ou invalide. Veuillez l'insérer dans le code.", sources: [] };
+            }
+            
+            const apiUrl = `${GEMINI_API_BASE}/${LLM_TEXT_MODEL}:generateContent?key=${API_KEY}`;
+            
+            // S'assurer que la réponse de l'IA est dans la langue sélectionnée
+            const langNames = {
+                'fr': 'Français', 'en': 'Anglais', 'es': 'Espagnol', 
+                'de': 'Allemand', 'it': 'Italien', 'pt': 'Portugais', 
+                'nl': 'Néerlandais', 'pl': 'Polonais'
+            };
+            const finalSystemInstruction = `${systemInstruction} Répondez dans la langue: ${langNames[currentLang] || 'Français'}.`;
+
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                // Outil Google Search Grounding
+                tools: [{ "google_search": {} }], 
+                systemInstruction: { parts: [{ text: finalSystemInstruction }] },
+            };
+
+            try {
+                const response = await fetchWithExponentialBackoff(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+                const candidate = result.candidates?.[0];
+
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    const text = candidate.content.parts[0].text;
+                    let sources = [];
+                    const groundingMetadata = candidate.groundingMetadata;
+                    
+                    if (groundingMetadata && groundingMetadata.groundingAttributions) {
+                        sources = groundingMetadata.groundingAttributions
+                            .map(attribution => ({
+                                uri: attribution.web?.uri,
+                                title: attribution.web?.title,
+                            }))
+                            .filter(source => source.uri && source.title);
+                    }
+                    return { text, sources };
+                } else {
+                    console.error("Gemini API error (no text candidate):", result);
+                    if (result.error && result.error.message.includes('API key')) {
+                         return { text: translations[currentLang]?.alert_api_invalid || "Erreur : La clé API semble invalide. Veuillez vérifier votre clé Gemini.", sources: [] };
+                    }
+                    return { text: translations[currentLang]?.alert_generation_failed || "Désolé, je n'ai pas pu générer de réponse claire. Veuillez réessayer ou reformuler.", sources: [] };
+                }
+
+            } catch (error) {
+                console.error("Error generating content:", error);
+                const errorMsg = translations[currentLang]?.alert_ai_error || "Une erreur est survenue lors de l'appel à l'IA";
+                return { text: `${errorMsg}: ${error.message}.`, sources: [] };
+            }
+        }
+
+        /**
+         * Évalue un témoignage avec l'IA Gemini pour déterminer s'il est approprié à publier.
+         * @param {string} name - Le nom ou pseudonyme de l'auteur
+         * @param {string} story - Le contenu du témoignage
+         * @returns {Promise<boolean>} true si le témoignage est approuvé, false sinon
+         */
+        async function evaluateTestimonialWithAI(name, story) {
+            if (!isApiKeyValid) {
+                // Si l'API n'est pas disponible, on accepte le témoignage par défaut (fallback)
+                console.warn("API key not available, accepting testimonial by default");
+                return true;
+            }
+
+            const apiUrl = `${GEMINI_API_BASE}/${LLM_TEXT_MODEL}:generateContent?key=${API_KEY}`;
+            
+            // Instruction système pour l'évaluation
+            const langNames = {
+                'fr': 'Français', 'en': 'Anglais', 'es': 'Espagnol', 
+                'de': 'Allemand', 'it': 'Italien', 'pt': 'Portugais', 
+                'nl': 'Néerlandais', 'pl': 'Polonais'
+            };
+            
+            const systemInstruction = `Tu es un modérateur bienveillant pour un site web chrétien. Ta tâche est d'évaluer si un témoignage de foi est approprié à publier.
+
+Critères d'APPROBATION (réponds "APPROUVÉ"):
+- Le témoignage parle d'une expérience personnelle de foi, de conversion, ou de rencontre avec Dieu
+- Le contenu est respectueux, bienveillant et édifiant
+- Le témoignage est authentique et personnel
+- Le contenu encourage et inspire les autres dans leur foi
+
+Critères de REJET (réponds "REJETÉ"):
+- Contenu offensant, haineux, ou discriminatoire
+- Spam, publicité, ou contenu commercial
+- Contenu inapproprié, vulgaire, ou offensant
+- Contenu qui n'a aucun lien avec la foi chrétienne
+- Contenu qui pourrait nuire à la communauté
+
+IMPORTANT: Réponds UNIQUEMENT par "APPROUVÉ" ou "REJETÉ" (en majuscules), sans autre texte.`;
+
+            const prompt = `Évalue ce témoignage:
+
+Nom/Pseudonyme: ${name}
+Témoignage: ${story}
+
+Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
+
+            try {
+                const response = await fetchWithExponentialBackoff(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }],
+                        systemInstruction: { parts: [{ text: systemInstruction }] },
+                    })
+                });
+                
+                const result = await response.json();
+                const candidate = result.candidates?.[0];
+                
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    const responseText = candidate.content.parts[0].text.trim().toUpperCase();
+                    // Vérifier si la réponse contient "APPROUVÉ"
+                    const isApproved = responseText.includes('APPROUVÉ') || responseText.includes('APPROUVE');
+                    console.log(`Testimonial evaluation result: ${responseText} -> ${isApproved ? 'APPROVED' : 'REJECTED'}`);
+                    return isApproved;
+                } else {
+                    console.error("Gemini API error (no text candidate):", result);
+                    // En cas d'erreur API, on accepte par défaut pour ne pas bloquer les utilisateurs
+                    return true;
+                }
+            } catch (error) {
+                console.error("Error evaluating testimonial:", error);
+                // En cas d'erreur, on accepte par défaut pour ne pas bloquer les utilisateurs
+                return true;
+            }
+        }
+
+        async function handleFaithQuery() {
+            const queryInput = document.getElementById('faith-query');
+            const resultDiv = document.getElementById('query-result');
+            const button = document.getElementById('query-button');
+            const buttonText = document.getElementById('button-text');
+            const spinner = document.getElementById('query-spinner');
+            const query = queryInput.value.trim();
+
+            if (!isApiKeyValid) {
+                resultDiv.innerHTML = `<p class="text-red-500">${translations[currentLang]?.alert_api_key_error || translations[currentLang]?.alert_api_missing || "Veuillez insérer votre clé API Gemini dans le code (variable API_KEY)."}</p>`;
+                resultDiv.classList.remove('hidden');
+                return;
+            }
+
+            if (!query) {
+                resultDiv.innerHTML = `<p class="text-red-500">${translations[currentLang].alert_empty_query || "Veuillez entrer une question."}</p>`;
+                resultDiv.classList.remove('hidden');
+                return;
+            }
+            
+            // Afficher l'état de chargement
+            button.disabled = true;
+            buttonText.textContent = translations[currentLang].explore_button_searching || "Recherche...";
+            spinner.classList.remove('hidden');
+            resultDiv.classList.add('hidden');
+            
+            // Enregistrer la question posée
+            logActivity('IA_QUESTION_ASKED', { query: query, lang: currentLang }); // APPEL AJOUTÉ
+            
+            // NOUVELLE INSTRUCTION SYSTÈME AVEC APPEL À L'ACTION
+            const systemInstruction = `Vous êtes un conseiller spirituel bienveillant et sage. Votre tâche est d'expliquer les concepts bibliques ou les versets de manière claire, concise, encourageante et accessible. Concentrez-vous sur l'amour de Dieu et la personne de Jésus.
+            
+            Après votre explication principale, ajoutez un paragraphe de conclusion intitulé "${translations[currentLang].explore_next_steps_title || "Prochaines Étapes pour Aller Plus Loin"}". Dans cette conclusion, encouragez chaleureusement l'utilisateur à ne pas rester seul avec ses questions et à contacter l'église pour une meilleure guidance. Mentionnez l'email et le téléphone suivants: ${CONTACT_EMAIL} ou ${CONTACT_PHONE}.`;
+            
+            // Utilisation de la fonction Gemini
+            const { text, sources } = await generateContentWithSearch(query, systemInstruction);
+
+            // Afficher le résultat
+            let htmlContent = `<h3 class="text-xl font-semibold text-indigo-700 mb-3">${translations[currentLang].explore_response_to || "Réponse à"} : "${query}"</h3>`;
+            htmlContent += `<div class="prose max-w-none text-gray-700">${text.replace(/\n/g, '<br>')}</div>`;
+
+            if (sources.length > 0) {
+                htmlContent += `<div class="mt-4 pt-4 border-t border-indigo-100">`;
+                htmlContent += `<p class="text-xs font-semibold text-gray-500 mb-1">${translations[currentLang].explore_sources || "Sources (via Google Search)"}:</p>`;
+                sources.slice(0, 3).forEach(source => { // Limiter à 3 sources
+                    htmlContent += `<p class="text-xs text-gray-600 truncate"><a href="${source.uri}" target="_blank" class="text-blue-500 hover:underline" title="${source.title}">${source.title}</a></p>`;
+                });
+                htmlContent += `</div>`;
+            } else {
+                 htmlContent += `<div class="mt-4 pt-4 border-t border-indigo-100">`;
+                 htmlContent += `<p class="text-xs font-semibold text-gray-500 mb-1">${translations[currentLang].explore_no_sources || "Information générée par IA (sans source externe trouvée)."}</p>`;
+                 htmlContent += `</div>`;
+            }
+            
+            resultDiv.innerHTML = htmlContent;
+            resultDiv.classList.remove('hidden');
+
+            // Restaurer l'état du bouton (seulement si l'auth est prête et la clé est valide)
+            buttonText.textContent = translations[currentLang].explore_button_explain || "Expliquer";
+            spinner.classList.add('hidden');
+            if (isAuthReady && isApiKeyValid) {
+                 button.disabled = false;
+            }
+        }
+
+
+        // --- UTILS TTS ---
+        // Fonctions nécessaires pour convertir PCM en WAV
+        function pcmToWav(pcm16, sampleRate) {
+            const numChannels = 1;
+            const bytesPerSample = 2; // PCM 16-bit
+            const blockAlign = numChannels * bytesPerSample;
+            const buffer = new ArrayBuffer(44 + pcm16.length * bytesPerSample);
+            const view = new DataView(buffer);
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + pcm16.length * bytesPerSample, true);
+            writeString(view, 8, 'WAVE');
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * blockAlign, true);
+            view.setUint16(32, blockAlign, true);
+            view.setUint16(34, 16, true);
+            writeString(view, 36, 'data');
+            view.setUint32(40, pcm16.length * bytesPerSample, true);
+            let offset = 44;
+            for (let i = 0; i < pcm16.length; i++) {
+                view.setInt16(offset, pcm16[i], true);
+                offset += 2;
+            }
+            return new Blob([view], { type: 'audio/wav' });
+        }
+        
+        function writeString(view, offset, string) {
+            for (let i = 0; i < string.length; i++) {
+                view.setUint8(offset + i, string.charCodeAt(i));
+            }
+        }
+
+        function base64ToArrayBuffer(base64) {
+            const binaryString = atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+
+
+
+        // --- APPLICATION LOGIC ---
+
+        // Nouvelle fonction pour copier le lien et donner un feedback utilisateur
+        function copyLink(buttonElement) {
+            logActivity('SHARE_LINK_COPIED'); // APPEL AJOUTÉ
+            const url = window.location.href;
+            const originalText = buttonElement.textContent;
+            try {
+                // Utilisation de la méthode moderne (si supportée)
+                navigator.clipboard.writeText(url).then(() => {
+                    buttonElement.textContent = translations[currentLang].alert_link_copied || "Lien Copié ! ✅";
+                    setTimeout(() => {
+                        buttonElement.textContent = originalText;
+                    }, 2000);
+                }).catch(() => {
+                    // Fallback pour la méthode dépréciée mais plus compatible avec les iframes/restrictions
+                    const tempInput = document.createElement('input');
+                    document.body.appendChild(tempInput);
+                    tempInput.value = url;
+                    tempInput.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(tempInput);
+                    
+                    buttonElement.textContent = translations[currentLang].alert_link_copied || "Lien Copié ! ✅";
+                    setTimeout(() => {
+                        buttonElement.textContent = originalText;
+                    }, 2000);
+                });
+            } catch (e) {
+                // Gestion des erreurs de sécurité/navigateur
+                document.getElementById('share').insertAdjacentHTML('afterbegin', `<div id="copy-error" class="p-2 mb-2 text-sm text-red-700 bg-red-100 rounded-lg text-center" role="alert">${translations[currentLang].alert_copy_error || "Impossible de copier. Veuillez copier le lien manuellement."}</div>`);
+                setTimeout(() => document.getElementById('copy-error')?.remove(), 3000);
+            }
+        }
+        
+        // Nouvelle fonction pour le partage sur les réseaux sociaux
+        function shareOnSocial(platform) {
+            logActivity('SHARE_BUTTON_CLICKED', { platform: platform }); // APPEL AJOUTÉ
+            const url = encodeURIComponent(window.location.href);
+            // Message optimisé pour le partage
+            const shareMessage = translations[currentLang].share_message || "J'ai trouvé un guide simple pour découvrir la foi en Dieu et le chemin vers Jésus. Partagez-le ! #FoiEnDieu #CheminVersJésus";
+            const text = encodeURIComponent(shareMessage);
+            let shareUrl = '';
+
+            switch(platform) {
+                case 'facebook':
+                    // Partage par URL, plus fiable que l'API JS
+                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+                    break;
+                case 'twitter':
+                    shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
+                    break;
+                case 'whatsapp':
+                    // Utilise l'API Web/Mobile
+                    shareUrl = `https://api.whatsapp.com/send?text=${text}%20${url}`;
+                    break;
+                case 'email':
+                     shareUrl = `mailto:?subject=${translations[currentLang].share_email_subject || "Découvrez la Foi en Dieu"}&body=${text}%20${url}`;
+                     break;
+                case 'sms':
+                    // Utilise le schéma sms: pour les mobiles
+                    shareUrl = `sms:?body=${text}%20${url}`;
+                    break;
+                default:
+                    return;
+            }
+            
+            // Ouvrir dans une nouvelle fenêtre pour les plateformes sociales, pour ne pas quitter l'application
+            if (platform === 'email' || platform === 'sms') {
+                window.location.href = shareUrl;
+            } else {
+                window.open(shareUrl, '_blank', 'width=600,height=400,resizable=yes,scrollbars=yes');
+            }
+        }
+
+
+        // Fonction pour lancer la recherche d'église dans un nouvel onglet
+        function searchForChurch() {
+            const cityInput = document.getElementById('church-city');
+            const city = cityInput.value.trim();
+
+            if (city) {
+                logActivity('CHURCH_SEARCH', { city: city }); // APPEL AJOUTÉ
+                // Construction de la requête Google optimisée pour le SEO local
+                // La requête est traduite selon la langue sélectionnée
+                const searchQuery = translations[currentLang]?.church_search_query || "église évangélique proche de";
+                const query = `${searchQuery} ${city}`;
+                const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+                
+                window.open(googleSearchUrl, '_blank');
+            } else {
+                // On peut ajouter un petit message d'erreur si la ville est vide
+                const churchSection = document.getElementById('find-church');
+                let messageDiv = document.getElementById('church-search-message');
+                if (!messageDiv) {
+                    messageDiv = document.createElement('div');
+                    messageDiv.id = 'church-search-message';
+                    messageDiv.className = 'mt-4 p-3 text-sm text-red-700 bg-red-100 rounded-lg text-center';
+                    churchSection.appendChild(messageDiv);
+                }
+                messageDiv.textContent = translations[currentLang].alert_empty_city || "Veuillez entrer une ville pour la recherche.";
+                setTimeout(() => messageDiv.remove(), 3000); // Masquer après 3 secondes
+            }
+        }
+
+
+        // Témoignages statiques (inspirés de sources web)
+        const staticTestimonials = [
+            { name: "Grégoire (Paris)", story: "J'ai découvert la foi durant la pandémie, grâce à un groupe d'amis chrétiens. J'étais en quête de sens, et j'ai trouvé en Jésus le pilier qui m'a aidé à me construire et à me donner une nouvelle raison de vivre.", date: "Mai 2023", isStatic: true },
+            { name: "Talitha K. (Ancienne athée)", story: "Mon cœur était saisi d'une passion inouïe après ma rencontre avec Dieu. Avant, rien ne m'intéressait; aujourd'hui, je partage la joie et l'excitation d'avoir trouvé une liberté et un sens qui dépassent tout.", date: "Août 2024", isStatic: true },
+            { name: "Marie-Agnès (Convertie)", story: "Après des années d'errance et de dépendances, j'ai crié à Dieu dans un moment de désespoir. J'ai senti une force indescriptible me secourir. J'ai pardonné, je suis libre, et j'ai retrouvé le goût de vivre.", date: "Juin 2017", isStatic: true }
+        ];
+
+        const actionContents = {
+            // Initialisation temporaire, mis à jour par updateActionContents
+            prayer: '',
+            contact: ''
+        };
+
+        /**
+         * Affiche les témoignages (statiques et dynamiques) dans la section dédiée.
+         * @param {Array} dynamicTestimonials - Liste des témoignages récupérés de Firestore.
+         */
+        function renderTestimonials(dynamicTestimonials = []) {
+            const list = document.getElementById('testimonial-list');
+            list.innerHTML = ''; // Vider la liste
+            
+            // Combiner statiques et dynamiques
+            const allTestimonials = [...staticTestimonials, ...dynamicTestimonials];
+            
+            // Récupération des libellés de traduction
+            const staticLabel = translations[currentLang].testimonial_static_label || "(inspiré)";
+            const userLabel = translations[currentLang].testimonial_user_label || "(utilisateur)";
+            const publishedLabel = translations[currentLang].testimonial_published_in || "publié en";
+            const onLabel = translations[currentLang].testimonial_on || "le";
+            const recentlyLabel = translations[currentLang].testimonial_recently || "récemment";
+
+            allTestimonials.forEach(t => {
+                const card = document.createElement('article');
+                card.className = 'p-6 bg-white rounded-lg shadow-md border-l-4 border-green-400';
+                
+                // Gestion des dates localisées
+                let dateText;
+                if (t.isStatic) {
+                    dateText = `${staticLabel} ${publishedLabel} ${t.date}`;
+                } else if (t.timestamp && typeof t.timestamp.toDate === 'function') {
+                    const date = t.timestamp.toDate();
+                    dateText = `${userLabel} ${onLabel} ${date.toLocaleDateString(currentLang)}`;
+                } else {
+                    dateText = `${userLabel} ${recentlyLabel}`;
+                }
+
+
+                card.innerHTML = `
+                    <p class="text-gray-700 italic mb-3">« ${t.story} »</p>
+                    <div class="flex justify-between items-center text-sm text-gray-500">
+                        <span class="font-semibold text-indigo-600">— ${t.name}</span>
+                        <span>${translations[currentLang].testimonial_label || "Témoignage"} ${dateText}</span>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        /**
+         * Établit l'écoute en temps réel des témoignages dans Firestore.
+         */
+        function setupTestimonialListener() {
+            if (!db || !isAuthReady) return;
+
+            const q = query(collection(db, TESTIMONIALS_COLLECTION));
+            
+            // onSnapshot est la fonction clé pour la synchronisation en temps réel
+            onSnapshot(q, (snapshot) => {
+                const dynamicTestimonials = [];
+                snapshot.forEach((doc) => {
+                    // On ajoute l'ID du document pour les opérations futures (non utilisées ici, mais bonne pratique)
+                    dynamicTestimonials.push({ id: doc.id, ...doc.data() }); 
+                });
+                console.log("Témoignages mis à jour:", dynamicTestimonials.length);
+                renderTestimonials(dynamicTestimonials);
+            }, (error) => {
+                console.error("Erreur lors de l'écoute des témoignages Firestore:", error);
+                // Si erreur, on affiche au moins les témoignages statiques
+                renderTestimonials(staticTestimonials.filter(t => t.isStatic)); 
+            });
+        }
+
+        /**
+         * Gère la soumission du formulaire de témoignage.
+         */
+        /**
+         * Gère la soumission du formulaire de témoignage avec évaluation par l'IA.
+         */
+        async function submitTestimonial() {
+            const nameInput = document.getElementById('new-testimonial-name');
+            const storyInput = document.getElementById('new-testimonial-story');
+            const submitButton = document.getElementById('submit-testimonial-button');
+            const submitMessage = document.getElementById('submit-message');
+
+            const name = nameInput.value.trim();
+            const story = storyInput.value.trim();
+
+            if (!name || !story) {
+                submitMessage.className = 'mt-4 p-3 text-red-700 bg-red-100 rounded-lg text-center';
+                submitMessage.textContent = translations[currentLang].alert_empty_testimonial || 'Veuillez remplir votre nom et votre histoire.';
+                submitMessage.classList.remove('hidden');
+                return;
+            }
+
+            submitButton.disabled = true;
+            submitButton.querySelector('#submit-button-text').textContent = translations[currentLang].submit_button_evaluating || 'Évaluation en cours...';
+            submitButton.querySelector('#submit-spinner').classList.remove('hidden');
+            submitMessage.classList.add('hidden');
+
+            try {
+                if (!db || !auth.currentUser) {
+                     const errorMsg = translations[currentLang]?.alert_firestore_error || "Firestore non initialisé ou utilisateur non connecté.";
+                     throw new Error(errorMsg);
+                }
+                
+                // Évaluer le témoignage avec l'IA avant de l'enregistrer
+                submitButton.querySelector('#submit-button-text').textContent = translations[currentLang].submit_button_evaluating || 'Évaluation en cours...';
+                const isApproved = await evaluateTestimonialWithAI(name, story);
+                
+                if (!isApproved) {
+                    // Le témoignage a été rejeté par l'IA
+                    logActivity('TESTIMONIAL_REJECTED_BY_AI', { name: name.substring(0, 50), story_length: story.length, lang: currentLang });
+                    submitMessage.className = 'mt-4 p-3 text-orange-700 bg-orange-100 rounded-lg text-center';
+                    submitMessage.textContent = translations[currentLang].alert_testimonial_rejected || 'Merci pour votre témoignage. Après évaluation, nous ne pouvons pas le publier car il ne correspond pas aux critères de notre communauté.';
+                    submitMessage.classList.remove('hidden');
+                    submitButton.querySelector('#submit-button-text').textContent = translations[currentLang].submit_button || 'Soumettre le Témoignage';
+                    submitButton.querySelector('#submit-spinner').classList.add('hidden');
+                    if (isAuthReady) {
+                        submitButton.disabled = false;
+                    }
+                    return;
+                }
+                
+                // Le témoignage est approuvé, on peut l'enregistrer
+                submitButton.querySelector('#submit-button-text').textContent = translations[currentLang].submit_button_sending || 'Envoi...';
+                
+                const docRef = await addDoc(collection(db, TESTIMONIALS_COLLECTION), {
+                    name: name,
+                    story: story,
+                    userId: userId, // ID de l'utilisateur anonyme ou authentifié
+                    timestamp: serverTimestamp(), // Marque temporelle du serveur
+                    aiApproved: true // Indicateur que l'IA a approuvé ce témoignage
+                });
+
+                // Enregistrer la soumission du témoignage (réussite)
+                logActivity('TESTIMONIAL_SUBMITTED', { name: name.substring(0, 50), story_length: story.length, lang: currentLang, aiApproved: true });
+
+                // Succès
+                submitMessage.className = 'mt-4 p-3 text-green-700 bg-green-100 rounded-lg text-center';
+                submitMessage.textContent = translations[currentLang].alert_submit_success || 'Merci ! Votre témoignage a été soumis et apparaît maintenant ci-dessus.';
+                submitMessage.classList.remove('hidden');
+                nameInput.value = '';
+                storyInput.value = '';
+
+                console.log("Document écrit avec ID: ", docRef.id);
+
+            } catch (e) {
+                // Échec
+                logActivity('TESTIMONIAL_SUBMISSION_FAILED', { error: e.message, lang: currentLang });
+                submitMessage.className = 'mt-4 p-3 text-red-700 bg-red-100 rounded-lg text-center';
+                submitMessage.textContent = translations[currentLang].alert_submit_error || `Erreur lors de la soumission. Veuillez réessayer.`;
+                submitMessage.classList.remove('hidden');
+                console.error("Erreur d'ajout de document: ", e);
+            } finally {
+                // Réactiver le bouton seulement si l'auth est prête (pour éviter un état cassé)
+                if (isAuthReady) {
+                    submitButton.disabled = false;
+                }
+                submitButton.querySelector('#submit-button-text').textContent = translations[currentLang].submit_button || 'Soumettre le Témoignage';
+                submitButton.querySelector('#submit-spinner').classList.add('hidden');
+            }
+        }
+
+
+        /**
+         * Affiche le message correspondant à l'action sélectionnée (Prière ou Contact).
+         * @param {string} action - 'prayer' ou 'contact'
+         */
+        function displayMessage(action) {
+            logActivity(`ACTION_BUTTON_CLICKED: ${action}`); // APPEL AJOUTÉ
+            const messageBox = document.getElementById('action-message');
+            messageBox.innerHTML = actionContents[action];
+            messageBox.classList.remove('hidden');
+            
+            // Mise à jour du texte de prière dans la bonne langue
+            if (action === 'prayer') {
+                const prayerQuote = document.getElementById('prayer-quote');
+                if(prayerQuote) {
+                    prayerQuote.innerHTML = `« ${PRAYER_TEXT[currentLang] || PRAYER_TEXT.fr} »`;
+                    prayerQuote.classList.add('whitespace-pre-wrap');
+                }
+                
+            }
+            // Faites défiler l'écran vers le message
+            messageBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        // Exposer les fonctions globales après l'import (pour utilisation dans le HTML)
+        window.handleFaithQuery = handleFaithQuery;
+        window.displayMessage = displayMessage; 
+        window.submitTestimonial = submitTestimonial; 
+        window.searchForChurch = searchForChurch; 
+        window.copyLink = copyLink; 
+        window.shareOnSocial = shareOnSocial; 
+
+        // Lancement de l'initialisation après le chargement du document
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mise à jour de la vérification de la clé API après le chargement du DOM
+            isApiKeyValid = API_KEY && API_KEY !== "VOTRE_CLÉ_API_ICI";
+            
+            initFirebase();
+            
+            // Appliquer la langue par défaut (fr) au chargement
+            updateActionContents('fr'); // Assure que les messages cachés sont prêts
+            applyTranslations('fr'); // Applique la traduction FR au DOM visible
+
+            // Si un sélecteur existe, le mettre à 'fr'
+            const selector = document.getElementById('language-selector');
+            if(selector) selector.value = 'fr';
+            
+            console.log("Application d'évangélisation chargée et optimisée pour l'expérience utilisateur, le SEO et l'IA.");
+        });
+
+    </script>
+
+</body>
+</html>
