@@ -147,12 +147,37 @@ echo "🔒 Configuration du certificat SSL..."
 # Vérifier si le certificat existe déjà
 if [ ! -d "/etc/letsencrypt/live/$DOMAIN" ]; then
     echo "📜 Génération du certificat SSL avec Let's Encrypt..."
-    certbot --nginx -d $DOMAIN --non-interactive --agree-tos --email admin@$DOMAIN --redirect
+    echo "⚠️  Assurez-vous que le domaine $DOMAIN pointe vers cette machine!"
+    echo "⚠️  Les ports 80 et 443 doivent être ouverts dans le firewall"
+    
+    # Attendre un peu pour que Nginx soit prêt
+    sleep 2
+    
+    # Générer le certificat
+    certbot --nginx -d $DOMAIN --non-interactive --agree-tos --email admin@$DOMAIN --redirect || {
+        echo "❌ Erreur lors de la génération du certificat SSL"
+        echo "💡 Vérifiez que:"
+        echo "   1. Le domaine $DOMAIN pointe vers cette IP"
+        echo "   2. Les ports 80 et 443 sont ouverts"
+        echo "   3. Nginx fonctionne correctement"
+        echo ""
+        echo "Vous pouvez générer le certificat manuellement avec:"
+        echo "   sudo certbot --nginx -d $DOMAIN"
+    }
     echo "✅ Certificat SSL généré"
 else
     echo "✅ Certificat SSL déjà présent"
     # Renouveler le certificat si nécessaire
     certbot renew --quiet
+fi
+
+# Vérifier que HTTPS fonctionne
+echo ""
+echo "🔍 Vérification de la configuration HTTPS..."
+if curl -s -o /dev/null -w "%{http_code}" https://$DOMAIN | grep -q "200\|301\|302"; then
+    echo "✅ HTTPS fonctionne correctement!"
+else
+    echo "⚠️  HTTPS ne répond pas encore. Vérifiez la configuration."
 fi
 
 echo ""
