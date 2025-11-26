@@ -20,26 +20,34 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
-# Vérifier si on est déjà dans un dépôt Git
+# Créer le répertoire de l'application
+echo "📁 Création du répertoire $APP_DIR..."
+mkdir -p $APP_DIR
+cd $APP_DIR
+
+# Cloner ou mettre à jour le dépôt
 if [ -d ".git" ]; then
-    echo "✅ Dépôt Git détecté dans le répertoire courant"
-    CURRENT_DIR=$(pwd)
-    APP_DIR=$CURRENT_DIR
-    echo "📂 Utilisation du répertoire: $APP_DIR"
+    echo "🔄 Mise à jour du dépôt Git..."
+    git pull origin main
 else
-    # Créer le répertoire de l'application
-    echo "📁 Création du répertoire $APP_DIR..."
-    mkdir -p $APP_DIR
-    cd $APP_DIR
-    
-    # Cloner ou mettre à jour le dépôt
-    if [ -d ".git" ]; then
-        echo "🔄 Mise à jour du dépôt Git..."
-        git pull origin main
-    else
-        echo "📥 Clonage du dépôt Git..."
-        git clone $REPO_URL .
+    # Si le répertoire existe mais n'est pas un dépôt Git, le nettoyer
+    if [ "$(ls -A $APP_DIR 2>/dev/null)" ]; then
+        echo "⚠️  Le répertoire $APP_DIR existe mais n'est pas un dépôt Git"
+        echo "📦 Nettoyage du répertoire..."
+        # Sauvegarder .env s'il existe
+        if [ -f ".env" ]; then
+            echo "💾 Sauvegarde du fichier .env..."
+            cp .env /tmp/foinouvelle.env.backup
+        fi
+        # Supprimer tout sauf .env si présent
+        find . -mindepth 1 -maxdepth 1 ! -name '.env' -exec rm -rf {} +
+        # Restaurer .env si sauvegardé
+        if [ -f "/tmp/foinouvelle.env.backup" ]; then
+            mv /tmp/foinouvelle.env.backup .env
+        fi
     fi
+    echo "📥 Clonage du dépôt Git..."
+    git clone $REPO_URL .
 fi
 
 # S'assurer qu'on est dans le bon répertoire
