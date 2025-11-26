@@ -34,31 +34,67 @@ if ! docker compose -f docker-compose.prod.yml ps | grep -q "Up"; then
 fi
 echo "✅ Conteneur Docker fonctionne"
 
-# Copier la configuration Nginx
+# Copier la configuration Nginx (temporaire sans SSL d'abord)
 echo "🌐 Configuration de Nginx..."
-if [ -f "$APP_DIR/nginx.conf" ]; then
-    cp "$APP_DIR/nginx.conf" $NGINX_CONF
-    # Remplacer le domaine dans la configuration
-    sed -i "s/foinouvelle.woutils.com/$DOMAIN/g" $NGINX_CONF
+if [ -f "$APP_DIR/nginx.conf.temp" ]; then
+    # Utiliser la version temporaire sans SSL
+    cp "$APP_DIR/nginx.conf.temp" $NGINX_CONF
+    echo "✅ Configuration Nginx temporaire (HTTP uniquement) créée"
+elif [ -f "$APP_DIR/nginx.conf" ]; then
+    # Créer une version temporaire sans SSL depuis nginx.conf
+    echo "📝 Création d'une configuration temporaire sans SSL..."
+    cat > $NGINX_CONF << EOF
+# Configuration temporaire - Certbot ajoutera HTTPS automatiquement
+server {
+    listen 80;
+    listen [::]:80;
+    server_name $DOMAIN;
     
-    # Créer le lien symbolique
-    if [ ! -L "/etc/nginx/sites-enabled/foinouvelle" ]; then
-        ln -s $NGINX_CONF /etc/nginx/sites-enabled/foinouvelle
-    fi
+    client_max_body_size 10M;
+    access_log /var/log/nginx/foinouvelle-access.log;
+    error_log /var/log/nginx/foinouvelle-error.log;
     
-    # Tester la configuration Nginx
-    echo "🧪 Test de la configuration Nginx..."
-    if nginx -t; then
-        echo "✅ Configuration Nginx valide"
-        # Recharger Nginx
-        systemctl reload nginx
-        echo "✅ Nginx rechargé"
-    else
-        echo "❌ Erreur dans la configuration Nginx"
-        exit 1
-    fi
+    location / {
+        proxy_pass http://127.0.0.1:2000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_cache_bypass \$http_upgrade;
+        proxy_connect_timeout 60s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
+    }
+}
+EOF
+    echo "✅ Configuration Nginx temporaire créée"
 else
-    echo "❌ Fichier nginx.conf non trouvé dans $APP_DIR"
+    echo "❌ Aucun fichier de configuration Nginx trouvé"
+    exit 1
+fi
+
+# Remplacer le domaine dans la configuration
+sed -i "s/foinouvelle.woutils.com/$DOMAIN/g" $NGINX_CONF
+
+# Créer le lien symbolique
+if [ ! -L "/etc/nginx/sites-enabled/foinouvelle" ]; then
+    ln -s $NGINX_CONF /etc/nginx/sites-enabled/foinouvelle
+    echo "✅ Lien symbolique créé"
+fi
+
+# Tester la configuration Nginx
+echo "🧪 Test de la configuration Nginx..."
+if nginx -t; then
+    echo "✅ Configuration Nginx valide"
+    # Recharger Nginx
+    systemctl reload nginx
+    echo "✅ Nginx rechargé"
+else
+    echo "❌ Erreur dans la configuration Nginx"
+    echo "💡 Vérifiez les erreurs ci-dessus"
     exit 1
 fi
 
@@ -75,19 +111,29 @@ if [ -d "/etc/letsencrypt/live/$DOMAIN" ]; then
     certbot certificates | grep -A 5 "$DOMAIN"
 else
     echo "📝 Génération du nouveau certificat..."
+    echo "⏳ Cela peut prendre quelques instants..."
+    
+    # Certbot va automatiquement modifier la configuration Nginx pour ajouter HTTPS
     certbot --nginx -d $DOMAIN --non-interactive --agree-tos --email admin@$DOMAIN --redirect
     
     if [ $? -eq 0 ]; then
         echo "✅ Certificat SSL généré avec succès!"
+        echo "✅ Certbot a automatiquement mis à jour la configuration Nginx"
+        
+        # Recharger Nginx pour appliquer les changements
+        systemctl reload nginx
+        echo "✅ Nginx rechargé avec la nouvelle configuration HTTPS"
     else
         echo "❌ Erreur lors de la génération du certificat"
         echo ""
         echo "💡 Vérifiez que:"
         echo "   1. Le domaine $DOMAIN pointe vers cette IP"
-        echo "   2. Les ports 80 et 443 sont ouverts"
-        echo "   3. Nginx fonctionne correctement"
+        echo "   2. Les ports 80 et 443 sont ouverts dans le firewall"
+        echo "   3. Nginx fonctionne correctement (test: sudo nginx -t)"
+        echo "   4. Le conteneur Docker répond sur http://127.0.0.1:2000"
         echo ""
-        echo "Vous pouvez essayer manuellement:"
+        echo "Testez manuellement:"
+        echo "   curl http://127.0.0.1:2000"
         echo "   sudo certbot --nginx -d $DOMAIN"
         exit 1
     fi
