@@ -29,19 +29,20 @@ for site in $(ls $NGINX_SITES); do
         
         if [ -n "$CERT_PATH" ] && [ ! -f "$CERT_PATH" ]; then
             echo "⚠️  Site $site référence un certificat manquant: $CERT_PATH"
-            echo "📝 Commentaire de la section SSL..."
+            echo "📝 Désactivation temporaire du site..."
             
             # Créer une sauvegarde
             cp "$SITE_PATH" "$SITE_PATH.backup"
             
-            # Commenter les lignes SSL
-            sed -i 's/^[[:space:]]*ssl_certificate/#ssl_certificate/g' "$SITE_PATH"
-            sed -i 's/^[[:space:]]*ssl_certificate_key/#ssl_certificate_key/g' "$SITE_PATH"
-            sed -i 's/^[[:space:]]*listen[[:space:]]*443/listen 80 #443/g' "$SITE_PATH"
-            sed -i 's/^[[:space:]]*ssl_protocols/#ssl_protocols/g' "$SITE_PATH"
-            sed -i 's/^[[:space:]]*ssl_ciphers/#ssl_ciphers/g' "$SITE_PATH"
-            
-            echo "✅ Configuration $site corrigée (SSL commenté)"
+            # Désactiver le site en le renommant
+            if [ -L "$SITE_PATH" ]; then
+                rm "$SITE_PATH"
+                echo "✅ Site $site désactivé (lien symbolique supprimé)"
+            else
+                # Si c'est un fichier direct, le déplacer
+                mv "$SITE_PATH" "$SITE_PATH.disabled"
+                echo "✅ Site $site désactivé (renommé en .disabled)"
+            fi
         fi
     fi
 done
