@@ -1,0 +1,22 @@
+{
+  "name": "foi-nouvelle",
+  "version": "1.0.0",
+  "description": "Application d'évangélisation avec support multilingue et modération IA",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "evangelism",
+    "faith",
+    "multilingual",
+    "ai"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  }
+}
+

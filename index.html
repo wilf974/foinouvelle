@@ -338,27 +338,20 @@
 
     </div>
 
+    <!-- SQL.js pour SQLite dans le navigateur -->
+    <script src="https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/sql-wasm.js"></script>
+
     <!-- JAVASCRIPT LOGIC -->
     <script type="module">
-        // Import des fonctionnalités Firebase (ajout de collection, onSnapshot, query, addDoc)
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
-        // --- FIREBASE SETUP ---
-        setLogLevel('debug'); 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        // --- SQLITE SETUP ---
+        let db = null; // Base de données SQLite
+        let userId = null; // ID utilisateur local (généré une fois)
+        let isDbReady = false;
         
-        // CORRECTION DE L'ERREUR : Déclaration unique des variables de service.
-        let db, auth, userId; 
-        let isAuthReady = false;
-        
-        // Chemin des collections
-        const TESTIMONIALS_COLLECTION = `artifacts/${appId}/public/data/user_testimonials`;
-        const ACTIVITY_COLLECTION = `artifacts/${appId}/public/data/user_activity`; // NOUVELLE COLLECTION POUR LE JOURNAL
+        // Nom de la base de données dans IndexedDB
+        const DB_NAME = 'foi_nouvelle_db';
+        const DB_VERSION = 1;
 
         // --- GESTION MULTI-LANGUE (i18n) ---
         const PRAYER_TEXT = {
@@ -1041,10 +1034,10 @@
                 }
             }
             
-            // Re-render les témoignages si nécessaire pour mettre à jour les dates et les textes statiques des témoignages si on implémente plus tard la traduction dynamique.
-            if (isAuthReady) {
-                // On relance le listener ou le render si les données sont prêtes
-                setupTestimonialListener(); 
+            // Re-render les témoignages si nécessaire pour mettre à jour les dates et les textes statiques des témoignages
+            if (isDbReady) {
+                // Recharger les témoignages depuis SQLite
+                loadTestimonials();
             } else {
                  renderTestimonials(staticTestimonials.filter(t => t.isStatic)); 
             }
@@ -1100,38 +1093,203 @@
         // const prayerText = PRAYER_TEXT.fr; 
         
         // =====================================================================
-        // 🚨 CLÉ API FOURNIE : Utilisation de la clé Gemini
+        // 🚨 VARIABLES D'ENVIRONNEMENT : Injectées par le serveur depuis .env
         // =====================================================================
-        const API_KEY = "AIzaSyCBluPCMBtBZWM0ODd10r1OMSS6P8H_2gI"; // Clé Gemini insérée
+        const API_KEY = "{{API_KEY}}"; // Clé Gemini injectée depuis .env
         
         // Rétablissement des configurations Gemini (URL de base implicite, modèles explicites)
         const GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
         const LLM_TEXT_MODEL = "gemini-2.5-flash-preview-09-2025"; // Modèle Gemini avec Search Grounding
         const LLM_TTS_MODEL = "gemini-2.5-flash-preview-tts"; // Modèle Gemini pour l'audio
 
-        // Contacts mis à jour avec les informations de l'utilisateur
-        const CONTACT_EMAIL = "bethelcorse@gmail.com";
-        const CONTACT_PHONE = "04 95 20 76 43";
+        // Contacts mis à jour avec les informations de l'utilisateur (injectés depuis .env)
+        const CONTACT_EMAIL = "{{CONTACT_EMAIL}}";
+        const CONTACT_PHONE = "{{CONTACT_PHONE}}";
         // EMAIL DE NOTIFICATION DEMANDÉE PAR L'UTILISATEUR (pour journalisation)
-        const ADMIN_NOTIFICATION_EMAIL = "jean.maillot14@gmail.com";
+        const ADMIN_NOTIFICATION_EMAIL = "{{ADMIN_NOTIFICATION_EMAIL}}";
 
         // Variable pour vérifier si l'API Key est valide (non-vide)
         let isApiKeyValid = API_KEY && API_KEY !== "VOTRE_CLÉ_API_ICI";
         
-        // --- NOUVELLE FONCTION DE JOURNALISATION D'ACTIVITÉ ---
-        async function logActivity(action, details = {}) {
-            if (!db || !userId) return; // Ne pas loguer si Firestore n'est pas prêt
-            
-            // Note: Nous n'envoyons pas d'e-mail ici, mais nous enregistrons l'événement.
+        /**
+         * Sauvegarde la base de données SQLite dans IndexedDB pour la persistance.
+         */
+        async function saveDatabase() {
+            if (!db) return;
             try {
-                await addDoc(collection(db, ACTIVITY_COLLECTION), {
-                    action: action,
-                    userId: userId,
-                    details: details,
-                    timestamp: serverTimestamp(),
-                    // Ajout d'une référence explicite pour l'administrateur
-                    admin_notification_target: ADMIN_NOTIFICATION_EMAIL 
+                const data = db.export();
+                const buffer = data.buffer;
+                const STORE_NAME = 'database';
+                
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open(DB_NAME, DB_VERSION);
+                    
+                    request.onerror = () => reject(request.error);
+                    
+                    request.onsuccess = () => {
+                        const idb = request.result;
+                        const transaction = idb.transaction([STORE_NAME], 'readwrite');
+                        const store = transaction.objectStore(STORE_NAME);
+                        store.put(buffer, 'db');
+                        transaction.oncomplete = () => resolve();
+                        transaction.onerror = () => reject(transaction.error);
+                    };
+                    
+                    request.onupgradeneeded = (event) => {
+                        const idb = event.target.result;
+                        if (!idb.objectStoreNames.contains(STORE_NAME)) {
+                            idb.createObjectStore(STORE_NAME);
+                        }
+                    };
                 });
+            } catch (e) {
+                console.error("Erreur lors de la sauvegarde de la base:", e);
+            }
+        }
+
+        /**
+         * Charge la base de données SQLite depuis IndexedDB.
+         */
+        async function loadDatabase() {
+            try {
+                const STORE_NAME = 'database';
+                
+                return new Promise((resolve) => {
+                    const request = indexedDB.open(DB_NAME, DB_VERSION);
+                    
+                    request.onerror = () => {
+                        // Si IndexedDB n'est pas disponible, on crée une nouvelle base
+                        resolve(null);
+                    };
+                    
+                    request.onsuccess = () => {
+                        const idb = request.result;
+                        if (!idb.objectStoreNames.contains(STORE_NAME)) {
+                            resolve(null);
+                            return;
+                        }
+                        const transaction = idb.transaction([STORE_NAME], 'readonly');
+                        const store = transaction.objectStore(STORE_NAME);
+                        const getRequest = store.get('db');
+                        
+                        getRequest.onsuccess = () => {
+                            resolve(getRequest.result);
+                        };
+                        
+                        getRequest.onerror = () => resolve(null);
+                    };
+                    
+                    request.onupgradeneeded = (event) => {
+                        const idb = event.target.result;
+                        if (!idb.objectStoreNames.contains(STORE_NAME)) {
+                            idb.createObjectStore(STORE_NAME);
+                        }
+                    };
+                });
+            } catch (e) {
+                console.error("Erreur lors du chargement de la base:", e);
+                return null;
+            }
+        }
+
+        /**
+         * Initialise la base de données SQLite et crée les tables nécessaires.
+         */
+        async function initSQLite() {
+            try {
+                // Initialiser SQL.js (chargé via script tag, accessible via window.initSqlJs)
+                const sqlJsInit = window.initSqlJs;
+                if (!sqlJsInit) {
+                    throw new Error("SQL.js n'est pas chargé. Vérifiez que le script est bien inclus.");
+                }
+                const SQL = await sqlJsInit({
+                    locateFile: file => `https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/${file}`
+                });
+
+                // Charger la base existante ou créer une nouvelle
+                const savedData = await loadDatabase();
+                
+                if (savedData) {
+                    db = new SQL.Database(new Uint8Array(savedData));
+                    console.log("Base de données chargée depuis IndexedDB");
+                } else {
+                    db = new SQL.Database();
+                    console.log("Nouvelle base de données créée");
+                }
+
+                // Créer les tables si elles n'existent pas
+                db.run(`
+                    CREATE TABLE IF NOT EXISTS testimonials (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        name TEXT NOT NULL,
+                        story TEXT NOT NULL,
+                        userId TEXT,
+                        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                        aiApproved INTEGER DEFAULT 1
+                    )
+                `);
+
+                db.run(`
+                    CREATE TABLE IF NOT EXISTS activities (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        action TEXT NOT NULL,
+                        userId TEXT,
+                        details TEXT,
+                        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                        admin_notification_target TEXT
+                    )
+                `);
+
+                // Sauvegarder après création des tables
+                await saveDatabase();
+
+                // Générer un ID utilisateur unique (stocké dans localStorage)
+                if (!userId) {
+                    userId = localStorage.getItem('foi_nouvelle_user_id');
+                    if (!userId) {
+                        userId = crypto.randomUUID();
+                        localStorage.setItem('foi_nouvelle_user_id', userId);
+                    }
+                }
+
+                isDbReady = true;
+                console.log("SQLite initialisé avec succès");
+
+                // Enregistrer la connexion
+                logActivity('USER_CONNECTED');
+
+                // Activer les boutons
+                if (isApiKeyValid) {
+                    document.getElementById('query-button').disabled = false;
+                }
+                document.getElementById('submit-testimonial-button').disabled = false;
+
+                // Charger et afficher les témoignages
+                loadTestimonials();
+
+            } catch (error) {
+                console.error("Erreur lors de l'initialisation de SQLite:", error);
+                document.getElementById('query-button').disabled = true;
+                document.getElementById('submit-testimonial-button').disabled = true;
+                // Afficher au moins les témoignages statiques en cas d'erreur
+                renderTestimonials(staticTestimonials.filter(t => t.isStatic));
+            }
+        }
+
+        /**
+         * Journalise une activité dans la base SQLite.
+         */
+        async function logActivity(action, details = {}) {
+            if (!db || !userId) return;
+            
+            try {
+                const detailsJson = JSON.stringify(details);
+                db.run(
+                    `INSERT INTO activities (action, userId, details, admin_notification_target) 
+                     VALUES (?, ?, ?, ?)`,
+                    [action, userId, detailsJson, ADMIN_NOTIFICATION_EMAIL]
+                );
+                await saveDatabase();
                 console.log(`Activité enregistrée: ${action}`);
             } catch (e) {
                 console.error(`Erreur lors de l'enregistrement de l'activité (${action}):`, e);
@@ -1139,63 +1297,49 @@
         }
 
         /**
-         * Fonction d'initialisation de Firebase et d'authentification.
+         * Charge tous les témoignages depuis SQLite.
          */
-        async function initFirebase() {
+        function loadTestimonials() {
+            if (!db) {
+                renderTestimonials(staticTestimonials.filter(t => t.isStatic));
+                return;
+            }
+
             try {
-                if (!isApiKeyValid) {
-                    // Afficher l'alerte si la clé est manquante
-                    document.getElementById('api-key-alert').classList.remove('hidden');
-                }
+                const result = db.exec(`
+                    SELECT id, name, story, userId, timestamp, aiApproved 
+                    FROM testimonials 
+                    WHERE aiApproved = 1 
+                    ORDER BY timestamp DESC
+                `);
 
-                if (Object.keys(firebaseConfig).length > 0) {
-                    const app = initializeApp(firebaseConfig);
-                    db = getFirestore(app);
-                    auth = getAuth(app);
+                const dynamicTestimonials = [];
+                if (result.length > 0) {
+                    const columns = result[0].columns;
+                    const values = result[0].values;
                     
-                    onAuthStateChanged(auth, async (user) => {
-                        if (user) {
-                            userId = user.uid;
-                            console.log("Authenticated as:", userId);
-                        } else {
-                            if (initialAuthToken) {
-                                await signInWithCustomToken(auth, initialAuthToken);
-                            } else {
-                                await signInAnonymously(auth);
-                            }
-                            userId = auth.currentUser?.uid || crypto.randomUUID();
-                            console.log("Logged in/Signed in anonymously:", userId);
+                    for (let i = 0; i < values.length; i++) {
+                        const row = {};
+                        columns.forEach((col, idx) => {
+                            row[col] = values[i][idx];
+                        });
+                        
+                        // Convertir la date string en objet Date pour compatibilité
+                        if (row.timestamp) {
+                            row.timestamp = {
+                                toDate: () => new Date(row.timestamp)
+                            };
                         }
-                        isAuthReady = true;
                         
-                        // Enregistrer la connexion
-                        logActivity('USER_CONNECTED'); // APPEL AJOUTÉ
-                        
-                        // Activer le bouton de requête IA SEULEMENT si la clé API est valide
-                        if (isApiKeyValid) {
-                            document.getElementById('query-button').disabled = false;
-                        }
-                        document.getElementById('submit-testimonial-button').disabled = false;
-                        
-                        // Lancer l'écoute des témoignages seulement après l'authentification
-                        setupTestimonialListener();
-                    });
-
-                } else {
-                    console.error("Firebase config not available. Running in local mode.");
-                    isAuthReady = true;
-                    // Activer le bouton de requête IA SEULEMENT si la clé API est valide
-                    if (isApiKeyValid) {
-                         document.getElementById('query-button').disabled = false;
+                        dynamicTestimonials.push(row);
                     }
-                    // Désactiver le formulaire de soumission si Firestore n'est pas dispo
-                    document.getElementById('submit-testimonial-button').disabled = true; 
-                    renderTestimonials(staticTestimonials); // Affiche au moins les statiques
                 }
-            } catch (error) {
-                console.error("Firebase initialization failed:", error);
-                document.getElementById('query-button').disabled = true;
-                document.getElementById('submit-testimonial-button').disabled = true;
+
+                console.log("Témoignages chargés depuis SQLite:", dynamicTestimonials.length);
+                renderTestimonials(dynamicTestimonials);
+            } catch (e) {
+                console.error("Erreur lors du chargement des témoignages:", e);
+                renderTestimonials(staticTestimonials.filter(t => t.isStatic));
             }
         }
 
@@ -1427,7 +1571,7 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
             // Restaurer l'état du bouton (seulement si l'auth est prête et la clé est valide)
             buttonText.textContent = translations[currentLang].explore_button_explain || "Expliquer";
             spinner.classList.add('hidden');
-            if (isAuthReady && isApiKeyValid) {
+            if (isDbReady && isApiKeyValid) {
                  button.disabled = false;
             }
         }
@@ -1626,8 +1770,17 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
                 let dateText;
                 if (t.isStatic) {
                     dateText = `${staticLabel} ${publishedLabel} ${t.date}`;
-                } else if (t.timestamp && typeof t.timestamp.toDate === 'function') {
-                    const date = t.timestamp.toDate();
+                } else if (t.timestamp) {
+                    let date;
+                    if (typeof t.timestamp.toDate === 'function') {
+                        // Format Firebase (compatibilité)
+                        date = t.timestamp.toDate();
+                    } else if (typeof t.timestamp === 'string') {
+                        // Format SQLite (string)
+                        date = new Date(t.timestamp);
+                    } else {
+                        date = new Date();
+                    }
                     dateText = `${userLabel} ${onLabel} ${date.toLocaleDateString(currentLang)}`;
                 } else {
                     dateText = `${userLabel} ${recentlyLabel}`;
@@ -1645,29 +1798,6 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
             });
         }
 
-        /**
-         * Établit l'écoute en temps réel des témoignages dans Firestore.
-         */
-        function setupTestimonialListener() {
-            if (!db || !isAuthReady) return;
-
-            const q = query(collection(db, TESTIMONIALS_COLLECTION));
-            
-            // onSnapshot est la fonction clé pour la synchronisation en temps réel
-            onSnapshot(q, (snapshot) => {
-                const dynamicTestimonials = [];
-                snapshot.forEach((doc) => {
-                    // On ajoute l'ID du document pour les opérations futures (non utilisées ici, mais bonne pratique)
-                    dynamicTestimonials.push({ id: doc.id, ...doc.data() }); 
-                });
-                console.log("Témoignages mis à jour:", dynamicTestimonials.length);
-                renderTestimonials(dynamicTestimonials);
-            }, (error) => {
-                console.error("Erreur lors de l'écoute des témoignages Firestore:", error);
-                // Si erreur, on affiche au moins les témoignages statiques
-                renderTestimonials(staticTestimonials.filter(t => t.isStatic)); 
-            });
-        }
 
         /**
          * Gère la soumission du formulaire de témoignage.
@@ -1697,8 +1827,8 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
             submitMessage.classList.add('hidden');
 
             try {
-                if (!db || !auth.currentUser) {
-                     const errorMsg = translations[currentLang]?.alert_firestore_error || "Firestore non initialisé ou utilisateur non connecté.";
+                if (!db || !isDbReady) {
+                     const errorMsg = translations[currentLang]?.alert_firestore_error || "Base de données non initialisée.";
                      throw new Error(errorMsg);
                 }
                 
@@ -1714,25 +1844,32 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
                     submitMessage.classList.remove('hidden');
                     submitButton.querySelector('#submit-button-text').textContent = translations[currentLang].submit_button || 'Soumettre le Témoignage';
                     submitButton.querySelector('#submit-spinner').classList.add('hidden');
-                    if (isAuthReady) {
+                    if (isDbReady) {
                         submitButton.disabled = false;
                     }
                     return;
                 }
                 
-                // Le témoignage est approuvé, on peut l'enregistrer
+                // Le témoignage est approuvé, on peut l'enregistrer dans SQLite
                 submitButton.querySelector('#submit-button-text').textContent = translations[currentLang].submit_button_sending || 'Envoi...';
                 
-                const docRef = await addDoc(collection(db, TESTIMONIALS_COLLECTION), {
-                    name: name,
-                    story: story,
-                    userId: userId, // ID de l'utilisateur anonyme ou authentifié
-                    timestamp: serverTimestamp(), // Marque temporelle du serveur
-                    aiApproved: true // Indicateur que l'IA a approuvé ce témoignage
-                });
+                // Insérer le témoignage dans SQLite
+                db.run(
+                    `INSERT INTO testimonials (name, story, userId, aiApproved) VALUES (?, ?, ?, ?)`,
+                    [name, story, userId, 1]
+                );
+                
+                // Sauvegarder la base de données
+                await saveDatabase();
+                
+                const lastInsertId = db.exec("SELECT last_insert_rowid() as id")[0].values[0][0];
+                console.log("Témoignage enregistré avec ID:", lastInsertId);
 
                 // Enregistrer la soumission du témoignage (réussite)
                 logActivity('TESTIMONIAL_SUBMITTED', { name: name.substring(0, 50), story_length: story.length, lang: currentLang, aiApproved: true });
+
+                // Recharger les témoignages pour afficher le nouveau
+                loadTestimonials();
 
                 // Succès
                 submitMessage.className = 'mt-4 p-3 text-green-700 bg-green-100 rounded-lg text-center';
@@ -1741,18 +1878,16 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
                 nameInput.value = '';
                 storyInput.value = '';
 
-                console.log("Document écrit avec ID: ", docRef.id);
-
             } catch (e) {
                 // Échec
                 logActivity('TESTIMONIAL_SUBMISSION_FAILED', { error: e.message, lang: currentLang });
                 submitMessage.className = 'mt-4 p-3 text-red-700 bg-red-100 rounded-lg text-center';
                 submitMessage.textContent = translations[currentLang].alert_submit_error || `Erreur lors de la soumission. Veuillez réessayer.`;
                 submitMessage.classList.remove('hidden');
-                console.error("Erreur d'ajout de document: ", e);
+                console.error("Erreur lors de l'ajout du témoignage:", e);
             } finally {
-                // Réactiver le bouton seulement si l'auth est prête (pour éviter un état cassé)
-                if (isAuthReady) {
+                // Réactiver le bouton seulement si la base est prête
+                if (isDbReady) {
                     submitButton.disabled = false;
                 }
                 submitButton.querySelector('#submit-button-text').textContent = translations[currentLang].submit_button || 'Soumettre le Témoignage';
@@ -1797,7 +1932,7 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
             // Mise à jour de la vérification de la clé API après le chargement du DOM
             isApiKeyValid = API_KEY && API_KEY !== "VOTRE_CLÉ_API_ICI";
             
-            initFirebase();
+            initSQLite();
             
             // Appliquer la langue par défaut (fr) au chargement
             updateActionContents('fr'); // Assure que les messages cachés sont prêts

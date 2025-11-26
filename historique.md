@@ -1,5 +1,134 @@
 # Historique des Modifications
 
+## 2025-01-XX - Dockerisation de l'application et externalisation des clés API
+
+### Modifications apportées
+
+**Fichiers créés :**
+- `server.js` : Serveur Node.js qui sert l'application et injecte les variables d'environnement
+- `package.json` : Configuration npm avec dépendances (dotenv)
+- `Dockerfile` : Configuration Docker pour conteneuriser l'application
+- `docker-compose.yml` : Configuration Docker Compose pour faciliter le déploiement
+- `.dockerignore` : Fichiers à exclure du build Docker
+- `.env.example` : Exemple de fichier de variables d'environnement
+- `README.md` : Documentation du projet
+
+**Fichier modifié :** `index.html`
+
+### Changements techniques
+
+1. **Externalisation des clés API**
+   - Suppression des clés API hardcodées dans `index.html`
+   - Remplacement par des placeholders `{{API_KEY}}`, `{{CONTACT_EMAIL}}`, etc.
+   - Les variables sont injectées par le serveur Node.js depuis le fichier `.env`
+
+2. **Serveur Node.js**
+   - Serveur HTTP simple qui lit `index.html` et remplace les placeholders
+   - Utilise `dotenv` pour charger les variables d'environnement
+   - Port configurable via `PORT` dans `.env` (défaut : 2000)
+
+3. **Dockerisation**
+   - Image basée sur `node:18-alpine` (légère)
+   - Configuration Docker Compose avec réseau dédié
+   - Port 2000 exposé par défaut
+   - Variables d'environnement chargées depuis `.env`
+
+### Variables d'environnement
+
+Les variables suivantes doivent être définies dans `.env` :
+- `API_KEY` : Clé API Google Gemini
+- `CONTACT_EMAIL` : Email de contact
+- `CONTACT_PHONE` : Téléphone de contact
+- `ADMIN_NOTIFICATION_EMAIL` : Email d'administration
+- `PORT` : Port du serveur (défaut : 2000)
+
+### Sécurité
+
+- Le fichier `.env` est exclu de Git (via `.gitignore`)
+- Le fichier `.env` est exclu du build Docker (via `.dockerignore`)
+- Un fichier `.env.example` est fourni comme modèle
+
+### Utilisation
+
+**Avec Docker :**
+```bash
+docker-compose up -d
+```
+
+**Sans Docker :**
+```bash
+npm install
+npm start
+```
+
+### Résultat
+
+L'application est maintenant entièrement dockerisée et les clés API sont externalisées dans un fichier `.env` sécurisé. L'application peut être déployée facilement sur n'importe quel serveur supportant Docker.
+
+---
+
+## 2025-01-XX - Remplacement de Firebase par SQLite pour le stockage des témoignages
+
+### Modifications apportées
+
+**Fichier modifié :** `index.html`
+
+### Changement majeur
+
+Remplacement complet de Firebase/Firestore par **SQLite** (via SQL.js) pour le stockage des témoignages et des activités. L'application utilise maintenant une base de données locale SQLite stockée dans IndexedDB pour la persistance.
+
+### Modifications techniques
+
+1. **Suppression de Firebase**
+   - Suppression de tous les imports Firebase (Firestore, Auth)
+   - Suppression de la configuration Firebase
+   - Suppression de l'authentification Firebase
+
+2. **Implémentation SQLite avec SQL.js**
+   - Ajout de SQL.js via CDN pour SQLite dans le navigateur
+   - Création de la fonction `initSQLite()` pour initialiser la base
+   - Stockage persistant dans IndexedDB
+
+3. **Structure de la base de données**
+   - Table `testimonials` : id, name, story, userId, timestamp, aiApproved
+   - Table `activities` : id, action, userId, details, timestamp, admin_notification_target
+
+4. **Fonctions créées**
+   - `saveDatabase()` : Sauvegarde la base SQLite dans IndexedDB
+   - `loadDatabase()` : Charge la base depuis IndexedDB
+   - `loadTestimonials()` : Charge tous les témoignages depuis SQLite
+   - `logActivity()` : Journalise les activités dans SQLite
+
+5. **Fonctions modifiées**
+   - `submitTestimonial()` : Utilise maintenant SQLite au lieu de Firestore
+   - `renderTestimonials()` : Gère les dates SQLite (string) et Firebase (compatibilité)
+   - Suppression de `setupTestimonialListener()` (remplacé par `loadTestimonials()`)
+
+6. **Authentification simplifiée**
+   - Remplacement de l'authentification Firebase par un ID utilisateur local
+   - ID stocké dans `localStorage` pour persistance entre sessions
+   - Génération automatique d'un UUID si absent
+
+### Avantages de SQLite
+
+- **Auto-hébergé** : Aucune dépendance externe (Firebase)
+- **Gratuit** : Pas de coûts d'infrastructure
+- **Local** : Données stockées dans le navigateur
+- **SQL natif** : Requêtes SQL standard
+- **Persistance** : Données sauvegardées dans IndexedDB
+
+### Limitations
+
+- **Local uniquement** : Les témoignages sont stockés localement dans le navigateur de chaque utilisateur
+- **Pas de synchronisation** : Les témoignages ne sont pas partagés entre utilisateurs
+- **IndexedDB requis** : Nécessite un navigateur supportant IndexedDB
+
+### Résultat
+
+L'application utilise maintenant SQLite pour stocker les témoignages localement. Chaque utilisateur voit ses propres témoignages approuvés par l'IA, stockés dans son navigateur.
+
+---
+
 ## 2025-01-XX - Ajout de l'évaluation par IA des témoignages avant publication
 
 ### Modifications apportées

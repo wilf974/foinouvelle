@@ -1,0 +1,16 @@
+services:
+  foi-nouvelle:
+    build: .
+    container_name: foi-nouvelle
+    ports:
+      - "2000:2000"
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - foi-nouvelle-network
+
+networks:
+  foi-nouvelle-network:
+    driver: bridge
+
