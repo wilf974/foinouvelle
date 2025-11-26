@@ -56,7 +56,25 @@ cd $APP_DIR
 # Créer le fichier .env s'il n'existe pas
 if [ ! -f ".env" ]; then
     echo "📝 Création du fichier .env..."
-    cp .env.example .env
+    if [ -f ".env.example" ]; then
+        cp .env.example .env
+    else
+        # Créer un fichier .env avec les valeurs par défaut
+        cat > .env << 'EOF'
+# Clé API Google Gemini
+API_KEY=
+
+# Informations de contact
+CONTACT_EMAIL=bethelcorse@gmail.com
+CONTACT_PHONE=04 95 20 76 43
+
+# Email d'administration pour les notifications
+ADMIN_NOTIFICATION_EMAIL=jean.maillot14@gmail.com
+
+# Port du serveur
+PORT=2000
+EOF
+    fi
     echo "⚠️  IMPORTANT: Modifiez le fichier .env avec vos clés API avant de continuer!"
     echo "   Éditez: nano $APP_DIR/.env"
     read -p "Appuyez sur Entrée après avoir configuré le fichier .env..."
