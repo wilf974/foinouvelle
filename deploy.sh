@@ -28,7 +28,17 @@ cd $APP_DIR
 # Cloner ou mettre à jour le dépôt
 if [ -d ".git" ]; then
     echo "🔄 Mise à jour du dépôt Git..."
+    # Sauvegarder les modifications locales si nécessaire
+    if ! git diff --quiet || ! git diff --cached --quiet; then
+        echo "⚠️  Modifications locales détectées, sauvegarde..."
+        git stash push -m "Sauvegarde avant mise à jour $(date +%Y%m%d_%H%M%S)"
+    fi
     git pull origin main
+    # Restaurer les modifications si sauvegardées
+    if git stash list | grep -q "Sauvegarde avant mise à jour"; then
+        echo "💾 Tentative de restauration des modifications sauvegardées..."
+        git stash pop || echo "⚠️  Conflits détectés, résolvez-les manuellement"
+    fi
 else
     # Si le répertoire existe mais n'est pas un dépôt Git, le nettoyer
     if [ "$(ls -A $APP_DIR 2>/dev/null)" ]; then
