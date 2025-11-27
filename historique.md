@@ -1,5 +1,47 @@
 # Historique des Modifications
 
+## 2025-01-27 - Ajout d'une icône de coche visible pour la confirmation d'acceptation
+
+### Modifications apportées
+
+**Fichier modifié :** `index.html`
+
+### Changement effectué
+
+Ajout d'une icône de coche (✓) visible dans le bouton de confirmation et dans le message de confirmation pour indiquer visuellement que l'utilisateur a accepté Jésus. La coche apparaît après le clic sur le bouton.
+
+### Modifications techniques
+
+1. **Structure HTML du bouton**
+   - Ajout d'un élément `<span>` pour la coche dans le bouton (caché par défaut)
+   - Utilisation de `flex` pour aligner le texte et la coche
+   - La coche s'affiche après le clic sur le bouton
+
+2. **Message de confirmation**
+   - Ajout d'une icône de coche (✓) au début du message de confirmation
+   - Utilisation de `innerHTML` pour permettre l'affichage de la coche avec le texte
+
+3. **Fonction `handlePrayerAcceptance()`**
+   - Affichage de la coche dans le bouton après le clic
+   - Mise à jour du message de confirmation avec la coche visible
+   - Gestion de la structure HTML pour préserver la coche lors du changement de langue
+
+4. **Fonction `applyTranslations()`**
+   - Préservation de la coche dans le bouton et le message lors du changement de langue
+   - Mise à jour correcte de la structure HTML avec la coche
+
+### Interface utilisateur
+
+- **Bouton** : Affiche une coche (✓) à côté du texte après le clic
+- **Message de confirmation** : Affiche une grande coche (✓) au début du message
+- **Visibilité** : La coche est clairement visible pour confirmer l'action de l'utilisateur
+
+### Résultat
+
+L'utilisateur voit maintenant une coche visible dans le bouton et le message de confirmation après avoir cliqué sur le bouton, offrant une confirmation visuelle claire de son acceptation de Jésus.
+
+---
+
 ## 2025-01-27 - Remplacement de la case à cocher par un bouton poussoir pour l'acceptation de Jésus
 
 ### Modifications apportées

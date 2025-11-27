@@ -1067,9 +1067,22 @@
                             newButton.classList.remove('bg-indigo-600', 'hover:bg-indigo-700', 'hover:scale-105', 'active:scale-95');
                             newButton.classList.add('bg-green-600', 'cursor-not-allowed');
                             const t = translations[lang] || translations.fr;
-                            newButton.textContent = t.steps_prayer_button_label;
+                            
+                            // Afficher la coche dans le bouton
+                            const buttonText = newButton.querySelector('#prayer-button-text');
+                            const buttonCheck = newButton.querySelector('#prayer-button-check');
+                            if (buttonText && buttonCheck) {
+                                buttonText.textContent = t.steps_prayer_button_label;
+                                buttonCheck.classList.remove('hidden');
+                            } else {
+                                newButton.innerHTML = `<span class="flex items-center justify-center gap-2"><span>✓</span> <span>${t.steps_prayer_button_label}</span></span>`;
+                            }
+                            
                             newConfirmationMessage.classList.remove('hidden');
-                            newConfirmationMessage.querySelector('p').textContent = t.steps_prayer_confirmation_message;
+                            const confirmationP = newConfirmationMessage.querySelector('p');
+                            if (confirmationP) {
+                                confirmationP.innerHTML = `<span class="text-2xl">✓</span> <span>${t.steps_prayer_confirmation_message}</span>`;
+                            }
                         }
                     }
                 } else if (contactSection) {
@@ -1106,12 +1119,16 @@
                     <button 
                         id="prayer-acceptance-button" 
                         onclick="handlePrayerAcceptance()" 
-                        class="w-full py-3 px-6 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-md transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-300 active:scale-95">
-                        ${t.steps_prayer_button_label}
+                        class="w-full py-3 px-6 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-md transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-300 active:scale-95 flex items-center justify-center gap-2">
+                        <span id="prayer-button-text">${t.steps_prayer_button_label}</span>
+                        <span id="prayer-button-check" class="hidden text-xl">✓</span>
                     </button>
                 </div>
                 <div id="prayer-confirmation-message" class="mt-4 p-4 bg-green-100 border-l-4 border-green-500 rounded-lg hidden">
-                    <p class="text-green-800 font-semibold">${t.steps_prayer_confirmation_message}</p>
+                    <p class="text-green-800 font-semibold flex items-center gap-2">
+                        <span class="text-2xl">✓</span>
+                        <span>${t.steps_prayer_confirmation_message}</span>
+                    </p>
                 </div>
                 <p class="text-sm text-gray-500 mt-3">
                     ${t.steps_footer}
@@ -1999,13 +2016,26 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
             
             // Mettre à jour le message de confirmation avec la traduction actuelle
             const t = translations[currentLang] || translations.fr;
-            confirmationMessage.querySelector('p').textContent = t.steps_prayer_confirmation_message;
+            const confirmationP = confirmationMessage.querySelector('p');
+            if (confirmationP) {
+                confirmationP.innerHTML = `<span class="text-2xl">✓</span> <span>${t.steps_prayer_confirmation_message}</span>`;
+            }
             
             // Désactiver le bouton et changer son style pour indiquer qu'il a été cliqué
             button.disabled = true;
             button.classList.remove('bg-indigo-600', 'hover:bg-indigo-700', 'hover:scale-105', 'active:scale-95');
             button.classList.add('bg-green-600', 'cursor-not-allowed');
-            button.textContent = t.steps_prayer_confirmation_message.split('🎉')[0].trim() || button.textContent;
+            
+            // Afficher la coche dans le bouton
+            const buttonText = button.querySelector('#prayer-button-text');
+            const buttonCheck = button.querySelector('#prayer-button-check');
+            if (buttonText && buttonCheck) {
+                buttonText.textContent = t.steps_prayer_button_label;
+                buttonCheck.classList.remove('hidden');
+            } else {
+                // Fallback si la structure n'est pas trouvée
+                button.innerHTML = `<span class="flex items-center justify-center gap-2"><span>✓</span> <span>${t.steps_prayer_button_label}</span></span>`;
+            }
             
             // Faire défiler vers le message de confirmation
             confirmationMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
