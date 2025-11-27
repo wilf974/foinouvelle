@@ -10,6 +10,7 @@ const path = require('path');
 const url = require('url');
 const querystring = require('querystring');
 const nodemailer = require('nodemailer');
+const Database = require('better-sqlite3');
 require('dotenv').config();
 
 const PORT = process.env.PORT || 2000;
@@ -17,6 +18,69 @@ const PORT = process.env.PORT || 2000;
 // Fichiers pour stocker les versets
 const VERSE_CACHE_FILE = path.join(__dirname, 'weekly-verse.json');
 const VERSE_ARCHIVE_FILE = path.join(__dirname, 'verses-archive.json');
+
+// Base de données SQLite côté serveur
+const DB_FILE = path.join(__dirname, 'foi-nouvelle.db');
+let db = null;
+
+/**
+ * Initialise la base de données SQLite côté serveur
+ */
+function initDatabase() {
+    try {
+        db = new Database(DB_FILE);
+        
+        // Créer la table pour le compteur global d'acceptations
+        db.exec(`
+            CREATE TABLE IF NOT EXISTS acceptance_counter (
+                id INTEGER PRIMARY KEY CHECK (id = 1),
+                count INTEGER DEFAULT 0
+            )
+        `);
+        
+        // Initialiser le compteur à 0 s'il n'existe pas
+        const existing = db.prepare('SELECT count FROM acceptance_counter WHERE id = 1').get();
+        if (!existing) {
+            db.prepare('INSERT INTO acceptance_counter (id, count) VALUES (1, 0)').run();
+        }
+        
+        console.log('✅ Base de données SQLite initialisée:', DB_FILE);
+    } catch (error) {
+        console.error('❌ Erreur lors de l\'initialisation de la base de données:', error);
+        throw error;
+    }
+}
+
+/**
+ * Récupère le compteur global d'acceptations
+ * @returns {number} Le nombre total d'acceptations
+ */
+function getAcceptanceCounter() {
+    try {
+        const result = db.prepare('SELECT count FROM acceptance_counter WHERE id = 1').get();
+        return result ? result.count : 0;
+    } catch (error) {
+        console.error('Erreur lors de la récupération du compteur:', error);
+        return 0;
+    }
+}
+
+/**
+ * Incrémente le compteur global d'acceptations
+ * @returns {number} Le nouveau nombre total d'acceptations
+ */
+function incrementAcceptanceCounter() {
+    try {
+        db.prepare('UPDATE acceptance_counter SET count = count + 1 WHERE id = 1').run();
+        return getAcceptanceCounter();
+    } catch (error) {
+        console.error('Erreur lors de l\'incrémentation du compteur:', error);
+        return getAcceptanceCounter();
+    }
+}
+
+// Initialiser la base de données au démarrage
+initDatabase();
 
 /**
  * Configuration du transporteur SMTP
@@ -706,7 +770,7 @@ function sendJSON(res, statusCode, data) {
     res.writeHead(statusCode, { 
         'Content-Type': 'application/json; charset=utf-8',
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type'
     });
     res.end(JSON.stringify(data));
@@ -814,7 +878,7 @@ const server = http.createServer(async (req, res) => {
     if (req.method === 'OPTIONS') {
         res.writeHead(200, {
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
             'Access-Control-Allow-Headers': 'Content-Type'
         });
         res.end();
@@ -868,7 +932,10 @@ const server = http.createServer(async (req, res) => {
     if (parsedUrl.pathname === '/api/notify-acceptance' && req.method === 'POST') {
         try {
             const data = await parseBody(req);
-            const { userAgent, language, timestamp, userId, counter } = data;
+            const { userAgent, language, timestamp, userId } = data;
+            
+            // Récupérer le compteur depuis la base de données
+            const counter = getAcceptanceCounter();
             
             // Récupérer l'IP et la localisation
             const clientIP = getClientIP(req);
@@ -880,7 +947,7 @@ const server = http.createServer(async (req, res) => {
                 <p><strong>ID utilisateur:</strong> ${userId || 'Non disponible'}</p>
                 <p><strong>Langue:</strong> ${language || 'Non disponible'}</p>
                 <p><strong>Navigateur:</strong> ${userAgent || 'Non disponible'}</p>
-                <p><strong>Compteur total d'acceptations:</strong> ${counter || 0}</p>
+                <p><strong>Compteur total d'acceptations:</strong> ${counter}</p>
                 <hr>
                 <h3>📍 Localisation</h3>
                 <p><strong>Adresse IP:</strong> ${location.ip}</p>
@@ -903,6 +970,30 @@ const server = http.createServer(async (req, res) => {
         } catch (error) {
             console.error('Erreur API notify-acceptance:', error);
             sendJSON(res, 500, { success: false, error: error.message });
+        }
+        return;
+    }
+    
+    // API endpoint pour récupérer le compteur global d'acceptations
+    if (parsedUrl.pathname === '/api/acceptance-counter' && req.method === 'GET') {
+        try {
+            const count = getAcceptanceCounter();
+            sendJSON(res, 200, { success: true, count: count });
+        } catch (error) {
+            console.error('Erreur API acceptance-counter GET:', error);
+            sendJSON(res, 500, { success: false, error: error.message, count: 0 });
+        }
+        return;
+    }
+    
+    // API endpoint pour incrémenter le compteur global d'acceptations
+    if (parsedUrl.pathname === '/api/acceptance-counter/increment' && req.method === 'POST') {
+        try {
+            const newCount = incrementAcceptanceCounter();
+            sendJSON(res, 200, { success: true, count: newCount });
+        } catch (error) {
+            console.error('Erreur API acceptance-counter increment:', error);
+            sendJSON(res, 500, { success: false, error: error.message, count: 0 });
         }
         return;
     }

@@ -1,5 +1,124 @@
 # Historique des Modifications
 
+## 2025-01-27 - Migration du compteur d'acceptations vers une base de données serveur partagée
+
+### Modifications apportées
+
+**Fichiers modifiés :** `server.js`, `index.html`, `package.json`, `.gitignore`
+
+### Problème identifié
+
+Le compteur d'acceptations était stocké localement dans SQLite côté client (IndexedDB), ce qui signifiait que chaque utilisateur voyait son propre compteur local. Les utilisateurs ne pouvaient pas voir le nombre réel d'acceptations partagé entre tous les visiteurs du site.
+
+### Solution implémentée
+
+Migration complète du système de compteur vers une base de données SQLite côté serveur, permettant à tous les utilisateurs de voir le même nombre réel d'acceptations.
+
+### Modifications techniques
+
+1. **Ajout de better-sqlite3**
+   - Ajout de la dépendance `better-sqlite3` version 11.0.0 dans `package.json`
+   - Bibliothèque SQLite native pour Node.js, performante et synchrone
+
+2. **Initialisation de la base de données côté serveur (`server.js`)**
+   - Création d'une base de données SQLite : `foi-nouvelle.db`
+   - Table `acceptance_counter` avec une seule ligne (id=1) pour stocker le compteur global
+   - Initialisation automatique au démarrage du serveur
+   - Fonctions utilitaires :
+     - `initDatabase()` : Initialise la base et crée la table si nécessaire
+     - `getAcceptanceCounter()` : Récupère le compteur depuis la base
+     - `incrementAcceptanceCounter()` : Incrémente le compteur et retourne le nouveau total
+
+3. **Nouveaux endpoints API**
+   - **GET `/api/acceptance-counter`** : Récupère le compteur global
+     - Retourne : `{ success: true, count: number }`
+   - **POST `/api/acceptance-counter/increment`** : Incrémente le compteur
+     - Retourne : `{ success: true, count: number }` (nouveau total)
+
+4. **Modification du code client (`index.html`)**
+   - **`incrementAcceptanceCounter()`** : Appelle maintenant l'endpoint POST `/api/acceptance-counter/increment`
+   - **`getAcceptanceCounter()`** : Appelle maintenant l'endpoint GET `/api/acceptance-counter`
+   - **`updateAcceptanceCounterDisplay()`** : Fonctionne maintenant sans dépendre de la base locale
+   - Suppression de la création de la table `acceptance_counter` locale (plus nécessaire)
+
+5. **Mise à jour de l'email de notification**
+   - Le serveur récupère automatiquement le compteur depuis la base de données lors de l'envoi de l'email
+   - Plus besoin d'envoyer le compteur depuis le client
+
+6. **Configuration Git**
+   - Ajout de `foi-nouvelle.db` et `foi-nouvelle.db-journal` au `.gitignore`
+   - La base de données est créée automatiquement sur chaque serveur
+
+### Avantages
+
+- ✅ **Compteur global partagé** : Tous les utilisateurs voient le même nombre réel
+- ✅ **Persistance serveur** : Le compteur est stocké sur le serveur, pas dans le navigateur
+- ✅ **Fiabilité** : Une seule source de vérité pour le compteur
+- ✅ **Performance** : better-sqlite3 est très performant (synchrone, natif)
+- ✅ **Simplicité** : Pas de configuration complexe, la base est créée automatiquement
+
+### Structure de la base de données
+
+```sql
+CREATE TABLE acceptance_counter (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    count INTEGER DEFAULT 0
+);
+```
+
+### Fichiers créés/modifiés
+
+- `foi-nouvelle.db` : Base de données SQLite (créée automatiquement, non versionnée)
+- `package.json` : Ajout de `better-sqlite3`
+- `server.js` : Initialisation BDD + endpoints API
+- `index.html` : Utilisation des endpoints serveur au lieu de la base locale
+- `.gitignore` : Exclusion de la base de données
+
+### Résultat
+
+Tous les utilisateurs connectés au site voient maintenant le même nombre réel d'acceptations de Jésus, stocké de manière persistante sur le serveur. Le compteur est partagé entre tous les visiteurs et s'incrémente de manière centralisée.
+
+---
+
+## 2025-01-27 - Résolution conflit Git : fichier google verification ✅ RÉSOLU
+
+### Problème rencontré
+
+Lors du `git pull` sur le VPS, erreur : "The following untracked working tree files would be overwritten by merge: googlea4732c9e738ea22c.html"
+
+### Cause
+
+Le fichier avait été créé manuellement sur le VPS avant d'être ajouté au repository Git.
+
+### Solution appliquée
+
+Sur le VPS, suppression du fichier local puis pull :
+
+```bash
+rm googlea4732c9e738ea22c.html
+sudo git pull origin main
+sudo docker compose -f docker-compose.prod.yml down
+sudo docker compose -f docker-compose.prod.yml build --no-cache
+sudo docker compose -f docker-compose.prod.yml up -d
+```
+
+### Résultat
+
+✅ **Build Docker réussi** : Tous les fichiers statiques sont maintenant copiés dans le conteneur :
+- `index.html`, `server.js`
+- `robots.txt`, `sitemap.xml`
+- `google*.html` (fichier de vérification)
+- `images/` (dossier complet)
+
+✅ **Fichier accessible** : `https://foinouvelle.woutils.com/googlea4732c9e738ea22c.html` retourne correctement :
+```
+google-site-verification: googlea4732c9e738ea22c.html
+```
+
+✅ **Prêt pour validation Google** : Le fichier est maintenant accessible et Google Search Console peut valider la propriété du domaine.
+
+---
+
 ## 2025-01-27 - Correction Dockerfile : ajout des fichiers statiques manquants
 
 ### Modifications apportées

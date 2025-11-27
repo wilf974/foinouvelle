@@ -1505,19 +1505,8 @@
                     )
                 `);
 
-                // Créer la table pour le compteur global d'acceptations
-                db.run(`
-                    CREATE TABLE IF NOT EXISTS acceptance_counter (
-                        id INTEGER PRIMARY KEY CHECK (id = 1),
-                        count INTEGER DEFAULT 0
-                    )
-                `);
-
-                // Initialiser le compteur à 0 s'il n'existe pas
-                const counterCheck = db.exec("SELECT count FROM acceptance_counter WHERE id = 1");
-                if (counterCheck.length === 0 || counterCheck[0].values.length === 0) {
-                    db.run("INSERT OR IGNORE INTO acceptance_counter (id, count) VALUES (1, 0)");
-                }
+                // Note: La table acceptance_counter locale n'est plus utilisée
+                // Le compteur est maintenant géré côté serveur pour être partagé entre tous les utilisateurs
 
                 // Sauvegarder après création des tables
                 await saveDatabase();
@@ -1615,24 +1604,24 @@
         }
 
         /**
-         * Incrémente le compteur global d'acceptations de Jésus.
+         * Incrémente le compteur global d'acceptations de Jésus côté serveur.
          * @returns {Promise<number>} Le nouveau nombre total d'acceptations
          */
         async function incrementAcceptanceCounter() {
-            if (!db) return 0;
-            
             try {
-                // Incrémenter le compteur
-                db.run("UPDATE acceptance_counter SET count = count + 1 WHERE id = 1");
+                const response = await fetch('/api/acceptance-counter/increment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
                 
-                // Récupérer le nouveau total
-                const result = db.exec("SELECT count FROM acceptance_counter WHERE id = 1");
-                const newCount = result.length > 0 && result[0].values.length > 0 
-                    ? result[0].values[0][0] 
-                    : 0;
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 
-                await saveDatabase();
-                return newCount;
+                const data = await response.json();
+                return data.success ? data.count : 0;
             } catch (e) {
                 console.error("Erreur lors de l'incrémentation du compteur:", e);
                 return 0;
@@ -1640,17 +1629,19 @@
         }
 
         /**
-         * Récupère le nombre total d'acceptations de Jésus.
+         * Récupère le nombre total d'acceptations de Jésus depuis le serveur.
          * @returns {Promise<number>} Le nombre total d'acceptations
          */
         async function getAcceptanceCounter() {
-            if (!db) return 0;
-            
             try {
-                const result = db.exec("SELECT count FROM acceptance_counter WHERE id = 1");
-                return result.length > 0 && result[0].values.length > 0 
-                    ? result[0].values[0][0] 
-                    : 0;
+                const response = await fetch('/api/acceptance-counter');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                return data.success ? data.count : 0;
             } catch (e) {
                 console.error("Erreur lors de la récupération du compteur:", e);
                 return 0;
@@ -1659,13 +1650,11 @@
 
         /**
          * Met à jour l'affichage du compteur dans le footer.
+         * Récupère le compteur depuis le serveur pour afficher le nombre réel partagé.
          */
         async function updateAcceptanceCounterDisplay() {
-            if (!isDbReady) return;
-            
             const count = await getAcceptanceCounter();
             const counterNumberElement = document.getElementById('counter-number');
-            const textElement = document.querySelector('[data-i18n="footer_counter_text"]');
             
             if (counterNumberElement) {
                 counterNumberElement.textContent = count.toLocaleString();
@@ -2354,16 +2343,15 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
             // Journaliser l'activité
             logActivity('PRAYER_ACCEPTANCE_CONFIRMED');
             
-            // Incrémenter le compteur global
+            // Incrémenter le compteur global côté serveur
             incrementAcceptanceCounter().then(async newCount => {
                 // Mettre à jour l'affichage du compteur
                 updateAcceptanceCounterDisplay();
                 console.log(`Compteur d'acceptations mis à jour: ${newCount}`);
                 
                 // Envoyer une notification par email lors de l'acceptation
-                await sendEmailNotification('notify-acceptance', {
-                    counter: newCount
-                });
+                // Le serveur récupère automatiquement le compteur depuis la base de données
+                await sendEmailNotification('notify-acceptance', {});
             });
             
             // Afficher le message de confirmation avec encouragement

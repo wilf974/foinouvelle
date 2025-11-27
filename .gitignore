@@ -27,6 +27,10 @@ Thumbs.db
 weekly-verse.json
 verses-archive.json
 
+# Base de données SQLite côté serveur
+foi-nouvelle.db
+foi-nouvelle.db-journal
+
 # Images (garder dans le repo pour le SEO)
 # images/verset-biblique.jpg
 # Cache du verset hebdomadaire
