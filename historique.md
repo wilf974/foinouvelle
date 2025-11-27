@@ -1,5 +1,71 @@
 # Historique des Modifications
 
+## 2025-01-27 - Ajout d'un compteur global d'acceptations et message d'encouragement enrichi
+
+### Modifications apportées
+
+**Fichier modifié :** `index.html`
+
+### Nouvelles fonctionnalités
+
+1. **Compteur global d'acceptations** : Ajout d'un compteur qui s'incrémente à chaque fois qu'une personne clique sur "J'ai accepté Jésus". Le compteur est affiché en bas de la page dans le footer.
+
+2. **Message d'encouragement enrichi** : Amélioration du message de confirmation avec un message d'encouragement supplémentaire qui apparaît après l'acceptation.
+
+### Modifications techniques
+
+1. **Nouvelle table SQLite `acceptance_counter`**
+   - Table pour stocker le compteur global (une seule ligne avec id=1)
+   - Compteur initialisé à 0 si la table est vide
+   - Persistance dans IndexedDB via SQLite
+
+2. **Nouvelles fonctions créées**
+   - `incrementAcceptanceCounter()` : Incrémente le compteur et retourne le nouveau total
+   - `getAcceptanceCounter()` : Récupère le nombre total d'acceptations
+   - `updateAcceptanceCounterDisplay()` : Met à jour l'affichage du compteur dans le footer
+
+3. **Modification de `handlePrayerAcceptance()`**
+   - Appel à `incrementAcceptanceCounter()` lors du clic
+   - Mise à jour automatique de l'affichage du compteur
+   - Message d'encouragement enrichi avec texte supplémentaire
+
+4. **Affichage du compteur dans le footer**
+   - Ajout d'un élément `<p>` dans le footer avec l'ID `acceptance-counter`
+   - Affichage du nombre formaté (avec séparateurs de milliers)
+   - Texte traduit dans les 8 langues supportées
+
+5. **Nouvelles clés de traduction**
+   - `footer_counter_text` : Texte du compteur dans toutes les langues
+   - `steps_prayer_encouragement` : Message d'encouragement supplémentaire dans toutes les langues
+
+6. **Intégration avec le système i18n**
+   - Le compteur se met à jour lors du changement de langue
+   - Le nombre reste le même, seul le texte change selon la langue
+
+### Interface utilisateur
+
+- **Footer** : Affichage du compteur en bas de la page avec style indigo pour la visibilité
+- **Message de confirmation** : Message d'encouragement supplémentaire affiché sous le message principal
+- **Formatage** : Le nombre est formaté avec des séparateurs de milliers (ex: 1,234)
+
+### Traductions ajoutées
+
+Le texte du compteur est traduit dans les 8 langues :
+- FR : "personnes ayant accepté Jésus par le biais de cette page"
+- EN : "people have accepted Jesus through this page"
+- ES : "personas han aceptado a Jesús a través de esta página"
+- DE : "Personen haben Jesus durch diese Seite angenommen"
+- IT : "persone hanno accettato Gesù tramite questa pagina"
+- PT : "pessoas aceitaram Jesus através desta página"
+- NL : "mensen hebben Jezus via deze pagina geaccepteerd"
+- PL : "osób przyjęło Jezusa przez tę stronę"
+
+### Résultat
+
+Chaque fois qu'une personne clique sur le bouton de confirmation, le compteur global s'incrémente et s'affiche en bas de la page. Un message d'encouragement enrichi est également affiché pour renforcer l'expérience positive de l'utilisateur.
+
+---
+
 ## 2025-01-27 - Ajout d'une icône de coche visible pour la confirmation d'acceptation
 
 ### Modifications apportées
