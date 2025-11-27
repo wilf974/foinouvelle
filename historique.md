@@ -1,5 +1,93 @@
 # Historique des Modifications
 
+## 2025-01-27 - Remplacement de la case à cocher par un bouton poussoir pour l'acceptation de Jésus
+
+### Modifications apportées
+
+**Fichier modifié :** `index.html`
+
+### Changement effectué
+
+Remplacement de la case à cocher (checkbox) par un **bouton poussoir** pour permettre à l'utilisateur de confirmer qu'il a accepté Jésus sincèrement dans son cœur. Le bouton offre une interaction plus engageante et claire pour cette action importante.
+
+### Modifications techniques
+
+1. **Nouvelle clé de traduction**
+   - Ajout de `steps_prayer_button_label` dans les 8 langues supportées
+   - Texte du bouton : "Je confirme : J'ai accepté Jésus dans mon cœur" (et traductions)
+
+2. **Modification de la section de prière (`updateActionContents()`)**
+   - Remplacement de la case à cocher par un bouton poussoir stylisé
+   - Bouton avec style indigo, effet hover, transition et animation
+   - Bouton pleine largeur pour une meilleure visibilité
+
+3. **Fonction `handlePrayerAcceptance()` modifiée**
+   - Adaptation pour fonctionner avec un bouton au lieu d'une checkbox
+   - Désactivation du bouton après le clic pour éviter les clics multiples
+   - Changement de style du bouton (indigo → vert) après confirmation
+   - Affichage du message de confirmation
+   - Journalisation de l'activité dans SQLite
+
+4. **Fonction `applyTranslations()` améliorée**
+   - Préservation de l'état du bouton (désactivé) lors du changement de langue
+   - Maintien du message de confirmation visible si déjà affiché
+   - Mise à jour des textes dans la nouvelle langue
+
+### Interface utilisateur
+
+- **Bouton poussoir** : Style moderne avec fond indigo, effet hover (scale), transition fluide
+- **État après clic** : Bouton devient vert et se désactive pour indiquer la confirmation
+- **Message de confirmation** : Affiché dans une boîte verte avec bordure gauche
+- **Responsive** : Bouton pleine largeur, adapté à tous les écrans
+
+### Avantages
+
+- **Engagement amélioré** : Un bouton poussoir est plus engageant qu'une case à cocher
+- **Clarté** : L'action est plus explicite et visible
+- **Sécurité** : Le bouton se désactive après le clic pour éviter les confirmations multiples
+- **Accessibilité** : Meilleure accessibilité avec un bouton clairement identifiable
+
+### Résultat
+
+L'utilisateur peut maintenant confirmer son acceptation de Jésus en cliquant sur un bouton poussoir visible et engageant. Le bouton se transforme visuellement après la confirmation pour indiquer que l'action a été enregistrée.
+
+---
+
+## 2025-01-27 - Récupération du projet depuis GitHub
+
+### Modifications apportées
+
+**Action :** Clonage du dépôt GitHub `https://github.com/wilf974/foinouvelle.git` dans le workspace local.
+
+### Contenu récupéré
+
+Le projet complet a été récupéré avec tous les fichiers suivants :
+- `index.html` - Application web principale
+- `server.js` - Serveur Node.js pour injection des variables d'environnement
+- `package.json` - Configuration npm avec dépendances
+- `Dockerfile` - Configuration Docker
+- `docker-compose.yml` - Configuration Docker Compose pour développement
+- `docker-compose.prod.yml` - Configuration Docker Compose pour production
+- `nginx.conf` - Configuration Nginx
+- Scripts de déploiement : `deploy.sh`, `setup-https.sh`, `fix-nginx.sh`, `cleanup.sh`, `find-ssl-refs.sh`
+- Documentation : `README.md`, `DEPLOY.md`, `DEPLOY_INSTRUCTIONS.md`, `QUICK_FIX.md`, `VERIFY_HTTPS.md`
+- `historique.md` - Historique complet des modifications
+
+### État du projet
+
+Le projet est une application web d'évangélisation avec :
+- Support multilingue (8 langues : FR, EN, ES, DE, IT, PT, NL, PL)
+- Modération IA des témoignages avec Google Gemini
+- Base de données SQLite locale (stockée dans IndexedDB)
+- Architecture Docker complète
+- Configuration Nginx pour la production
+
+### Prochaines étapes
+
+Le projet est prêt pour le développement. Il faut créer le fichier `.env` avec les variables d'environnement nécessaires (voir README.md).
+
+---
+
 ## 2025-01-XX - Ajout d'une case à cocher de confirmation pour l'acceptation de Jésus
 
 ### Modifications apportées

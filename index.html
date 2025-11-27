@@ -413,6 +413,7 @@
                 steps_button_prayer_audio: "Lire la Prière (Audio)",
                 steps_footer: "C'est le début d'une nouvelle aventure !",
                 steps_prayer_checkbox_label: "J'ai accepté Jésus sincèrement dans mon cœur",
+                steps_prayer_button_label: "Je confirme : J'ai accepté Jésus dans mon cœur",
                 steps_prayer_confirmation_message: "🎉 Félicitations ! Vous avez fait le bon choix. Jésus vous aime et vous accueille avec joie. Votre nouvelle vie avec Lui commence maintenant !",
                 steps_title_contact_section: "Nous Contacter",
                 steps_contact_prompt: "Nous serions ravis de discuter avec vous et de répondre à vos questions. N'hésitez pas à nous appeler ou à nous écrire.",
@@ -496,6 +497,7 @@
                 steps_button_prayer_audio: "Read Prayer (Audio)",
                 steps_footer: "It's the beginning of a new adventure!",
                 steps_prayer_checkbox_label: "I have sincerely accepted Jesus in my heart",
+                steps_prayer_button_label: "I confirm: I have accepted Jesus in my heart",
                 steps_prayer_confirmation_message: "🎉 Congratulations! You have made the right choice. Jesus loves you and welcomes you with joy. Your new life with Him begins now!",
                 steps_title_contact_section: "Contact Us",
                 steps_contact_prompt: "We would be delighted to talk with you and answer your questions. Feel free to call or write to us.",
@@ -578,6 +580,7 @@
                 steps_button_prayer_audio: "Leer Oración (Audio)",
                 steps_footer: "¡Es el comienzo de una nueva aventura!",
                 steps_prayer_checkbox_label: "He aceptado a Jesús sinceramente en mi corazón",
+                steps_prayer_button_label: "Confirmo: He aceptado a Jesús en mi corazón",
                 steps_prayer_confirmation_message: "🎉 ¡Felicidades! Has tomado la decisión correcta. Jesús te ama y te recibe con alegría. ¡Tu nueva vida con Él comienza ahora!",
                 steps_title_contact_section: "Contáctanos",
                 steps_contact_prompt: "Estaremos encantados de hablar contigo y responder tus preguntas. No dudes en llamarnos o escribirnos.",
@@ -656,6 +659,7 @@
                 steps_button_prayer_audio: "Gebet vorlesen (Audio)",
                 steps_footer: "Es ist der Beginn eines neuen Abenteuers!",
                 steps_prayer_checkbox_label: "Ich habe Jesus aufrichtig in mein Herz aufgenommen",
+                steps_prayer_button_label: "Ich bestätige: Ich habe Jesus in mein Herz aufgenommen",
                 steps_prayer_confirmation_message: "🎉 Herzlichen Glückwunsch! Sie haben die richtige Wahl getroffen. Jesus liebt Sie und heißt Sie mit Freude willkommen. Ihr neues Leben mit Ihm beginnt jetzt!",
                 steps_title_contact_section: "Kontaktiere uns",
                 steps_contact_prompt: "Wir würden uns freuen, mit dir zu sprechen und deine Fragen zu beantworten. Zögere nicht, uns anzurufen oder zu schreiben.",
@@ -732,6 +736,7 @@
                 steps_button_prayer_audio: "Leggi Preghiera (Audio)",
                 steps_footer: "È l'inizio di una nuova avventura!",
                 steps_prayer_checkbox_label: "Ho accettato Gesù sinceramente nel mio cuore",
+                steps_prayer_button_label: "Confermo: Ho accettato Gesù nel mio cuore",
                 steps_prayer_confirmation_message: "🎉 Congratulazioni! Hai fatto la scelta giusta. Gesù ti ama e ti accoglie con gioia. La tua nuova vita con Lui inizia ora!",
                 steps_title_contact_section: "Contattaci",
                 steps_contact_prompt: "Saremmo felici di parlare con te e rispondere alle tue domande. Non esitare a chiamarci o scriverci.",
@@ -808,6 +813,7 @@
                 steps_button_prayer_audio: "Ler Oração (Áudio)",
                 steps_footer: "É o início de uma nova aventura!",
                 steps_prayer_checkbox_label: "Aceitei Jesus sinceramente no meu coração",
+                steps_prayer_button_label: "Confirmo: Aceitei Jesus no meu coração",
                 steps_prayer_confirmation_message: "🎉 Parabéns! Fez a escolha certa. Jesus ama-o e recebe-o com alegria. A sua nova vida com Ele começa agora!",
                 steps_title_contact_section: "Contacte-nos",
                 steps_contact_prompt: "Teríamos muito prazer em falar consigo e responder às suas perguntas. Não hesite em ligar-nos ou escrever-nos.",
@@ -884,6 +890,7 @@
                 steps_button_prayer_audio: "Lees Gebed (Audio)",
                 steps_footer: "Het is het begin van een nieuw avontuur!",
                 steps_prayer_checkbox_label: "Ik heb Jezus oprecht in mijn hart aanvaard",
+                steps_prayer_button_label: "Ik bevestig: Ik heb Jezus in mijn hart aanvaard",
                 steps_prayer_confirmation_message: "🎉 Gefeliciteerd! Je hebt de juiste keuze gemaakt. Jezus houdt van je en verwelkomt je met vreugde. Je nieuwe leven met Hem begint nu!",
                 steps_title_contact_section: "Neem Contact Op",
                 steps_contact_prompt: "We zouden graag met je praten en je vragen beantwoorden. Aarzel niet om ons te bellen of te schrijven.",
@@ -960,6 +967,7 @@
                 steps_button_prayer_audio: "Przeczytaj Modlitwę (Audio)",
                 steps_footer: "To początek nowej przygody!",
                 steps_prayer_checkbox_label: "Szczerze przyjąłem Jezusa do mojego serca",
+                steps_prayer_button_label: "Potwierdzam: Przyjąłem Jezusa do mojego serca",
                 steps_prayer_confirmation_message: "🎉 Gratulacje! Podjąłeś właściwą decyzję. Jezus cię kocha i przyjmuje cię z radością. Twoje nowe życie z Nim zaczyna się teraz!",
                 steps_title_contact_section: "Skontaktuj Się z Nami",
                 steps_contact_prompt: "Bylibyśmy zachwyceni porozmawiać z tobą i odpowiedzieć na twoje pytania. Nie wahaj się do nas zadzwonić lub napisać.",
@@ -1043,7 +1051,27 @@
                 
                 if (prayerQuote) {
                     // C'est la section de prière, mettre à jour avec le nouveau contenu
+                    // Préserver l'état du bouton s'il a déjà été cliqué
+                    const existingButton = messageBox.querySelector('#prayer-acceptance-button');
+                    const wasButtonClicked = existingButton && existingButton.disabled;
+                    const confirmationWasVisible = document.getElementById('prayer-confirmation-message') && !document.getElementById('prayer-confirmation-message').classList.contains('hidden');
+                    
                     messageBox.innerHTML = actionContents.prayer;
+                    
+                    // Si le bouton avait été cliqué, le désactiver à nouveau et afficher le message
+                    if (wasButtonClicked || confirmationWasVisible) {
+                        const newButton = messageBox.querySelector('#prayer-acceptance-button');
+                        const newConfirmationMessage = messageBox.querySelector('#prayer-confirmation-message');
+                        if (newButton && newConfirmationMessage) {
+                            newButton.disabled = true;
+                            newButton.classList.remove('bg-indigo-600', 'hover:bg-indigo-700', 'hover:scale-105', 'active:scale-95');
+                            newButton.classList.add('bg-green-600', 'cursor-not-allowed');
+                            const t = translations[lang] || translations.fr;
+                            newButton.textContent = t.steps_prayer_button_label;
+                            newConfirmationMessage.classList.remove('hidden');
+                            newConfirmationMessage.querySelector('p').textContent = t.steps_prayer_confirmation_message;
+                        }
+                    }
                 } else if (contactSection) {
                     // C'est la section de contact, mettre à jour avec le nouveau contenu
                     messageBox.innerHTML = actionContents.contact;
@@ -1075,10 +1103,12 @@
                     « ${prayerTextLocalized} »
                 </blockquote>
                 <div class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                    <label class="flex items-center cursor-pointer">
-                        <input type="checkbox" id="prayer-acceptance-checkbox" class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 focus:ring-2" onchange="handlePrayerAcceptance()">
-                        <span class="ml-3 text-gray-700 font-medium">${t.steps_prayer_checkbox_label}</span>
-                    </label>
+                    <button 
+                        id="prayer-acceptance-button" 
+                        onclick="handlePrayerAcceptance()" 
+                        class="w-full py-3 px-6 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-md transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-300 active:scale-95">
+                        ${t.steps_prayer_button_label}
+                    </button>
                 </div>
                 <div id="prayer-confirmation-message" class="mt-4 p-4 bg-green-100 border-l-4 border-green-500 rounded-lg hidden">
                     <p class="text-green-800 font-semibold">${t.steps_prayer_confirmation_message}</p>
@@ -1945,32 +1975,40 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
         }
 
         /**
-         * Gère la validation de la case à cocher pour l'acceptation de Jésus.
-         * Affiche un message de confirmation si l'utilisateur coche la case.
+         * Gère le clic sur le bouton poussoir pour confirmer l'acceptation de Jésus.
+         * Affiche un message de confirmation et désactive le bouton après le clic.
          */
         function handlePrayerAcceptance() {
-            const checkbox = document.getElementById('prayer-acceptance-checkbox');
+            const button = document.getElementById('prayer-acceptance-button');
             const confirmationMessage = document.getElementById('prayer-confirmation-message');
             
-            if (!checkbox || !confirmationMessage) {
+            if (!button || !confirmationMessage) {
                 return;
             }
             
-            if (checkbox.checked) {
-                // L'utilisateur a coché la case
-                logActivity('PRAYER_ACCEPTANCE_CONFIRMED');
-                confirmationMessage.classList.remove('hidden');
-                
-                // Mettre à jour le message de confirmation avec la traduction actuelle
-                const t = translations[currentLang] || translations.fr;
-                confirmationMessage.querySelector('p').textContent = t.steps_prayer_confirmation_message;
-                
-                // Faire défiler vers le message de confirmation
-                confirmationMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            } else {
-                // L'utilisateur a décoché la case
-                confirmationMessage.classList.add('hidden');
+            // Vérifier si le bouton n'a pas déjà été cliqué
+            if (button.disabled) {
+                return;
             }
+            
+            // Journaliser l'activité
+            logActivity('PRAYER_ACCEPTANCE_CONFIRMED');
+            
+            // Afficher le message de confirmation
+            confirmationMessage.classList.remove('hidden');
+            
+            // Mettre à jour le message de confirmation avec la traduction actuelle
+            const t = translations[currentLang] || translations.fr;
+            confirmationMessage.querySelector('p').textContent = t.steps_prayer_confirmation_message;
+            
+            // Désactiver le bouton et changer son style pour indiquer qu'il a été cliqué
+            button.disabled = true;
+            button.classList.remove('bg-indigo-600', 'hover:bg-indigo-700', 'hover:scale-105', 'active:scale-95');
+            button.classList.add('bg-green-600', 'cursor-not-allowed');
+            button.textContent = t.steps_prayer_confirmation_message.split('🎉')[0].trim() || button.textContent;
+            
+            // Faire défiler vers le message de confirmation
+            confirmationMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
         
         // Exposer les fonctions globales après l'import (pour utilisation dans le HTML)
