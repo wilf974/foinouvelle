@@ -14,8 +14,9 @@ require('dotenv').config();
 
 const PORT = process.env.PORT || 2000;
 
-// Fichier pour stocker le verset hebdomadaire
+// Fichiers pour stocker les versets
 const VERSE_CACHE_FILE = path.join(__dirname, 'weekly-verse.json');
+const VERSE_ARCHIVE_FILE = path.join(__dirname, 'verses-archive.json');
 
 /**
  * Configuration du transporteur SMTP
@@ -145,17 +146,42 @@ Le verset doit être :
                             
                             const verseData = JSON.parse(jsonMatch[0]);
                             
+                            const now = new Date();
                             const verse = {
+                                id: now.toISOString().split('T')[0], // ID unique basé sur la date
                                 text: verseData.text || 'Car Dieu a tant aimé le monde...',
                                 reference: verseData.reference || 'Jean 3:16',
-                                date: 'Semaine du ' + new Date().toLocaleDateString('fr-FR'),
-                                dateISO: new Date().toISOString().split('T')[0],
-                                theme: verseData.theme || 'Amour de Dieu'
+                                date: 'Semaine du ' + now.toLocaleDateString('fr-FR'),
+                                dateISO: now.toISOString().split('T')[0],
+                                theme: verseData.theme || 'Amour de Dieu',
+                                slug: `verset-${now.toISOString().split('T')[0]}` // Slug pour l'URL
                             };
                             
-                            // Sauvegarder dans le cache
+                            // Sauvegarder dans le cache (verset actuel)
                             fs.writeFileSync(VERSE_CACHE_FILE, JSON.stringify(verse, null, 2));
-                            console.log('✅ Nouveau verset hebdomadaire généré:', verse.reference);
+                            
+                            // Ajouter à l'archive
+                            let archive = [];
+                            if (fs.existsSync(VERSE_ARCHIVE_FILE)) {
+                                try {
+                                    archive = JSON.parse(fs.readFileSync(VERSE_ARCHIVE_FILE, 'utf8'));
+                                } catch (e) {
+                                    archive = [];
+                                }
+                            }
+                            
+                            // Vérifier si ce verset n'existe pas déjà (éviter les doublons)
+                            const exists = archive.find(v => v.id === verse.id);
+                            if (!exists) {
+                                archive.unshift(verse); // Ajouter au début
+                                // Garder seulement les 52 derniers versets (1 an)
+                                if (archive.length > 52) {
+                                    archive = archive.slice(0, 52);
+                                }
+                                fs.writeFileSync(VERSE_ARCHIVE_FILE, JSON.stringify(archive, null, 2));
+                            }
+                            
+                            console.log('✅ Nouveau verset hebdomadaire généré:', verse.reference, `(${verse.id})`);
                             
                             resolve(verse);
                         } else {
@@ -197,6 +223,273 @@ async function checkAndUpdateWeeklyVerse() {
         console.log('🔄 Génération d\'un nouveau verset hebdomadaire...');
         await generateWeeklyVerse();
     }
+}
+
+/**
+ * Charge l'archive complète des versets
+ * @returns {Array} Tableau de tous les versets archivés
+ */
+function loadVerseArchive() {
+    try {
+        if (fs.existsSync(VERSE_ARCHIVE_FILE)) {
+            const data = fs.readFileSync(VERSE_ARCHIVE_FILE, 'utf8');
+            return JSON.parse(data);
+        }
+    } catch (error) {
+        console.error('Erreur lors du chargement de l\'archive:', error);
+    }
+    return [];
+}
+
+/**
+ * Récupère un verset spécifique par son ID
+ * @param {string} verseId - ID du verset (format YYYY-MM-DD)
+ * @returns {Object|null} Le verset ou null si non trouvé
+ */
+function getVerseById(verseId) {
+    const archive = loadVerseArchive();
+    return archive.find(v => v.id === verseId) || null;
+}
+
+/**
+ * Génère un sitemap dynamique incluant tous les versets archivés
+ * @returns {Promise<string>} XML du sitemap
+ */
+async function generateDynamicSitemap() {
+    const archive = loadVerseArchive();
+    const baseUrl = 'https://foinouvelle.woutils.com';
+    
+    let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>${baseUrl}/</loc>
+    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/index.html</loc>
+    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/archive-versets</loc>
+    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>`;
+
+    // Ajouter tous les versets archivés
+    archive.forEach(verse => {
+        sitemap += `
+  <url>
+    <loc>${baseUrl}/verset/${verse.id}</loc>
+    <lastmod>${verse.dateISO}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>`;
+    });
+
+    sitemap += `
+</urlset>`;
+    
+    return sitemap;
+}
+
+/**
+ * Génère le HTML d'une page de verset individuel avec schéma Article
+ * @param {Object} verse - Objet verset
+ * @returns {string} HTML de la page
+ */
+function generateVersePage(verse) {
+    const baseHtml = getIndexHtml();
+    const archive = loadVerseArchive();
+    const currentIndex = archive.findIndex(v => v.id === verse.id);
+    const prevVerse = currentIndex > 0 ? archive[currentIndex - 1] : null;
+    const nextVerse = currentIndex >= 0 && currentIndex < archive.length - 1 ? archive[currentIndex + 1] : null;
+    
+    // Remplacer le contenu principal par la page du verset
+    const verseHtml = `
+        <section class="py-16 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl shadow-lg mb-12">
+            <div class="text-center max-w-4xl mx-auto">
+                <nav class="mb-6 text-sm text-indigo-600" aria-label="Breadcrumb">
+                    <a href="/" class="hover:underline">Accueil</a> / 
+                    <a href="/archive-versets" class="hover:underline">Archive des Versets</a> / 
+                    <span class="text-gray-600">${verse.reference}</span>
+                </nav>
+                
+                <article itemscope itemtype="https://schema.org/Article">
+                    <h1 class="text-4xl font-bold mb-6 text-indigo-800" itemprop="headline">Verset de la Semaine - ${verse.reference}</h1>
+                    <div class="p-8 bg-white rounded-lg shadow-md border-l-4 border-indigo-500">
+                        <blockquote class="text-2xl md:text-3xl font-medium text-gray-800 italic mb-6" itemprop="text">
+                            "${verse.text}"
+                        </blockquote>
+                        <cite class="text-xl text-indigo-600 font-semibold block mb-4" itemprop="citation">
+                            ${verse.reference}
+                        </cite>
+                        <p class="text-sm text-gray-600 mb-4">
+                            <time datetime="${verse.dateISO}" itemprop="datePublished">${verse.date}</time>
+                        </p>
+                        ${verse.theme ? `<p class="text-base text-gray-700 italic" itemprop="about">${verse.theme}</p>` : ''}
+                    </div>
+                    
+                    <div class="mt-8 p-6 bg-white rounded-lg shadow-md">
+                        <h2 class="text-2xl font-bold mb-4 text-indigo-700">Réflexion sur ce verset</h2>
+                        <p class="text-gray-700 leading-relaxed">
+                            Ce verset biblique nous rappelle l'<strong>amour inconditionnel de Dieu</strong> et Sa <strong>grâce</strong> pour chacun de nous. 
+                            La Parole de Dieu est vivante et puissante, et chaque verset peut transformer notre vie si nous l'acceptons avec foi.
+                        </p>
+                        <p class="text-gray-700 leading-relaxed mt-4">
+                            Si ce message résonne en vous, nous vous encourageons à <a href="/#etapes" class="text-indigo-600 hover:underline font-semibold">explorer davantage le message de la foi</a> 
+                            et à découvrir comment <a href="/#message" class="text-indigo-600 hover:underline font-semibold">Jésus-Christ peut transformer votre vie</a>. 
+                            Vous pouvez également <a href="/#temoignages" class="text-indigo-600 hover:underline font-semibold">lire les témoignages</a> de ceux qui ont fait ce choix.
+                        </p>
+                        <div class="mt-6 flex flex-wrap gap-3 justify-center">
+                            <a href="/#etapes" class="inline-block px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-300">
+                                Découvrir le Chemin vers Dieu
+                            </a>
+                            <a href="/archive-versets" class="inline-block px-6 py-3 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition duration-300">
+                                Voir tous les versets
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Navigation entre versets (maillage interne) -->
+                    <nav class="mt-8 flex flex-col sm:flex-row gap-4 justify-between" aria-label="Navigation entre versets">
+                        ${prevVerse ? `
+                            <a href="/verset/${prevVerse.id}" class="p-4 bg-white rounded-lg shadow-md hover:shadow-xl transition duration-300 border-l-4 border-indigo-500 text-left">
+                                <span class="text-sm text-gray-500">← Verset précédent</span>
+                                <p class="font-semibold text-indigo-700 mt-1">${prevVerse.reference}</p>
+                            </a>
+                        ` : '<div></div>'}
+                        ${nextVerse ? `
+                            <a href="/verset/${nextVerse.id}" class="p-4 bg-white rounded-lg shadow-md hover:shadow-xl transition duration-300 border-l-4 border-indigo-500 text-left">
+                                <span class="text-sm text-gray-500">Verset suivant →</span>
+                                <p class="font-semibold text-indigo-700 mt-1">${nextVerse.reference}</p>
+                            </a>
+                        ` : '<div></div>'}
+                    </nav>
+                </article>
+            </div>
+        </section>
+    `;
+    
+    // Injecter le verset dans le HTML de base
+    let html = baseHtml.replace(
+        /<main class="w-full max-w-4xl mx-auto p-4 md:p-8 flex-grow">[\s\S]*?<\/main>/,
+        `<main class="w-full max-w-4xl mx-auto p-4 md:p-8 flex-grow">${verseHtml}</main>`
+    );
+    
+    // Ajouter le schéma Article pour ce verset spécifique
+    const articleSchema = {
+        "@type": "Article",
+        "@id": `https://foinouvelle.woutils.com/verset/${verse.id}`,
+        "headline": `Verset de la Semaine - ${verse.reference}`,
+        "description": verse.text.substring(0, 200),
+        "text": verse.text,
+        "author": {
+            "@type": "Organization",
+            "name": "Bible"
+        },
+        "datePublished": verse.dateISO,
+        "dateModified": verse.dateISO,
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": `https://foinouvelle.woutils.com/verset/${verse.id}`
+        },
+        "about": {
+            "@type": "Thing",
+            "name": verse.theme || "Évangélisation"
+        },
+        "inLanguage": "fr"
+    };
+    
+    // Injecter le schéma Article dans le JSON-LD
+    const articleJson = JSON.stringify(articleSchema, null, 2);
+    html = html.replace(
+        /(\]\s*\}\s*<\/script>)/,
+        `,\n        ${articleJson.replace(/\n/g, '\n        ')}\n      $1`
+    );
+    
+    return html;
+}
+
+/**
+ * Génère la page d'archive des versets avec maillage interne
+ * @returns {string} HTML de la page d'archive
+ */
+function generateArchivePage() {
+    const archive = loadVerseArchive();
+    const baseHtml = getIndexHtml();
+    
+    let archiveContent = `
+        <section class="py-16">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl font-bold mb-4 text-indigo-800">Archive des Versets Hebdomadaires</h1>
+                <p class="text-lg text-gray-600 mb-4">Découvrez tous les versets bibliques qui ont été partagés chaque semaine pour votre édification spirituelle</p>
+                <nav class="text-sm text-indigo-600">
+                    <a href="/" class="hover:underline">Accueil</a> / 
+                    <a href="/#verset-semaine" class="hover:underline">Verset de la Semaine</a> / 
+                    <span class="text-gray-600">Archive</span>
+                </nav>
+            </div>
+            
+            <div class="mb-8 p-4 bg-indigo-50 rounded-lg border-l-4 border-indigo-500">
+                <p class="text-gray-700">
+                    <strong>💡 Pourquoi lire les versets bibliques ?</strong> La Parole de Dieu est vivante et puissante. 
+                    Chaque verset peut apporter <a href="/#message" class="text-indigo-600 hover:underline">guidance, espoir et transformation</a> dans votre vie. 
+                    Explorez ces versets et découvrez comment <a href="/#etapes" class="text-indigo-600 hover:underline">Jésus-Christ peut changer votre vie</a>.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    `;
+    
+    archive.forEach((verse, index) => {
+        archiveContent += `
+            <article class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition duration-300 border-l-4 border-indigo-500" itemscope itemtype="https://schema.org/Article">
+                <a href="/verset/${verse.id}" class="block" itemprop="url">
+                    <h2 class="text-xl font-bold mb-3 text-indigo-700" itemprop="headline">${verse.reference}</h2>
+                    <blockquote class="text-gray-700 italic mb-4 line-clamp-3" itemprop="text">
+                        "${verse.text.substring(0, 150)}${verse.text.length > 150 ? '...' : ''}"
+                    </blockquote>
+                    <p class="text-sm text-gray-500">
+                        <time datetime="${verse.dateISO}" itemprop="datePublished">${verse.date}</time>
+                    </p>
+                    ${verse.theme ? `<p class="text-xs text-indigo-600 mt-2" itemprop="about">${verse.theme}</p>` : ''}
+                    <span class="text-xs text-indigo-500 mt-2 block">Lire la suite →</span>
+                </a>
+            </article>
+        `;
+    });
+    
+    archiveContent += `
+            </div>
+            
+            <div class="mt-12 p-6 bg-white rounded-lg shadow-md text-center">
+                <h2 class="text-2xl font-bold mb-4 text-indigo-700">Vous cherchez à approfondir votre foi ?</h2>
+                <p class="text-gray-700 mb-6">
+                    Ces versets sont un excellent point de départ, mais la foi se vit aussi en communauté. 
+                    <a href="/#find-church" class="text-indigo-600 hover:underline font-semibold">Trouvez une église près de chez vous</a> 
+                    ou <a href="/#etapes" class="text-indigo-600 hover:underline font-semibold">découvrez comment commencer votre chemin avec Dieu</a>.
+                </p>
+                <div class="flex flex-wrap gap-3 justify-center">
+                    <a href="/" class="inline-block px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-300">
+                        Retour à l'accueil
+                    </a>
+                    <a href="/#etapes" class="inline-block px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition duration-300">
+                        Commencer mon chemin de foi
+                    </a>
+                </div>
+            </div>
+        </section>
+    `;
+    
+    return baseHtml.replace(
+        /<main class="w-full max-w-4xl mx-auto p-4 md:p-8 flex-grow">[\s\S]*?<\/main>/,
+        `<main class="w-full max-w-4xl mx-auto p-4 md:p-8 flex-grow">${archiveContent}</main>`
+    );
 }
 
 /**
@@ -258,10 +551,47 @@ function getIndexHtml() {
     
     // Charger et injecter le verset hebdomadaire
     const weeklyVerse = loadWeeklyVerse();
+    const verseId = weeklyVerse.id || weeklyVerse.dateISO || new Date().toISOString().split('T')[0];
+    
     html = html.replace(/\{\{WEEKLY_VERSE_TEXT\}\}/g, weeklyVerse.text || 'Car Dieu a tant aimé le monde qu\'il a donné son Fils unique...');
     html = html.replace(/\{\{WEEKLY_VERSE_REFERENCE\}\}/g, weeklyVerse.reference || 'Jean 3:16');
     html = html.replace(/\{\{WEEKLY_VERSE_DATE\}\}/g, weeklyVerse.date || 'Semaine du ' + new Date().toLocaleDateString('fr-FR'));
     html = html.replace(/\{\{WEEKLY_VERSE_DATE_ISO\}\}/g, weeklyVerse.dateISO || new Date().toISOString().split('T')[0]);
+    html = html.replace(/\{\{WEEKLY_VERSE_ID\}\}/g, verseId);
+    
+    // Ajouter le schéma Article pour le verset actuel dans les données structurées
+    if (weeklyVerse.id || weeklyVerse.dateISO) {
+        const articleSchema = {
+            "@type": "Article",
+            "@id": `https://foinouvelle.woutils.com/verset/${verseId}`,
+            "headline": `Verset de la Semaine - ${weeklyVerse.reference || 'Jean 3:16'}`,
+            "description": (weeklyVerse.text || '').substring(0, 200),
+            "text": weeklyVerse.text || '',
+            "author": {
+                "@type": "Organization",
+                "name": "Bible"
+            },
+            "datePublished": weeklyVerse.dateISO || new Date().toISOString().split('T')[0],
+            "dateModified": weeklyVerse.dateISO || new Date().toISOString().split('T')[0],
+            "mainEntityOfPage": {
+                "@type": "WebPage",
+                "@id": `https://foinouvelle.woutils.com/verset/${verseId}`
+            },
+            "about": {
+                "@type": "Thing",
+                "name": weeklyVerse.theme || "Évangélisation"
+            },
+            "inLanguage": "fr"
+        };
+        
+        // Injecter le schéma Article dans le JSON-LD existant
+        const articleJson = JSON.stringify(articleSchema, null, 2);
+        // Remplacer la fin du @graph pour ajouter l'article
+        html = html.replace(
+            /(\]\s*\}\s*<\/script>)/,
+            `,\n        ${articleJson.replace(/\n/g, '\n        ')}\n      $1`
+        );
+    }
     
     return html;
 }
@@ -537,25 +867,53 @@ const server = http.createServer(async (req, res) => {
         return;
     }
     
-    // Gérer sitemap.xml
+    // Gérer sitemap.xml (dynamique avec les versets)
     if (parsedUrl.pathname === '/sitemap.xml') {
-        const sitemapPath = path.join(__dirname, 'sitemap.xml');
-        fs.access(sitemapPath, fs.constants.F_OK, (err) => {
-            if (err) {
-                res.writeHead(404, { 'Content-Type': 'text/plain' });
-                res.end('sitemap.xml not found');
-                return;
-            }
-            fs.readFile(sitemapPath, (err, data) => {
-                if (err) {
-                    res.writeHead(500, { 'Content-Type': 'text/plain' });
-                    res.end('Error reading sitemap.xml');
-                    return;
-                }
-                res.writeHead(200, { 'Content-Type': 'application/xml; charset=utf-8' });
-                res.end(data);
-            });
+        generateDynamicSitemap().then(sitemap => {
+            res.writeHead(200, { 'Content-Type': 'application/xml; charset=utf-8' });
+            res.end(sitemap);
+        }).catch(err => {
+            console.error('Erreur génération sitemap:', err);
+            res.writeHead(500, { 'Content-Type': 'text/plain' });
+            res.end('Error generating sitemap');
         });
+        return;
+    }
+    
+    // Gérer la page d'archive des versets
+    if (parsedUrl.pathname === '/archive-versets') {
+        try {
+            const html = generateArchivePage();
+            res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+            res.end(html);
+        } catch (error) {
+            console.error('Erreur génération archive:', error);
+            res.writeHead(500, { 'Content-Type': 'text/plain' });
+            res.end('Erreur serveur');
+        }
+        return;
+    }
+    
+    // Gérer les pages individuelles de versets (/verset/YYYY-MM-DD)
+    const verseMatch = parsedUrl.pathname.match(/^\/verset\/(\d{4}-\d{2}-\d{2})$/);
+    if (verseMatch) {
+        const verseId = verseMatch[1];
+        const verse = getVerseById(verseId);
+        
+        if (verse) {
+            try {
+                const html = generateVersePage(verse);
+                res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+                res.end(html);
+            } catch (error) {
+                console.error('Erreur génération page verset:', error);
+                res.writeHead(500, { 'Content-Type': 'text/plain' });
+                res.end('Erreur serveur');
+            }
+        } else {
+            res.writeHead(404, { 'Content-Type': 'text/plain' });
+            res.end('Verset non trouvé');
+        }
         return;
     }
     

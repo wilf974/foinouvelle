@@ -23,6 +23,9 @@ Thumbs.db
 # Docker
 .docker/
 
+# Cache des versets hebdomadaires
+weekly-verse.json
+verses-archive.json
 # Cache du verset hebdomadaire
 weekly-verse.json
 
