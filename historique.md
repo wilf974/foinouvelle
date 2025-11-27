@@ -1,5 +1,95 @@
 # Historique des Modifications
 
+## 2025-01-27 - Ajout de données structurées Schema.org pour améliorer le SEO
+
+### Modifications apportées
+
+**Fichiers modifiés :** `index.html`, `server.js`
+
+### Nouvelles fonctionnalités
+
+Ajout de données structurées Schema.org (JSON-LD) pour améliorer significativement le référencement SEO et permettre l'affichage de "rich snippets" dans les résultats de recherche Google.
+
+### Avantages SEO de Schema.org
+
+1. **Rich Snippets** : Les données structurées permettent à Google d'afficher des informations enrichies dans les résultats de recherche (étoiles, avis, FAQ, etc.)
+
+2. **Meilleure compréhension** : Les moteurs de recherche comprennent mieux le contenu et le contexte du site
+
+3. **Amélioration du CTR** : Les résultats enrichis attirent plus de clics (jusqu'à 30% d'augmentation)
+
+4. **Knowledge Graph** : Peut aider à apparaître dans le Knowledge Graph de Google
+
+5. **Voice Search** : Optimise le site pour la recherche vocale (Google Assistant, Siri, etc.)
+
+### Schémas implémentés
+
+1. **Organization** (`@type: Organization`)
+   - Nom : "Foi Nouvelle"
+   - URL : https://foinouvelle.woutils.com
+   - Description de l'organisation
+   - Point de contact (email et téléphone)
+   - Permet à Google d'afficher des informations sur l'organisation
+
+2. **WebSite** (`@type: WebSite`)
+   - Informations sur le site web
+   - Action de recherche (SearchAction) pour permettre la recherche sur le site
+   - Support multilingue (8 langues)
+   - Permet l'affichage d'une boîte de recherche dans les résultats Google
+
+3. **WebPage** (`@type: WebPage`)
+   - Informations sur la page principale
+   - Date de publication et modification
+   - Image principale
+   - Breadcrumb (fil d'Ariane)
+   - Améliore l'indexation de la page
+
+4. **BreadcrumbList** (`@type: BreadcrumbList`)
+   - Navigation structurée
+   - Aide Google à comprendre la hiérarchie du site
+   - Peut afficher le fil d'Ariane dans les résultats
+
+5. **FAQPage** (`@type: FAQPage`)
+   - Questions fréquentes structurées
+   - 3 questions principales :
+     - "Comment trouver la foi en Dieu ?"
+     - "Comment faire une prière de conversion ?"
+     - "Comment trouver une église près de chez moi ?"
+   - **Avantage majeur** : Peut afficher les FAQ directement dans les résultats Google (featured snippets)
+
+### Modifications techniques
+
+1. **Ajout dans `index.html`**
+   - Script JSON-LD dans le `<head>`
+   - Utilisation de `@graph` pour organiser plusieurs schémas
+   - Placeholders `{{CONTACT_EMAIL}}` et `{{CONTACT_PHONE}}` pour injection dynamique
+
+2. **Modification de `server.js`**
+   - Remplacement des placeholders dans les données structurées
+   - Injection des valeurs depuis les variables d'environnement
+
+### Validation
+
+Les données structurées peuvent être validées avec :
+- **Google Rich Results Test** : https://search.google.com/test/rich-results
+- **Schema.org Validator** : https://validator.schema.org/
+
+### Résultat attendu
+
+- **Affichage enrichi** dans les résultats Google (FAQ, informations d'organisation)
+- **Meilleur classement** grâce à une meilleure compréhension du contenu
+- **Augmentation du CTR** grâce aux rich snippets
+- **Optimisation pour la recherche vocale**
+
+### Impact SEO estimé
+
+- **+15-30% de CTR** grâce aux rich snippets
+- **Meilleure visibilité** dans les résultats de recherche
+- **Apparition possible** dans les featured snippets (FAQ)
+- **Optimisation** pour Google Assistant et recherche vocale
+
+---
+
 ## 2025-01-27 - Ajout de robots.txt et sitemap.xml pour le référencement SEO
 
 ### Modifications apportées

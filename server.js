@@ -89,6 +89,10 @@ function getIndexHtml() {
         `const ADMIN_NOTIFICATION_EMAIL = "${process.env.ADMIN_NOTIFICATION_EMAIL || ''}";`
     );
     
+    // Remplacer les placeholders dans les données structurées Schema.org
+    html = html.replace(/\{\{CONTACT_EMAIL\}\}/g, process.env.CONTACT_EMAIL || '');
+    html = html.replace(/\{\{CONTACT_PHONE\}\}/g, process.env.CONTACT_PHONE || '');
+    
     return html;
 }
 
