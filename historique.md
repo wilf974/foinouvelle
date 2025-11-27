@@ -1,5 +1,62 @@
 # Historique des Modifications
 
+## 2025-01-27 - Implémentation de la fonctionnalité de recherche URL pour SearchAction
+
+### Modifications apportées
+
+**Fichier modifié :** `index.html`
+
+### Nouvelles fonctionnalités
+
+Implémentation de la fonctionnalité de recherche via URL avec le paramètre `?q=` pour que le SearchAction Schema.org fonctionne correctement et permette à Google d'afficher une boîte de recherche dans les résultats.
+
+### Modifications techniques
+
+1. **Fonction `getSearchQueryFromURL()`**
+   - Récupère le paramètre `q` depuis l'URL
+   - Utilise `URLSearchParams` pour parser les paramètres
+   - Retourne la requête de recherche ou `null`
+
+2. **Fonction `executeSearch(queryText)`**
+   - Remplit automatiquement le champ de recherche avec la requête
+   - Fait défiler vers la section "Explorer l'IA"
+   - Lance automatiquement la recherche après un court délai
+   - Intègre avec la fonctionnalité IA existante
+
+3. **Intégration au chargement de la page**
+   - Vérifie automatiquement si un paramètre `?q=` est présent dans l'URL
+   - Lance la recherche automatiquement si présent
+   - Décodage de l'URL pour gérer les caractères spéciaux
+
+### Fonctionnement
+
+**Exemple d'utilisation :**
+- URL : `https://foinouvelle.woutils.com/?q=comment%20prier`
+- Le site détecte automatiquement le paramètre
+- Remplit le champ de recherche avec "comment prier"
+- Fait défiler vers la section de recherche
+- Lance automatiquement la recherche IA
+
+### Avantages SEO
+
+1. **SearchAction fonctionnel** : Le schéma Schema.org SearchAction est maintenant opérationnel
+2. **Boîte de recherche Google** : Google peut afficher une boîte de recherche directement dans les résultats
+3. **Meilleure expérience utilisateur** : Les utilisateurs peuvent rechercher directement depuis Google
+4. **Rich snippets** : Améliore les chances d'apparaître avec des rich snippets
+
+### Compatibilité
+
+- Fonctionne avec tous les navigateurs modernes
+- Gère correctement les caractères spéciaux (décodage URL)
+- Intégré avec la fonctionnalité IA existante
+- Ne perturbe pas l'expérience utilisateur normale
+
+### Résultat
+
+Le SearchAction Schema.org est maintenant pleinement fonctionnel. Les utilisateurs peuvent rechercher directement depuis Google, et le site répond automatiquement avec les résultats de l'IA.
+
+---
+
 ## 2025-01-27 - Ajout de données structurées Schema.org pour améliorer le SEO
 
 ### Modifications apportées

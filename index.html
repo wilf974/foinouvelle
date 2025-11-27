@@ -1826,6 +1826,43 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
             }
         }
 
+        /**
+         * Récupère le paramètre de recherche depuis l'URL (?q=)
+         * @returns {string|null} La requête de recherche ou null
+         */
+        function getSearchQueryFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('q');
+        }
+
+        /**
+         * Lance une recherche avec une requête spécifique (utilisé pour la recherche URL)
+         * @param {string} queryText - Le texte de la requête
+         */
+        async function executeSearch(queryText) {
+            const queryInput = document.getElementById('faith-query');
+            const resultDiv = document.getElementById('query-result');
+            
+            if (!queryInput || !resultDiv) {
+                return;
+            }
+            
+            // Remplir le champ de recherche
+            queryInput.value = queryText;
+            
+            // Faire défiler vers la section de recherche
+            const exploreSection = document.getElementById('explore');
+            if (exploreSection) {
+                exploreSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            
+            // Attendre un peu pour que le scroll se termine
+            setTimeout(() => {
+                // Lancer la recherche
+                handleFaithQuery();
+            }, 500);
+        }
+
         async function handleFaithQuery() {
             const queryInput = document.getElementById('faith-query');
             const resultDiv = document.getElementById('query-result');
@@ -2321,6 +2358,15 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
             // Appliquer la langue par défaut (fr) au chargement
             updateActionContents('fr'); // Assure que les messages cachés sont prêts
             applyTranslations('fr'); // Applique la traduction FR au DOM visible
+            
+            // Vérifier si une recherche est demandée via l'URL (?q=)
+            const searchQuery = getSearchQueryFromURL();
+            if (searchQuery) {
+                // Attendre que tout soit initialisé avant de lancer la recherche
+                setTimeout(() => {
+                    executeSearch(decodeURIComponent(searchQuery));
+                }, 1000);
+            }
 
             // Si un sélecteur existe, le mettre à 'fr'
             const selector = document.getElementById('language-selector');
