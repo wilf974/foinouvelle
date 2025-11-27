@@ -218,3 +218,4 @@ sudo certbot renew --dry-run
 - Le port 2000 est uniquement accessible via Nginx (reverse proxy)
 - Les certificats SSL sont automatiquement renouvelés par Certbot
 
+

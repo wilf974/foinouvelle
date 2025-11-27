@@ -24,3 +24,4 @@ networks:
   foi-nouvelle-network:
     driver: bridge
 
+

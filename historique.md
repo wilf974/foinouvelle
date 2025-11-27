@@ -1,5 +1,50 @@
 # Historique des Modifications
 
+## 2025-01-XX - Ajout d'une case à cocher de confirmation pour l'acceptation de Jésus
+
+### Modifications apportées
+
+**Fichier modifié :** `index.html`
+
+### Nouvelle fonctionnalité
+
+Ajout d'une case à cocher en bas de la prière de conversion pour permettre à l'utilisateur de confirmer qu'il a accepté Jésus sincèrement dans son cœur. Lorsque l'utilisateur coche la case, un message de confirmation s'affiche pour le féliciter et l'encourager.
+
+### Modifications techniques
+
+1. **Template de la prière (`updateActionContents()`)**
+   - Ajout d'une case à cocher avec un label traduit dans toutes les langues
+   - Ajout d'un div pour afficher le message de confirmation (caché par défaut)
+   - Style avec fond gris clair et bordure pour mettre en évidence la case à cocher
+
+2. **Fonction `handlePrayerAcceptance()`**
+   - Gère le clic sur la case à cocher
+   - Affiche le message de confirmation si la case est cochée
+   - Cache le message si la case est décochée
+   - Met à jour le message avec la traduction de la langue actuelle
+   - Journalise l'action dans SQLite pour le suivi
+
+3. **Nouvelles clés de traduction**
+   - `steps_prayer_checkbox_label` : Texte de la case à cocher
+   - `steps_prayer_confirmation_message` : Message de confirmation
+   - Traductions ajoutées pour les 8 langues supportées (fr, en, es, de, it, pt, nl, pl)
+
+4. **Exposition de la fonction**
+   - La fonction `handlePrayerAcceptance` est exposée globalement pour être accessible depuis le HTML
+
+### Interface utilisateur
+
+- La case à cocher apparaît dans une boîte grise claire avec bordure pour la mettre en évidence
+- Le message de confirmation apparaît dans une boîte verte avec bordure gauche verte pour un effet visuel positif
+- Le message inclut un emoji 🎉 pour renforcer le côté positif
+- Le défilement automatique vers le message de confirmation améliore l'expérience utilisateur
+
+### Résultat
+
+L'utilisateur peut maintenant confirmer explicitement qu'il a accepté Jésus dans son cœur, et reçoit un message de confirmation encourageant dans sa langue. Cette fonctionnalité renforce l'engagement personnel et offre un moment de célébration pour cette décision importante.
+
+---
+
 ## 2025-01-XX - Dockerisation de l'application et externalisation des clés API
 
 ### Modifications apportées

@@ -20,3 +20,4 @@ EXPOSE 2000
 # Commande de démarrage
 CMD ["node", "server.js"]
 
+

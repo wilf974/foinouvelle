@@ -22,3 +22,4 @@ echo ""
 echo "📂 Liste des fichiers dans sites-available:"
 ls -la /etc/nginx/sites-available/ | grep -v ".disabled"
 
+

@@ -104,3 +104,4 @@ sudo certbot renew --dry-run
 - [ ] Redirection HTTP → HTTPS fonctionnelle
 - [ ] Site accessible en HTTPS : https://foinouvelle.woutils.com
 
+

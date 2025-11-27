@@ -81,3 +81,4 @@ L'application sera accessible sur http://localhost:2000
 
 Le fichier `.env` est déjà dans `.gitignore` et `.dockerignore`.
 
+
