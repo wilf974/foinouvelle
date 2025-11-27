@@ -19,6 +19,10 @@ CONTACT_PHONE=04 95 20 76 43
 # Email d'administration pour les notifications
 ADMIN_NOTIFICATION_EMAIL=jean.maillot14@gmail.com
 
+# Configuration SMTP pour l'envoi automatique d'emails
+SMTP_USER=smtp.habittracker@gmail.com
+SMTP_PASSWORD=pyaj whin fqtf epps
+
 # Port du serveur
 PORT=2000
 ```
