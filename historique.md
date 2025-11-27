@@ -1,5 +1,83 @@
 # Historique des Modifications
 
+## 2025-01-27 - Implémentation d'un système de verset biblique hebdomadaire SEO-friendly
+
+### Modifications apportées
+
+**Fichiers modifiés :** `index.html`, `server.js`, `.gitignore`
+
+### Nouvelles fonctionnalités
+
+Implémentation d'un système automatique de verset biblique hebdomadaire généré par l'IA Gemini, intégré directement dans le HTML source pour un maximum de SEO. Le verset change automatiquement chaque semaine.
+
+### Avantages SEO
+
+1. **Contenu frais régulier** : Un verset qui change chaque semaine = signal de "freshness" pour Google
+2. **Contenu unique** : Généré par IA, donc original et non dupliqué
+3. **Intégré dans le HTML source** : Le verset est injecté côté serveur, donc visible par Google
+4. **Données structurées Schema.org** : Schéma "Quotation" pour une meilleure compréhension
+5. **Thématique cohérente** : Renforce la cohérence sémantique du site (foi, spiritualité, évangélisation)
+
+### Modifications techniques
+
+1. **Section HTML dédiée (`index.html`)**
+   - Section `<section id="verset-semaine">` avec H2 pour le SEO
+   - Design attractif avec gradient et bordure
+   - Placeholders `{{WEEKLY_VERSE_TEXT}}`, `{{WEEKLY_VERSE_REFERENCE}}`, `{{WEEKLY_VERSE_DATE}}`
+   - Traductions dans les 8 langues supportées
+
+2. **Système côté serveur (`server.js`)**
+   - **Fonction `generateWeeklyVerse()`** : Génère un verset avec l'API Gemini
+     - Utilise le modèle `gemini-2.0-flash-exp`
+     - Instruction système pour générer des versets adaptés à l'évangélisation
+     - Format JSON structuré (texte, référence, thème)
+   - **Fonction `loadWeeklyVerse()`** : Charge le verset depuis le cache
+     - Vérifie si le verset a moins d'une semaine
+     - Retourne un verset par défaut si nécessaire
+   - **Fonction `checkAndUpdateWeeklyVerse()`** : Vérifie et régénère si nécessaire
+     - Appelée au démarrage du serveur
+     - Vérifiée toutes les 24 heures automatiquement
+   - **Injection dans le HTML** : Le verset est injecté dans le HTML avant de servir la page
+
+3. **Système de cache**
+   - Fichier `weekly-verse.json` pour stocker le verset actuel
+   - Contient : texte, référence, date, dateISO, thème
+   - Ajouté au `.gitignore` pour ne pas être versionné
+
+4. **Données structurées Schema.org**
+   - Schéma `Quotation` ajouté dans le JSON-LD
+   - Contient : texte, auteur (Bible), citation (référence), date de publication
+   - Améliore la compréhension par Google
+
+5. **Traductions**
+   - Titre "Verset de la Semaine" traduit dans les 8 langues
+
+### Fonctionnement
+
+1. **Au démarrage du serveur** : Vérifie si un verset existe et s'il a moins d'une semaine
+2. **Si le verset est ancien** : Génère un nouveau verset avec l'IA Gemini
+3. **Sauvegarde** : Le verset est sauvegardé dans `weekly-verse.json`
+4. **Injection** : À chaque requête, le verset est injecté dans le HTML
+5. **Vérification automatique** : Toutes les 24 heures, vérifie si un nouveau verset est nécessaire
+
+### Caractéristiques SEO
+
+- ✅ **Dans le HTML source** : Le verset est injecté côté serveur, visible par Google
+- ✅ **Section dédiée** : H2 + structure sémantique claire
+- ✅ **Contenu frais** : Changement hebdomadaire = signal de fraîcheur
+- ✅ **Données structurées** : Schema.org Quotation pour une meilleure compréhension
+- ✅ **Contenu unique** : Généré par IA, donc original
+- ✅ **Thématique cohérente** : Renforce la niche "foi et spiritualité"
+
+### Résultat attendu
+
+- **Meilleur classement** grâce au contenu frais régulier
+- **Rich snippets** possibles avec le schéma Quotation
+- **Meilleure compréhension** par Google du contenu du site
+- **Engagement utilisateur** : Contenu inspirant qui encourage les retours
+
+---
+
 ## 2025-01-27 - Implémentation de la fonctionnalité de recherche URL pour SearchAction
 
 ### Modifications apportées
