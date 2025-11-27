@@ -26,6 +26,9 @@ Thumbs.db
 # Cache des versets hebdomadaires
 weekly-verse.json
 verses-archive.json
+
+# Images (garder dans le repo pour le SEO)
+# images/verset-biblique.jpg
 # Cache du verset hebdomadaire
 weekly-verse.json
 
