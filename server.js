@@ -14,6 +14,9 @@ require('dotenv').config();
 
 const PORT = process.env.PORT || 2000;
 
+// Fichier pour stocker le verset hebdomadaire
+const VERSE_CACHE_FILE = path.join(__dirname, 'weekly-verse.json');
+
 /**
  * Configuration du transporteur SMTP
  */
@@ -35,6 +38,166 @@ transporter.verify((error, success) => {
         console.log('✅ Configuration SMTP prête à envoyer des emails');
     }
 });
+
+/**
+ * Charge le verset hebdomadaire depuis le cache
+ * @returns {Object} Objet contenant le verset, la référence et la date
+ */
+function loadWeeklyVerse() {
+    try {
+        if (fs.existsSync(VERSE_CACHE_FILE)) {
+            const data = fs.readFileSync(VERSE_CACHE_FILE, 'utf8');
+            const verse = JSON.parse(data);
+            
+            // Vérifier si le verset est encore valide (moins d'une semaine)
+            const verseDate = new Date(verse.dateISO);
+            const now = new Date();
+            const daysDiff = (now - verseDate) / (1000 * 60 * 60 * 24);
+            
+            if (daysDiff < 7) {
+                return verse;
+            }
+        }
+    } catch (error) {
+        console.error('Erreur lors du chargement du verset:', error);
+    }
+    
+    // Retourner un verset par défaut si aucun cache valide
+    return {
+        text: 'Car Dieu a tant aimé le monde qu\'il a donné son Fils unique, afin que quiconque croit en lui ne périsse point, mais qu\'il ait la vie éternelle.',
+        reference: 'Jean 3:16',
+        date: 'Semaine du ' + new Date().toLocaleDateString('fr-FR'),
+        dateISO: new Date().toISOString().split('T')[0]
+    };
+}
+
+/**
+ * Génère un nouveau verset biblique avec l'API Gemini
+ * @returns {Promise<Object>} Objet contenant le verset, la référence et la date
+ */
+async function generateWeeklyVerse() {
+    const apiKey = process.env.API_KEY;
+    if (!apiKey) {
+        console.warn('⚠️ API_KEY non configurée, utilisation du verset par défaut');
+        return loadWeeklyVerse();
+    }
+
+    try {
+        const systemInstruction = `Tu es un assistant spirituel. Génère un verset biblique inspirant et approprié pour l'évangélisation, qui encourage les gens à découvrir la foi en Jésus-Christ. 
+
+Réponds UNIQUEMENT au format JSON suivant (sans markdown, sans code blocks) :
+{
+  "text": "Le texte complet du verset",
+  "reference": "Référence biblique (ex: Jean 3:16, Romains 8:28)",
+  "theme": "Thème du verset en une phrase"
+}
+
+Le verset doit être :
+- Inspirant et encourageant
+- Adapté pour l'évangélisation
+- Provenant de la Bible (Ancien ou Nouveau Testament)
+- Complet et fidèle au texte biblique`;
+
+        const requestBody = JSON.stringify({
+            contents: [{
+                parts: [{
+                    text: systemInstruction
+                }]
+            }],
+            generationConfig: {
+                temperature: 0.7,
+                topK: 40,
+                topP: 0.95,
+                maxOutputTokens: 1024
+            }
+        });
+
+        return new Promise((resolve, reject) => {
+            const options = {
+                hostname: 'generativelanguage.googleapis.com',
+                path: `/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`,
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            const req = https.request(options, (res) => {
+                let data = '';
+
+                res.on('data', (chunk) => {
+                    data += chunk;
+                });
+
+                res.on('end', () => {
+                    try {
+                        const response = JSON.parse(data);
+                        
+                        if (response.candidates && response.candidates[0] && response.candidates[0].content) {
+                            const text = response.candidates[0].content.parts[0].text;
+                            
+                            // Extraire le JSON de la réponse
+                            let jsonMatch = text.match(/\{[\s\S]*\}/);
+                            if (!jsonMatch) {
+                                // Si pas de JSON, essayer de parser directement
+                                jsonMatch = [text];
+                            }
+                            
+                            const verseData = JSON.parse(jsonMatch[0]);
+                            
+                            const verse = {
+                                text: verseData.text || 'Car Dieu a tant aimé le monde...',
+                                reference: verseData.reference || 'Jean 3:16',
+                                date: 'Semaine du ' + new Date().toLocaleDateString('fr-FR'),
+                                dateISO: new Date().toISOString().split('T')[0],
+                                theme: verseData.theme || 'Amour de Dieu'
+                            };
+                            
+                            // Sauvegarder dans le cache
+                            fs.writeFileSync(VERSE_CACHE_FILE, JSON.stringify(verse, null, 2));
+                            console.log('✅ Nouveau verset hebdomadaire généré:', verse.reference);
+                            
+                            resolve(verse);
+                        } else {
+                            console.error('❌ Réponse API invalide:', response);
+                            resolve(loadWeeklyVerse());
+                        }
+                    } catch (error) {
+                        console.error('❌ Erreur lors du parsing de la réponse:', error);
+                        resolve(loadWeeklyVerse());
+                    }
+                });
+            });
+
+            req.on('error', (error) => {
+                console.error('❌ Erreur lors de la requête API:', error);
+                resolve(loadWeeklyVerse());
+            });
+
+            req.write(requestBody);
+            req.end();
+        });
+    } catch (error) {
+        console.error('❌ Erreur lors de la génération du verset:', error);
+        return loadWeeklyVerse();
+    }
+}
+
+/**
+ * Vérifie et régénère le verset hebdomadaire si nécessaire
+ */
+async function checkAndUpdateWeeklyVerse() {
+    const verse = loadWeeklyVerse();
+    const verseDate = new Date(verse.dateISO);
+    const now = new Date();
+    const daysDiff = (now - verseDate) / (1000 * 60 * 60 * 24);
+    
+    // Si le verset a plus d'une semaine, en générer un nouveau
+    if (daysDiff >= 7) {
+        console.log('🔄 Génération d\'un nouveau verset hebdomadaire...');
+        await generateWeeklyVerse();
+    }
+}
 
 /**
  * Envoie un email de notification
@@ -92,6 +255,13 @@ function getIndexHtml() {
     // Remplacer les placeholders dans les données structurées Schema.org
     html = html.replace(/\{\{CONTACT_EMAIL\}\}/g, process.env.CONTACT_EMAIL || '');
     html = html.replace(/\{\{CONTACT_PHONE\}\}/g, process.env.CONTACT_PHONE || '');
+    
+    // Charger et injecter le verset hebdomadaire
+    const weeklyVerse = loadWeeklyVerse();
+    html = html.replace(/\{\{WEEKLY_VERSE_TEXT\}\}/g, weeklyVerse.text || 'Car Dieu a tant aimé le monde qu\'il a donné son Fils unique...');
+    html = html.replace(/\{\{WEEKLY_VERSE_REFERENCE\}\}/g, weeklyVerse.reference || 'Jean 3:16');
+    html = html.replace(/\{\{WEEKLY_VERSE_DATE\}\}/g, weeklyVerse.date || 'Semaine du ' + new Date().toLocaleDateString('fr-FR'));
+    html = html.replace(/\{\{WEEKLY_VERSE_DATE_ISO\}\}/g, weeklyVerse.dateISO || new Date().toISOString().split('T')[0]);
     
     return html;
 }
@@ -433,8 +603,21 @@ const server = http.createServer(async (req, res) => {
     });
 });
 
+// Vérifier et mettre à jour le verset hebdomadaire au démarrage
+checkAndUpdateWeeklyVerse().then(() => {
+    console.log('✅ Vérification du verset hebdomadaire terminée');
+}).catch((error) => {
+    console.error('❌ Erreur lors de la vérification du verset:', error);
+});
+
+// Vérifier le verset toutes les 24 heures
+setInterval(() => {
+    checkAndUpdateWeeklyVerse();
+}, 24 * 60 * 60 * 1000); // 24 heures
+
 server.listen(PORT, () => {
     console.log(`🚀 Serveur Foi Nouvelle démarré sur http://localhost:${PORT}`);
     console.log(`📝 Variables d'environnement chargées depuis .env`);
+    console.log(`📖 Système de verset hebdomadaire activé`);
 });
 
