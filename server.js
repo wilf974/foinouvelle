@@ -226,6 +226,61 @@ async function checkAndUpdateWeeklyVerse() {
 }
 
 /**
+ * Génère une date ISO 8601 complète avec fuseau horaire (format Google recommandé)
+ * @param {string} dateISO - Date au format YYYY-MM-DD
+ * @returns {string} Date au format ISO 8601 complet (YYYY-MM-DDTHH:mm:ss+01:00)
+ */
+function getFullISO8601Date(dateISO) {
+    if (!dateISO) {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        
+        // Déterminer le fuseau horaire (France : +01:00 en hiver, +02:00 en été)
+        const offset = -now.getTimezoneOffset();
+        const offsetHours = String(Math.floor(Math.abs(offset) / 60)).padStart(2, '0');
+        const offsetMinutes = String(Math.abs(offset) % 60).padStart(2, '0');
+        const offsetSign = offset >= 0 ? '+' : '-';
+        
+        return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${offsetSign}${offsetHours}:${offsetMinutes}`;
+    }
+    
+    // Si on a une date ISO simple (YYYY-MM-DD), on ajoute l'heure et le fuseau horaire
+    const date = new Date(dateISO + 'T00:00:00');
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    
+    // Utiliser 10:00:00 comme heure par défaut (meilleure pratique)
+    const hours = '10';
+    const minutes = '00';
+    const seconds = '00';
+    
+    // Fuseau horaire France (UTC+1 en hiver, UTC+2 en été)
+    // On utilise +01:00 par défaut (on pourrait détecter automatiquement)
+    const offset = '+01:00';
+    
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${offset}`;
+}
+
+/**
+ * Génère l'URL de l'image pour un verset
+ * @param {string} verseId - ID du verset (YYYY-MM-DD)
+ * @returns {string} URL de l'image
+ */
+function getVerseImageUrl(verseId) {
+    const baseUrl = 'https://foinouvelle.woutils.com';
+    // Image générique biblique pour tous les versets
+    // Pour personnaliser : créer un dossier /images/versets/ et ajouter des images spécifiques
+    // Format recommandé : 1200x630px (ratio 1.91:1 pour les réseaux sociaux)
+    return `${baseUrl}/images/verset-biblique.jpg`;
+}
+
+/**
  * Charge l'archive complète des versets
  * @returns {Array} Tableau de tous les versets archivés
  */
@@ -381,19 +436,22 @@ function generateVersePage(verse) {
         `<main class="w-full max-w-4xl mx-auto p-4 md:p-8 flex-grow">${verseHtml}</main>`
     );
     
-    // Ajouter le schéma Article pour ce verset spécifique
+    // Ajouter le schéma Article pour ce verset spécifique (corrigé selon recommandations Google)
+    const fullDateISO = getFullISO8601Date(verse.dateISO);
     const articleSchema = {
         "@type": "Article",
         "@id": `https://foinouvelle.woutils.com/verset/${verse.id}`,
         "headline": `Verset de la Semaine - ${verse.reference}`,
         "description": verse.text.substring(0, 200),
         "text": verse.text,
+        "image": getVerseImageUrl(verse.id),
         "author": {
             "@type": "Organization",
-            "name": "Bible"
+            "name": "Bible",
+            "url": "https://www.bible.com"
         },
-        "datePublished": verse.dateISO,
-        "dateModified": verse.dateISO,
+        "datePublished": fullDateISO,
+        "dateModified": fullDateISO,
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": `https://foinouvelle.woutils.com/verset/${verse.id}`
@@ -559,20 +617,23 @@ function getIndexHtml() {
     html = html.replace(/\{\{WEEKLY_VERSE_DATE_ISO\}\}/g, weeklyVerse.dateISO || new Date().toISOString().split('T')[0]);
     html = html.replace(/\{\{WEEKLY_VERSE_ID\}\}/g, verseId);
     
-    // Ajouter le schéma Article pour le verset actuel dans les données structurées
+    // Ajouter le schéma Article pour le verset actuel dans les données structurées (corrigé selon recommandations Google)
     if (weeklyVerse.id || weeklyVerse.dateISO) {
+        const fullDateISO = getFullISO8601Date(weeklyVerse.dateISO || new Date().toISOString().split('T')[0]);
         const articleSchema = {
             "@type": "Article",
             "@id": `https://foinouvelle.woutils.com/verset/${verseId}`,
             "headline": `Verset de la Semaine - ${weeklyVerse.reference || 'Jean 3:16'}`,
             "description": (weeklyVerse.text || '').substring(0, 200),
             "text": weeklyVerse.text || '',
+            "image": getVerseImageUrl(verseId),
             "author": {
                 "@type": "Organization",
-                "name": "Bible"
+                "name": "Bible",
+                "url": "https://www.bible.com"
             },
-            "datePublished": weeklyVerse.dateISO || new Date().toISOString().split('T')[0],
-            "dateModified": weeklyVerse.dateISO || new Date().toISOString().split('T')[0],
+            "datePublished": fullDateISO,
+            "dateModified": fullDateISO,
             "mainEntityOfPage": {
                 "@type": "WebPage",
                 "@id": `https://foinouvelle.woutils.com/verset/${verseId}`
