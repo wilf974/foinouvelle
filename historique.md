@@ -1,5 +1,46 @@
 # Historique des Modifications
 
+## 2025-01-27 - Correction : accès aux pages de versets individuels
+
+### Modifications apportées
+
+**Fichier modifié :** `server.js`
+
+### Problème identifié
+
+Lors du clic sur "Lire ce verset en détail" depuis la page d'accueil, l'utilisateur obtenait une erreur "Verset non trouvé" pour les versets de la semaine actuelle qui n'étaient pas encore dans l'archive.
+
+### Cause
+
+La fonction `getVerseById()` cherchait uniquement dans l'archive des versets (`verses-archive.json`), mais le verset de la semaine actuelle est stocké dans `weekly-verse.json` et peut ne pas être encore dans l'archive.
+
+### Solution implémentée
+
+1. **Modification de `getVerseById()`**
+   - Cherche d'abord dans l'archive comme avant
+   - Si non trouvé, vérifie si c'est le verset de la semaine actuelle
+   - Retourne le verset de la semaine si l'ID correspond
+   - S'assure que le verset retourné a toujours un `id` pour la cohérence
+
+2. **Amélioration du verset par défaut**
+   - Le verset par défaut retourné par `loadWeeklyVerse()` a maintenant toujours un `id` basé sur `dateISO`
+
+3. **Amélioration de la page d'erreur**
+   - Remplacement du message d'erreur texte brut par une page HTML complète
+   - Correction de l'encodage UTF-8 (plus de "Verset non trouvÃ©")
+   - Ajout de liens de navigation vers l'accueil et l'archive
+   - Design cohérent avec le reste du site
+
+### Résultat
+
+✅ Les utilisateurs peuvent maintenant accéder aux pages individuelles des versets de la semaine actuelle, même s'ils ne sont pas encore dans l'archive.
+
+✅ Les pages d'erreur sont maintenant plus conviviales avec des liens de navigation.
+
+✅ L'encodage UTF-8 est correct pour tous les messages.
+
+---
+
 ## 2025-01-27 - Migration du compteur d'acceptations vers une base de données serveur partagée
 
 ### Modifications apportées

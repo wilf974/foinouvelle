@@ -128,11 +128,13 @@ function loadWeeklyVerse() {
     }
     
     // Retourner un verset par défaut si aucun cache valide
+    const defaultDateISO = new Date().toISOString().split('T')[0];
     return {
+        id: defaultDateISO,
         text: 'Car Dieu a tant aimé le monde qu\'il a donné son Fils unique, afin que quiconque croit en lui ne périsse point, mais qu\'il ait la vie éternelle.',
         reference: 'Jean 3:16',
         date: 'Semaine du ' + new Date().toLocaleDateString('fr-FR'),
-        dateISO: new Date().toISOString().split('T')[0]
+        dateISO: defaultDateISO
     };
 }
 
@@ -366,8 +368,25 @@ function loadVerseArchive() {
  * @returns {Object|null} Le verset ou null si non trouvé
  */
 function getVerseById(verseId) {
+    // Chercher d'abord dans l'archive
     const archive = loadVerseArchive();
-    return archive.find(v => v.id === verseId) || null;
+    const archivedVerse = archive.find(v => v.id === verseId);
+    if (archivedVerse) {
+        return archivedVerse;
+    }
+    
+    // Si non trouvé dans l'archive, vérifier si c'est le verset de la semaine actuelle
+    const weeklyVerse = loadWeeklyVerse();
+    const weeklyVerseId = weeklyVerse.id || weeklyVerse.dateISO;
+    if (weeklyVerse && weeklyVerseId === verseId) {
+        // S'assurer que le verset a bien un id pour la cohérence
+        return {
+            ...weeklyVerse,
+            id: weeklyVerseId
+        };
+    }
+    
+    return null;
 }
 
 /**
@@ -1064,8 +1083,32 @@ const server = http.createServer(async (req, res) => {
                 res.end('Erreur serveur');
             }
         } else {
-            res.writeHead(404, { 'Content-Type': 'text/plain' });
-            res.end('Verset non trouvé');
+            // Verset non trouvé : rediriger vers la page d'accueil avec un message
+            const baseHtml = getIndexHtml();
+            const errorHtml = `
+                <section class="py-16 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl shadow-lg mb-12">
+                    <div class="text-center max-w-4xl mx-auto">
+                        <h1 class="text-4xl font-bold mb-6 text-indigo-800">Verset non trouvé</h1>
+                        <p class="text-gray-700 mb-6">Le verset demandé (${verseId}) n'a pas été trouvé dans l'archive.</p>
+                        <div class="mt-6 flex flex-wrap gap-3 justify-center">
+                            <a href="/" class="inline-block px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-300">
+                                Retour à l'accueil
+                            </a>
+                            <a href="/archive-versets" class="inline-block px-6 py-3 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition duration-300">
+                                Voir l'archive complète
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            `;
+            
+            const html = baseHtml.replace(
+                /<main class="w-full max-w-4xl mx-auto p-4 md:p-8 flex-grow">[\s\S]*?<\/main>/,
+                `<main class="w-full max-w-4xl mx-auto p-4 md:p-8 flex-grow">${errorHtml}</main>`
+            );
+            
+            res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
+            res.end(html);
         }
         return;
     }
