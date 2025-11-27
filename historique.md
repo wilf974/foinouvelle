@@ -1,5 +1,63 @@
 # Historique des Modifications
 
+## 2025-01-27 - Ajout de l'IP et de la localisation géographique dans les emails de notification
+
+### Modifications apportées
+
+**Fichier modifié :** `server.js`
+
+### Nouvelles fonctionnalités
+
+Ajout de la récupération de l'adresse IP et de la localisation géographique de l'utilisateur dans les emails de notification (visite et acceptation).
+
+### Modifications techniques
+
+1. **Fonction `getClientIP()`**
+   - Récupère l'adresse IP du client depuis la requête HTTP
+   - Gère les headers de proxy (X-Forwarded-For, X-Real-IP)
+   - Fallback sur l'adresse de la socket si les headers ne sont pas disponibles
+
+2. **Fonction `getLocationFromIP()`**
+   - Utilise l'API gratuite ip-api.com pour la géolocalisation
+   - Récupère : pays, région, ville, fournisseur Internet (ISP)
+   - Gère les erreurs et les IPs locales (127.0.0.1, ::1)
+   - Retourne des valeurs par défaut en cas d'erreur
+
+3. **Mise à jour des emails**
+   - **Email de visite** : Ajout d'une section "📍 Localisation" avec :
+     - Adresse IP
+     - Pays
+     - Région
+     - Ville
+     - Fournisseur Internet (ISP)
+   - **Email d'acceptation** : Même section de localisation ajoutée
+
+### Informations collectées
+
+Pour chaque email, les informations suivantes sont maintenant incluses :
+- Adresse IP du client
+- Pays de localisation
+- Région/État
+- Ville
+- Fournisseur Internet (ISP)
+
+### Service utilisé
+
+- **API de géolocalisation** : ip-api.com (gratuit, sans clé API requise)
+- **Limite** : 45 requêtes par minute (suffisant pour l'usage normal)
+
+### Gestion des erreurs
+
+- Les IPs locales (127.0.0.1, ::1) sont détectées et affichent "Non disponible"
+- En cas d'erreur de connexion à l'API, affichage de "Erreur de connexion"
+- Les erreurs ne bloquent pas l'envoi de l'email, les informations manquantes sont indiquées
+
+### Résultat
+
+Les emails de notification incluent maintenant l'adresse IP et la localisation géographique complète de l'utilisateur, permettant un meilleur suivi et une meilleure compréhension de l'audience.
+
+---
+
 ## 2025-01-27 - Mise en place d'un système SMTP pour l'envoi automatique d'emails
 
 ### Modifications apportées

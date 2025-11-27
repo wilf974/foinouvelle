@@ -4,6 +4,7 @@
  */
 
 const http = require('http');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
@@ -144,6 +145,100 @@ function sendJSON(res, statusCode, data) {
 }
 
 /**
+ * Récupère l'adresse IP du client depuis la requête
+ * @param {http.IncomingMessage} req - Objet de requête HTTP
+ * @returns {string} Adresse IP du client
+ */
+function getClientIP(req) {
+    // Vérifier les headers de proxy (X-Forwarded-For, X-Real-IP)
+    const forwarded = req.headers['x-forwarded-for'];
+    if (forwarded) {
+        return forwarded.split(',')[0].trim();
+    }
+    
+    const realIP = req.headers['x-real-ip'];
+    if (realIP) {
+        return realIP;
+    }
+    
+    // Sinon, utiliser l'adresse de la socket
+    return req.socket.remoteAddress || 'Inconnue';
+}
+
+/**
+ * Récupère la localisation géographique à partir d'une adresse IP
+ * @param {string} ip - Adresse IP
+ * @returns {Promise<Object>} Informations de localisation
+ */
+function getLocationFromIP(ip) {
+    return new Promise((resolve) => {
+        // Ignorer les IPs locales
+        if (!ip || ip === 'Inconnue' || ip.startsWith('127.') || ip.startsWith('::1') || ip === '::ffff:127.0.0.1') {
+            resolve({
+                ip: ip || 'Inconnue',
+                country: 'Non disponible',
+                region: 'Non disponible',
+                city: 'Non disponible',
+                isp: 'Non disponible'
+            });
+            return;
+        }
+
+        // Utiliser ip-api.com (gratuit, sans clé API)
+        const apiUrl = `http://ip-api.com/json/${ip}?fields=status,message,country,regionName,city,isp,query`;
+        
+        http.get(apiUrl, (res) => {
+            let data = '';
+            
+            res.on('data', (chunk) => {
+                data += chunk;
+            });
+            
+            res.on('end', () => {
+                try {
+                    const result = JSON.parse(data);
+                    if (result.status === 'success') {
+                        resolve({
+                            ip: result.query || ip,
+                            country: result.country || 'Non disponible',
+                            region: result.regionName || 'Non disponible',
+                            city: result.city || 'Non disponible',
+                            isp: result.isp || 'Non disponible'
+                        });
+                    } else {
+                        resolve({
+                            ip: ip,
+                            country: 'Non disponible',
+                            region: 'Non disponible',
+                            city: 'Non disponible',
+                            isp: 'Non disponible'
+                        });
+                    }
+                } catch (error) {
+                    console.error('Erreur lors de la récupération de la localisation:', error);
+                    resolve({
+                        ip: ip,
+                        country: 'Erreur de récupération',
+                        region: 'Erreur de récupération',
+                        city: 'Erreur de récupération',
+                        isp: 'Erreur de récupération'
+                    });
+                }
+            });
+        }).on('error', (error) => {
+            console.error('Erreur lors de la requête de géolocalisation:', error);
+            resolve({
+                ip: ip,
+                country: 'Erreur de connexion',
+                region: 'Erreur de connexion',
+                city: 'Erreur de connexion',
+                isp: 'Erreur de connexion'
+            });
+        });
+    });
+}
+
+/**
  * Crée le serveur HTTP
  */
 const server = http.createServer(async (req, res) => {
@@ -166,12 +261,23 @@ const server = http.createServer(async (req, res) => {
             const data = await parseBody(req);
             const { userAgent, language, timestamp, userId } = data;
             
+            // Récupérer l'IP et la localisation
+            const clientIP = getClientIP(req);
+            const location = await getLocationFromIP(clientIP);
+            
             const emailHtml = `
                 <h2>Nouvelle visite sur Foi Nouvelle</h2>
                 <p><strong>Date et heure:</strong> ${timestamp || new Date().toISOString()}</p>
                 <p><strong>ID utilisateur:</strong> ${userId || 'Non disponible'}</p>
                 <p><strong>Langue:</strong> ${language || 'Non disponible'}</p>
                 <p><strong>Navigateur:</strong> ${userAgent || 'Non disponible'}</p>
+                <hr>
+                <h3>📍 Localisation</h3>
+                <p><strong>Adresse IP:</strong> ${location.ip}</p>
+                <p><strong>Pays:</strong> ${location.country}</p>
+                <p><strong>Région:</strong> ${location.region}</p>
+                <p><strong>Ville:</strong> ${location.city}</p>
+                <p><strong>Fournisseur Internet (ISP):</strong> ${location.isp}</p>
                 <hr>
                 <p><em>Cette notification a été envoyée automatiquement lors de la visite du site.</em></p>
             `;
@@ -196,6 +302,10 @@ const server = http.createServer(async (req, res) => {
             const data = await parseBody(req);
             const { userAgent, language, timestamp, userId, counter } = data;
             
+            // Récupérer l'IP et la localisation
+            const clientIP = getClientIP(req);
+            const location = await getLocationFromIP(clientIP);
+            
             const emailHtml = `
                 <h2>🎉 Une personne a accepté Jésus !</h2>
                 <p><strong>Date et heure:</strong> ${timestamp || new Date().toISOString()}</p>
@@ -203,6 +313,13 @@ const server = http.createServer(async (req, res) => {
                 <p><strong>Langue:</strong> ${language || 'Non disponible'}</p>
                 <p><strong>Navigateur:</strong> ${userAgent || 'Non disponible'}</p>
                 <p><strong>Compteur total d'acceptations:</strong> ${counter || 0}</p>
+                <hr>
+                <h3>📍 Localisation</h3>
+                <p><strong>Adresse IP:</strong> ${location.ip}</p>
+                <p><strong>Pays:</strong> ${location.country}</p>
+                <p><strong>Région:</strong> ${location.region}</p>
+                <p><strong>Ville:</strong> ${location.city}</p>
+                <p><strong>Fournisseur Internet (ISP):</strong> ${location.isp}</p>
                 <hr>
                 <p style="color: #16a34a; font-weight: bold;">Une nouvelle personne a fait le choix de suivre Jésus !</p>
                 <p><em>Cette notification a été envoyée automatiquement lors de l'acceptation de Jésus.</em></p>
