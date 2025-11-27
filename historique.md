@@ -1,5 +1,76 @@
 # Historique des Modifications
 
+## 2025-01-27 - Finalisation : Image ajoutée et configuration complète pour rich snippets
+
+### Modifications apportées
+
+**Fichiers modifiés :** `server.js`, `.gitignore`  
+**Fichiers ajoutés :** `images/verset-biblique.jpg`
+
+### Finalisation
+
+L'image `verset-biblique.jpg` a été créée et ajoutée au projet. Le serveur est maintenant configuré pour servir correctement les images avec le bon type MIME.
+
+### Corrections techniques
+
+1. **Type MIME corrigé**
+   - **Avant** : `.jpg` → `image/jpg` (incorrect)
+   - **Après** : `.jpg` et `.jpeg` → `image/jpeg` (correct)
+   - Les navigateurs et Google reconnaissent maintenant correctement les images
+
+2. **Image ajoutée**
+   - Fichier : `images/verset-biblique.jpg` (1.8MB)
+   - Accessible via : `https://foinouvelle.woutils.com/images/verset-biblique.jpg`
+   - Servie automatiquement par le serveur Node.js
+
+3. **Configuration Git**
+   - Image ajoutée au repository (nécessaire pour le déploiement)
+   - `.gitignore` mis à jour avec commentaire
+
+### État final du système
+
+✅ **Archive de versets** : Système complet avec 52 versets par an  
+✅ **Pages individuelles** : URLs uniques pour chaque verset  
+✅ **Schémas Article** : JSON-LD complet et conforme Google  
+✅ **Image** : Ajoutée et accessible  
+✅ **Dates ISO 8601** : Format complet avec fuseau horaire  
+✅ **Maillage interne** : Liens optimisés entre toutes les pages  
+✅ **Sitemap dynamique** : Toutes les pages incluses automatiquement  
+
+### Prochaines étapes recommandées
+
+1. **Déployer sur le VPS** :
+   ```bash
+   cd /opt/apps/foinouvelle
+   sudo git pull origin main
+   sudo docker compose -f docker-compose.prod.yml down
+   sudo docker compose -f docker-compose.prod.yml build --no-cache
+   sudo docker compose -f docker-compose.prod.yml up -d
+   ```
+
+2. **Vérifier l'image** :
+   - Tester : `https://foinouvelle.woutils.com/images/verset-biblique.jpg`
+   - Vérifier dans Google Search Console que l'image est accessible
+
+3. **Valider les rich snippets** :
+   - Utiliser l'outil de test de données structurées de Google
+   - URL : https://search.google.com/test/rich-results
+   - Tester une page de verset : `https://foinouvelle.woutils.com/verset/2025-01-27`
+
+4. **Surveiller les résultats** :
+   - Vérifier dans Google Search Console les erreurs de données structurées
+   - Surveiller l'apparition des rich snippets dans les résultats de recherche
+   - Analyser le CTR des pages avec images
+
+### Résultat attendu
+
+- ✅ **Aucun avertissement Google** : Tous les champs recommandés sont présents
+- ✅ **Rich snippets enrichis** : Affichage avec vignette possible dans Google
+- ✅ **Meilleur CTR** : Les résultats avec image attirent +20% de clics en moyenne
+- ✅ **SEO optimisé** : 52 nouvelles pages par an avec contenu frais et structuré
+
+---
+
 ## 2025-01-27 - Correction des schémas Article JSON-LD selon recommandations Google
 
 ### Modifications apportées
