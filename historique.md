@@ -1,5 +1,94 @@
 # Historique des Modifications
 
+## 2025-01-27 - Mise en place d'un système SMTP pour l'envoi automatique d'emails
+
+### Modifications apportées
+
+**Fichiers modifiés :** `server.js`, `index.html`, `package.json`
+
+### Nouvelles fonctionnalités
+
+1. **Système SMTP avec Nodemailer** : Configuration d'un transporteur SMTP pour l'envoi automatique d'emails
+2. **Notification lors de la visite** : Envoi automatique d'un email lorsqu'une personne visite le site
+3. **Notification lors de l'acceptation** : Envoi automatique d'un email lorsqu'une personne accepte Jésus
+
+### Modifications techniques
+
+1. **Ajout de Nodemailer**
+   - Ajout de `nodemailer` version 6.9.8 dans `package.json`
+   - Configuration du transporteur SMTP avec Gmail
+
+2. **Nouvelles variables d'environnement**
+   - `SMTP_USER` : Adresse email SMTP (smtp.habittracker@gmail.com)
+   - `SMTP_PASSWORD` : Mot de passe d'application Gmail
+   - Les emails sont envoyés à `ADMIN_NOTIFICATION_EMAIL` (déjà existant)
+
+3. **Endpoints API créés dans `server.js`**
+   - `/api/notify-visit` : Endpoint POST pour notifier une visite
+   - `/api/notify-acceptance` : Endpoint POST pour notifier une acceptation
+   - Gestion CORS pour permettre les appels depuis le frontend
+   - Parsing JSON du corps des requêtes
+
+4. **Fonction `sendEmail()` dans `server.js`**
+   - Fonction asynchrone pour envoyer des emails
+   - Support HTML et texte
+   - Gestion des erreurs avec logs détaillés
+   - Vérification de la configuration SMTP au démarrage
+
+5. **Fonction `sendEmailNotification()` dans `index.html`**
+   - Fonction pour appeler les endpoints API
+   - Collecte automatique des informations utilisateur :
+     - ID utilisateur (userId)
+     - Langue actuelle (currentLang)
+     - User Agent (navigator.userAgent)
+     - Timestamp
+   - Gestion des erreurs sans bloquer l'application
+
+6. **Intégration dans le flux utilisateur**
+   - Appel automatique lors de l'initialisation SQLite (visite)
+   - Appel automatique lors de l'acceptation de Jésus
+   - Envoi du compteur total d'acceptations dans l'email de notification
+
+### Contenu des emails
+
+**Email de visite :**
+- Date et heure
+- ID utilisateur
+- Langue du navigateur
+- User Agent
+
+**Email d'acceptation :**
+- Date et heure
+- ID utilisateur
+- Langue du navigateur
+- User Agent
+- Compteur total d'acceptations
+- Message de célébration
+
+### Configuration requise
+
+Ajouter dans le fichier `.env` :
+```env
+SMTP_USER=smtp.habittracker@gmail.com
+SMTP_PASSWORD=pyaj whin fqtf epps
+ADMIN_NOTIFICATION_EMAIL=jean.maillot14@gmail.com
+```
+
+### Sécurité
+
+- Les identifiants SMTP sont stockés dans `.env` (non versionné)
+- Les emails sont envoyés uniquement à l'adresse d'administration
+- Les erreurs d'envoi ne bloquent pas l'application
+- Support CORS configuré pour les appels API
+
+### Résultat
+
+Le système envoie automatiquement des emails de notification :
+- À chaque visite du site avec les informations disponibles sur l'utilisateur
+- À chaque acceptation de Jésus avec le compteur total d'acceptations
+
+---
+
 ## 2025-01-27 - Ajout d'un compteur global d'acceptations et message d'encouragement enrichi
 
 ### Modifications apportées

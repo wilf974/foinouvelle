@@ -1365,6 +1365,9 @@
                         
                         // Enregistrer la connexion
                 logActivity('USER_CONNECTED');
+                
+                // Envoyer une notification par email lors de la visite
+                sendEmailNotification('notify-visit', {});
                         
                 // Activer les boutons
                         if (isApiKeyValid) {
@@ -1404,6 +1407,39 @@
                 console.log(`Activité enregistrée: ${action}`);
             } catch (e) {
                 console.error(`Erreur lors de l'enregistrement de l'activité (${action}):`, e);
+            }
+        }
+
+        /**
+         * Envoie une notification par email via l'API serveur.
+         * @param {string} endpoint - Endpoint API ('notify-visit' ou 'notify-acceptance')
+         * @param {Object} data - Données à envoyer
+         */
+        async function sendEmailNotification(endpoint, data) {
+            try {
+                const response = await fetch(`/api/${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        ...data,
+                        userId: userId,
+                        language: currentLang,
+                        userAgent: navigator.userAgent,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    console.log(`✅ Email de notification envoyé (${endpoint})`);
+                } else {
+                    console.error(`❌ Erreur lors de l'envoi de l'email (${endpoint}):`, result.error);
+                }
+            } catch (error) {
+                console.error(`❌ Erreur lors de l'appel API (${endpoint}):`, error);
+                // Ne pas bloquer l'application en cas d'erreur d'envoi d'email
             }
         }
 
@@ -2111,10 +2147,15 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
             logActivity('PRAYER_ACCEPTANCE_CONFIRMED');
             
             // Incrémenter le compteur global
-            incrementAcceptanceCounter().then(newCount => {
+            incrementAcceptanceCounter().then(async newCount => {
                 // Mettre à jour l'affichage du compteur
                 updateAcceptanceCounterDisplay();
                 console.log(`Compteur d'acceptations mis à jour: ${newCount}`);
+                
+                // Envoyer une notification par email lors de l'acceptation
+                await sendEmailNotification('notify-acceptance', {
+                    counter: newCount
+                });
             });
             
             // Afficher le message de confirmation avec encouragement
