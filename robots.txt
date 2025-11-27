@@ -1,0 +1,6 @@
+User-agent: *
+
+Disallow:
+
+Sitemap: https://foinouvelle.woutils.com/sitemap.xml
+

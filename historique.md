@@ -1,5 +1,56 @@
 # Historique des Modifications
 
+## 2025-01-27 - Ajout de robots.txt et sitemap.xml pour le référencement SEO
+
+### Modifications apportées
+
+**Fichiers créés :** `robots.txt`, `sitemap.xml`  
+**Fichier modifié :** `server.js`
+
+### Nouvelles fonctionnalités
+
+Ajout des fichiers `robots.txt` et `sitemap.xml` pour améliorer le référencement SEO du site et permettre aux moteurs de recherche d'indexer correctement le site.
+
+### Modifications techniques
+
+1. **Fichier `robots.txt`**
+   - Autorise tous les robots d'indexation (`User-agent: *`)
+   - Aucune restriction (`Disallow:` vide)
+   - Référence au sitemap : `https://foinouvelle.woutils.com/sitemap.xml`
+
+2. **Fichier `sitemap.xml`**
+   - Format XML standard conforme au protocole Sitemap
+   - Inclut la page d'accueil (`/` et `/index.html`)
+   - Configuration :
+     - `changefreq`: weekly (mise à jour hebdomadaire)
+     - `priority`: 1.0 (priorité maximale)
+     - `lastmod`: Date de création
+
+3. **Modification de `server.js`**
+   - Ajout de la gestion explicite de `/robots.txt` et `/sitemap.xml`
+   - Types MIME corrects :
+     - `robots.txt` : `text/plain; charset=utf-8`
+     - `sitemap.xml` : `application/xml; charset=utf-8`
+   - Ajout des extensions `.txt` et `.xml` dans la fonction `getContentType()`
+
+### Accès aux fichiers
+
+- **robots.txt** : `https://foinouvelle.woutils.com/robots.txt`
+- **sitemap.xml** : `https://foinouvelle.woutils.com/sitemap.xml`
+
+### Avantages SEO
+
+- **robots.txt** : Indique aux moteurs de recherche comment explorer le site
+- **sitemap.xml** : Aide les moteurs de recherche à découvrir et indexer toutes les pages
+- Améliore la visibilité du site dans les résultats de recherche
+- Facilite l'indexation par Google, Bing, etc.
+
+### Résultat
+
+Le site est maintenant mieux optimisé pour le référencement avec des fichiers robots.txt et sitemap.xml correctement configurés et accessibles.
+
+---
+
 ## 2025-01-27 - Ajout de l'IP et de la localisation géographique dans les emails de notification
 
 ### Modifications apportées

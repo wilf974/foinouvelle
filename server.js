@@ -106,7 +106,9 @@ function getContentType(filePath) {
         '.jpg': 'image/jpg',
         '.gif': 'image/gif',
         '.svg': 'image/svg+xml',
-        '.ico': 'image/x-icon'
+        '.ico': 'image/x-icon',
+        '.txt': 'text/plain',
+        '.xml': 'application/xml'
     };
     return mimeTypes[ext] || 'application/octet-stream';
 }
@@ -336,6 +338,50 @@ const server = http.createServer(async (req, res) => {
             console.error('Erreur API notify-acceptance:', error);
             sendJSON(res, 500, { success: false, error: error.message });
         }
+        return;
+    }
+    
+    // Gérer robots.txt
+    if (parsedUrl.pathname === '/robots.txt') {
+        const robotsPath = path.join(__dirname, 'robots.txt');
+        fs.access(robotsPath, fs.constants.F_OK, (err) => {
+            if (err) {
+                res.writeHead(404, { 'Content-Type': 'text/plain' });
+                res.end('robots.txt not found');
+                return;
+            }
+            fs.readFile(robotsPath, (err, data) => {
+                if (err) {
+                    res.writeHead(500, { 'Content-Type': 'text/plain' });
+                    res.end('Error reading robots.txt');
+                    return;
+                }
+                res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
+                res.end(data);
+            });
+        });
+        return;
+    }
+    
+    // Gérer sitemap.xml
+    if (parsedUrl.pathname === '/sitemap.xml') {
+        const sitemapPath = path.join(__dirname, 'sitemap.xml');
+        fs.access(sitemapPath, fs.constants.F_OK, (err) => {
+            if (err) {
+                res.writeHead(404, { 'Content-Type': 'text/plain' });
+                res.end('sitemap.xml not found');
+                return;
+            }
+            fs.readFile(sitemapPath, (err, data) => {
+                if (err) {
+                    res.writeHead(500, { 'Content-Type': 'text/plain' });
+                    res.end('Error reading sitemap.xml');
+                    return;
+                }
+                res.writeHead(200, { 'Content-Type': 'application/xml; charset=utf-8' });
+                res.end(data);
+            });
+        });
         return;
     }
     
