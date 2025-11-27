@@ -10,9 +10,11 @@ COPY package.json ./
 # Installer les dépendances
 RUN npm install --production
 
-# Copier les fichiers de l'application
-COPY index.html ./
-COPY server.js ./
+# Copier tous les fichiers nécessaires (en excluant node_modules via .dockerignore)
+COPY index.html server.js ./
+COPY robots.txt sitemap.xml ./
+COPY google*.html ./
+COPY images/ ./images/
 
 # Exposer le port
 EXPOSE 2000

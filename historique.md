@@ -1,5 +1,56 @@
 # Historique des Modifications
 
+## 2025-01-27 - Correction Dockerfile : ajout des fichiers statiques manquants
+
+### Modifications apportées
+
+**Fichiers modifiés :** `Dockerfile`  
+**Fichiers ajoutés :** `googlea4732c9e738ea22c.html`
+
+### Problème identifié
+
+Le Dockerfile ne copiait que `index.html` et `server.js`, ce qui empêchait le serveur de servir les autres fichiers statiques :
+- `robots.txt`
+- `sitemap.xml`
+- `googlea4732c9e738ea22c.html` (fichier de vérification Google)
+- `images/` (dossier contenant les images)
+
+### Solution
+
+Modification du Dockerfile pour copier tous les fichiers statiques nécessaires :
+
+```dockerfile
+# Copier les fichiers statiques
+COPY robots.txt ./
+COPY sitemap.xml ./
+COPY google*.html ./
+COPY images/ ./images/
+```
+
+### Instructions de déploiement
+
+Après avoir fait `git pull` sur le VPS, reconstruire l'image Docker :
+
+```bash
+cd /opt/apps/foinouvelle
+sudo git pull origin main
+sudo docker compose -f docker-compose.prod.yml down
+sudo docker compose -f docker-compose.prod.yml build --no-cache
+sudo docker compose -f docker-compose.prod.yml up -d
+```
+
+### Vérification
+
+Après le redéploiement, tester l'accessibilité du fichier :
+
+```bash
+curl https://foinouvelle.woutils.com/googlea4732c9e738ea22c.html
+```
+
+Le résultat attendu : `google-site-verification: googlea4732c9e738ea22c.html`
+
+---
+
 ## 2025-01-27 - Finalisation : Image ajoutée et configuration complète pour rich snippets
 
 ### Modifications apportées
