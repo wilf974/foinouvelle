@@ -132,7 +132,20 @@ function loadWeeklyVerse() {
     try {
         if (fs.existsSync(VERSE_CACHE_FILE)) {
             const data = fs.readFileSync(VERSE_CACHE_FILE, 'utf8');
+            
+            // Vérifier que le fichier n'est pas vide
+            if (!data || data.trim().length === 0) {
+                console.log('⚠️ Fichier weekly-verse.json vide, génération d\'un nouveau verset...');
+                return null; // Retourner null pour forcer la génération
+            }
+            
             const verse = JSON.parse(data);
+            
+            // Vérifier que le verset a les propriétés nécessaires
+            if (!verse || !verse.dateISO || !verse.text || !verse.reference) {
+                console.log('⚠️ Verset invalide dans le cache, génération d\'un nouveau verset...');
+                return null;
+            }
             
             // Vérifier si le verset est encore valide (pour la semaine en cours)
             const verseDate = new Date(verse.dateISO + 'T00:00:00');
@@ -152,6 +165,15 @@ function loadWeeklyVerse() {
         }
     } catch (error) {
         console.error('Erreur lors du chargement du verset:', error);
+        // Si le fichier est corrompu, le supprimer pour forcer la régénération
+        try {
+            if (fs.existsSync(VERSE_CACHE_FILE)) {
+                fs.unlinkSync(VERSE_CACHE_FILE);
+                console.log('🗑️ Fichier weekly-verse.json corrompu supprimé');
+            }
+        } catch (unlinkError) {
+            console.error('Erreur lors de la suppression du fichier corrompu:', unlinkError);
+        }
     }
     
     // Retourner un verset par défaut si aucun cache valide
@@ -323,6 +345,20 @@ Le verset doit être :
  */
 async function checkAndUpdateWeeklyVerse() {
     const verse = loadWeeklyVerse();
+    
+    // Si aucun verset valide n'a été chargé, en générer un nouveau
+    if (!verse || !verse.dateISO) {
+        const now = new Date();
+        const dayOfWeek = now.getDay();
+        const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+        const currentWeekStart = new Date(now);
+        currentWeekStart.setDate(now.getDate() - daysToMonday);
+        currentWeekStart.setHours(0, 0, 0, 0);
+        console.log('🔄 Génération d\'un nouveau verset hebdomadaire pour la semaine du', currentWeekStart.toLocaleDateString('fr-FR'));
+        await generateWeeklyVerse();
+        return;
+    }
+    
     const verseDate = new Date(verse.dateISO + 'T00:00:00');
     const now = new Date();
     
