@@ -2470,6 +2470,72 @@ Le verset doit être :
         return;
     }
 
+    // Contenu par défaut (fallback si la base de données est vide)
+    const DEFAULT_CONTENT = {
+        hero: {
+            title: "Découvrez le Chemin vers Dieu et l'Espoir",
+            subtitle_1: "Vous cherchez un sens à votre vie ? Découvrez comment **trouver la foi en Dieu**, le chemin vers Jésus et une communauté accueillante.",
+            subtitle_2: "Découvrez l'amour inconditionnel et la puissance transformatrice de la foi. Où que vous soyez dans votre recherche, vous êtes le bienvenu.",
+            button: "Je veux comprendre"
+        },
+        message_card_1: {
+            title: "1. L'Amour Inconditionnel de Dieu",
+            text: "Dieu est la source de toute existence et vous a créé(e) par amour. Son amour n'a pas de condition : il est total et éternel. Il n'attend pas que vous soyez parfait(e), mais que vous acceptiez Sa présence.",
+            footer: "*Le point de départ de tout : Sa grâce est disponible, quel que soit votre passé.*"
+        },
+        message_card_2: {
+            title: "2. La Réalité de la Séparation (Péché)",
+            text: "Bien que nous soyons aimés, nos choix autonomes et nos erreurs (appelés péché) ont créé une distance. Ce n'est pas une liste de fautes, mais un état de séparation qui vous empêche d'atteindre la plénitude et de connaître Dieu intimement. C'est l'origine du vide que beaucoup ressentent.",
+            footer: "*Le péché crée une barrière. C'est pourquoi nous avons besoin d'un pont.*"
+        },
+        message_card_3: {
+            title: "3. Le Pont du Salut : Jésus-Christ",
+            text: "Jésus est venu sur Terre pour combler la distance. Sa mort sur la croix et sa résurrection ne sont pas seulement un fait historique, mais l'acte qui rend le pardon total et la réconciliation possible. En L'acceptant comme Seigneur et Sauveur, vous traversez ce pont vers la relation avec Dieu.",
+            footer: "*C'est un cadeau à accepter par la foi, non à mériter par les œuvres.*"
+        },
+        plan: {
+            title: "Plan de Lecture 7 Jours : Commencer avec Jésus",
+            days_1_3_title: "Jours 1-3 : L'Amour et le Pardon",
+            days_4_7_title: "Jours 4-7 : La Nouvelle Vie",
+            footer: "Ces versets sont un point de départ pour une lecture personnelle et quotidienne."
+        },
+        explore: {
+            title: "✨ Poser des Questions sur la Foi (Explorateur IA)",
+            subtitle: "Posez une question simple sur la foi. Notre IA (recherche assistée) vous fournira une explication claire et bienveillante.",
+            placeholder: "Ex: Comment puis-je prier ?",
+            button: "Expliquer"
+        },
+        community: {
+            title: "Trouver une Communauté de Foi Accueillante",
+            subtitle: "La foi est vécue en communauté. Trouvez une communauté locale pour être mieux accompagné dans votre marche.",
+            placeholder: "Entrez votre ville (Ex: Paris, Ajaccio, Marseille)",
+            button: "Rechercher"
+        },
+        testimonials: {
+            title: "Histoires de Vie Transformée et Témoignages",
+            submit_title: "Partagez Votre Histoire !",
+            submit_subtitle: "Votre expérience peut inspirer quelqu'un d'autre. Racontez-nous comment votre rencontre avec Dieu a transformé votre vie.",
+            submit_name_placeholder: "Votre nom ou pseudonyme",
+            submit_story_placeholder: "Votre témoignage de vie...",
+            submit_button: "Soumettre le Témoignage"
+        },
+        share: {
+            title: "Partager le Message avec vos Proches",
+            subtitle: "Aidez d'autres personnes à découvrir la foi ! Cliquez sur un bouton pour partager cette page."
+        },
+        steps: {
+            title: "Prière de Conversion : Faire le Premier Pas",
+            subtitle: "Si le message résonne en vous, voici les étapes simples pour commencer votre voyage de foi.",
+            button_prayer: "Faire une Prière",
+            button_contact: "Contacter Quelqu'un",
+            prayer_title: "Votre Prière de Premier Pas",
+            contact_title: "Nous Contacter"
+        },
+        footer: {
+            subtitle: "Trouver la Foi en Dieu | Guide, Prière et Communauté de Foi"
+        }
+    };
+
     // API admin - Récupérer le contenu d'une section
     const contentMatch = parsedUrl.pathname.match(/^\/api\/admin\/content\/(.+)$/);
     if (contentMatch && req.method === 'GET') {
@@ -2485,11 +2551,17 @@ Le verset doit être :
             const sectionKey = contentMatch[1];
             const result = db.prepare('SELECT content_json FROM site_content WHERE section_key = ? AND language = ?').get(sectionKey, 'fr');
 
+            // Récupérer le contenu par défaut pour cette section
+            const defaultSectionContent = DEFAULT_CONTENT[sectionKey] || {};
+
             if (result) {
-                const content = JSON.parse(result.content_json);
-                sendJSON(res, 200, { success: true, content: content });
+                const dbContent = JSON.parse(result.content_json);
+                // Fusionner avec le contenu par défaut pour s'assurer que tous les champs sont présents
+                const mergedContent = { ...defaultSectionContent, ...dbContent };
+                sendJSON(res, 200, { success: true, content: mergedContent });
             } else {
-                sendJSON(res, 200, { success: true, content: null });
+                // Si pas de contenu en base, renvoyer le contenu par défaut
+                sendJSON(res, 200, { success: true, content: defaultSectionContent });
             }
         } catch (error) {
             sendJSON(res, 500, { success: false, error: error.message });
