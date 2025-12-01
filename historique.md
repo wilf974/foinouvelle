@@ -1696,3 +1696,4 @@ L'application est maintenant multilingue avec un support complet pour 8 langues 
   - Fusion dynamique des traductions côté client pour surcharger les textes par défaut.
   - Ajout de la possibilité de modifier le texte de la "Prière de Conversion" depuis l'admin.
   - Correction de bugs d'affichage et de syntaxe dans le dashboard admin.
+  - Implémentation de la rotation automatique des clés API Gemini pour contourner les limites de quota (erreur 429).
