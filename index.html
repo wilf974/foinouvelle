@@ -1360,11 +1360,10 @@
         // =====================================================================
         // 🚨 VARIABLES D'ENVIRONNEMENT : Injectées par le serveur depuis .env
         // =====================================================================
-        const API_KEY = "{{API_KEY}}"; // Clé Gemini injectée depuis .env
+        // NOTE: L'API_KEY n'est plus injectée côté client pour des raisons de sécurité
+        // Tous les appels à Gemini passent maintenant par le serveur (/api/gemini/generate)
         
         // Rétablissement des configurations Gemini (URL de base implicite, modèles explicites)
-        const GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
-        const LLM_TEXT_MODEL = "gemini-2.5-flash-preview-09-2025"; // Modèle Gemini avec Search Grounding
         const LLM_TTS_MODEL = "gemini-2.5-flash-preview-tts"; // Modèle Gemini pour l'audio
 
         // Contacts mis à jour avec les informations de l'utilisateur (injectés depuis .env)
@@ -1373,8 +1372,8 @@
         // EMAIL DE NOTIFICATION DEMANDÉE PAR L'UTILISATEUR (pour journalisation)
         const ADMIN_NOTIFICATION_EMAIL = "{{ADMIN_NOTIFICATION_EMAIL}}";
 
-        // Variable pour vérifier si l'API Key est valide (non-vide)
-        let isApiKeyValid = API_KEY && API_KEY !== "VOTRE_CLÉ_API_ICI";
+        // Variable pour vérifier si l'API est disponible (toujours true car géré côté serveur)
+        let isApiKeyValid = true; // L'API est maintenant gérée côté serveur
         
         /**
          * Sauvegarde la base de données SQLite dans IndexedDB pour la persistance.
@@ -1740,60 +1739,35 @@
             throw new Error(errorMsg);
         }
 
+        /**
+         * Génère du contenu avec recherche via l'API serveur (protège la clé API)
+         * @param {string} prompt - Le prompt utilisateur
+         * @param {string} systemInstruction - L'instruction système pour l'IA
+         * @returns {Promise<Object>} { text: string, sources: Array }
+         */
         async function generateContentWithSearch(prompt, systemInstruction) {
-            if (!isApiKeyValid) {
-                 return { text: translations[currentLang]?.alert_api_missing || "Erreur : La clé API Gemini est manquante ou invalide. Veuillez l'insérer dans le code.", sources: [] };
-            }
-            
-            const apiUrl = `${GEMINI_API_BASE}/${LLM_TEXT_MODEL}:generateContent?key=${API_KEY}`;
-            
-            // S'assurer que la réponse de l'IA est dans la langue sélectionnée
-            const langNames = {
-                'fr': 'Français', 'en': 'Anglais', 'es': 'Espagnol', 
-                'de': 'Allemand', 'it': 'Italien', 'pt': 'Portugais', 
-                'nl': 'Néerlandais', 'pl': 'Polonais'
-            };
-            const finalSystemInstruction = `${systemInstruction} Répondez dans la langue: ${langNames[currentLang] || 'Français'}.`;
-
-            const payload = {
-                contents: [{ parts: [{ text: prompt }] }],
-                // Outil Google Search Grounding
-                tools: [{ "google_search": {} }], 
-                systemInstruction: { parts: [{ text: finalSystemInstruction }] },
-            };
-
             try {
-                const response = await fetchWithExponentialBackoff(apiUrl, {
+                const response = await fetch('/api/gemini/generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify({
+                        prompt: prompt,
+                        systemInstruction: systemInstruction,
+                        language: currentLang
+                    })
                 });
                 
                 const result = await response.json();
-                const candidate = result.candidates?.[0];
-
-                if (candidate && candidate.content?.parts?.[0]?.text) {
-                    const text = candidate.content.parts[0].text;
-                    let sources = [];
-                    const groundingMetadata = candidate.groundingMetadata;
-                    
-                    if (groundingMetadata && groundingMetadata.groundingAttributions) {
-                        sources = groundingMetadata.groundingAttributions
-                            .map(attribution => ({
-                                uri: attribution.web?.uri,
-                                title: attribution.web?.title,
-                            }))
-                            .filter(source => source.uri && source.title);
-                    }
-                    return { text, sources };
+                
+                if (result.success && result.text) {
+                    return { text: result.text, sources: result.sources || [] };
                 } else {
-                    console.error("Gemini API error (no text candidate):", result);
-                    if (result.error && result.error.message.includes('API key')) {
-                         return { text: translations[currentLang]?.alert_api_invalid || "Erreur : La clé API semble invalide. Veuillez vérifier votre clé Gemini.", sources: [] };
-                    }
-                    return { text: translations[currentLang]?.alert_generation_failed || "Désolé, je n'ai pas pu générer de réponse claire. Veuillez réessayer ou reformuler.", sources: [] };
+                    console.error("Erreur API serveur Gemini:", result);
+                    const errorMsg = result.error?.includes('API_KEY') 
+                        ? translations[currentLang]?.alert_api_invalid || "Erreur : La clé API semble invalide côté serveur."
+                        : translations[currentLang]?.alert_generation_failed || "Désolé, je n'ai pas pu générer de réponse claire. Veuillez réessayer ou reformuler.";
+                    return { text: errorMsg, sources: [] };
                 }
-
             } catch (error) {
                 console.error("Error generating content:", error);
                 const errorMsg = translations[currentLang]?.alert_ai_error || "Une erreur est survenue lors de l'appel à l'IA";
@@ -1807,22 +1781,13 @@
          * @param {string} story - Le contenu du témoignage
          * @returns {Promise<boolean>} true si le témoignage est approuvé, false sinon
          */
+        /**
+         * Évalue un témoignage avec l'IA via le serveur (protège la clé API)
+         * @param {string} name - Le nom ou pseudonyme de l'auteur
+         * @param {string} story - Le contenu du témoignage
+         * @returns {Promise<boolean>} true si le témoignage est approuvé, false sinon
+         */
         async function evaluateTestimonialWithAI(name, story) {
-            if (!isApiKeyValid) {
-                // Si l'API n'est pas disponible, on accepte le témoignage par défaut (fallback)
-                console.warn("API key not available, accepting testimonial by default");
-                return true;
-            }
-
-            const apiUrl = `${GEMINI_API_BASE}/${LLM_TEXT_MODEL}:generateContent?key=${API_KEY}`;
-            
-            // Instruction système pour l'évaluation
-            const langNames = {
-                'fr': 'Français', 'en': 'Anglais', 'es': 'Espagnol', 
-                'de': 'Allemand', 'it': 'Italien', 'pt': 'Portugais', 
-                'nl': 'Néerlandais', 'pl': 'Polonais'
-            };
-            
             const systemInstruction = `Tu es un modérateur bienveillant pour un site web chrétien. Ta tâche est d'évaluer si un témoignage de foi est approprié à publier.
 
 Critères d'APPROBATION (réponds "APPROUVÉ"):
@@ -1848,26 +1813,26 @@ Témoignage: ${story}
 Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
 
             try {
-                const response = await fetchWithExponentialBackoff(apiUrl, {
+                const response = await fetch('/api/gemini/generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: prompt }] }],
-                        systemInstruction: { parts: [{ text: systemInstruction }] },
+                        prompt: prompt,
+                        systemInstruction: systemInstruction,
+                        language: currentLang
                     })
                 });
                 
                 const result = await response.json();
-                const candidate = result.candidates?.[0];
                 
-                if (candidate && candidate.content?.parts?.[0]?.text) {
-                    const responseText = candidate.content.parts[0].text.trim().toUpperCase();
+                if (result.success && result.text) {
+                    const responseText = result.text.trim().toUpperCase();
                     // Vérifier si la réponse contient "APPROUVÉ"
                     const isApproved = responseText.includes('APPROUVÉ') || responseText.includes('APPROUVE');
                     console.log(`Testimonial evaluation result: ${responseText} -> ${isApproved ? 'APPROVED' : 'REJECTED'}`);
                     return isApproved;
                 } else {
-                    console.error("Gemini API error (no text candidate):", result);
+                    console.error("Erreur API serveur Gemini:", result);
                     // En cas d'erreur API, on accepte par défaut pour ne pas bloquer les utilisateurs
                     return true;
                 }
@@ -1923,11 +1888,7 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
             const spinner = document.getElementById('query-spinner');
             const query = queryInput.value.trim();
 
-            if (!isApiKeyValid) {
-                resultDiv.innerHTML = `<p class="text-red-500">${translations[currentLang]?.alert_api_key_error || translations[currentLang]?.alert_api_missing || "Veuillez insérer votre clé API Gemini dans le code (variable API_KEY)."}</p>`;
-                resultDiv.classList.remove('hidden');
-                return;
-            }
+            // NOTE: Plus besoin de vérifier isApiKeyValid car l'API est gérée côté serveur
 
             if (!query) {
                 resultDiv.innerHTML = `<p class="text-red-500">${translations[currentLang].alert_empty_query || "Veuillez entrer une question."}</p>`;
@@ -2341,7 +2302,7 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
             }
             
             // Journaliser l'activité
-            logActivity('PRAYER_ACCEPTANCE_CONFIRMED');
+                logActivity('PRAYER_ACCEPTANCE_CONFIRMED');
             
             // Incrémenter le compteur global côté serveur
             incrementAcceptanceCounter().then(async newCount => {
@@ -2355,10 +2316,10 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
             });
             
             // Afficher le message de confirmation avec encouragement
-            confirmationMessage.classList.remove('hidden');
-            
-            // Mettre à jour le message de confirmation avec la traduction actuelle
-            const t = translations[currentLang] || translations.fr;
+                confirmationMessage.classList.remove('hidden');
+                
+                // Mettre à jour le message de confirmation avec la traduction actuelle
+                const t = translations[currentLang] || translations.fr;
             const confirmationP = confirmationMessage.querySelector('p');
             if (confirmationP) {
                 // Message d'encouragement enrichi
@@ -2385,9 +2346,9 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
                 // Fallback si la structure n'est pas trouvée
                 button.innerHTML = `<span class="flex items-center justify-center gap-2"><span>✓</span> <span>${t.steps_prayer_button_label}</span></span>`;
             }
-            
-            // Faire défiler vers le message de confirmation
-            confirmationMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                
+                // Faire défiler vers le message de confirmation
+                confirmationMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
         
         // Exposer les fonctions globales après l'import (pour utilisation dans le HTML)
@@ -2401,8 +2362,7 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
 
         // Lancement de l'initialisation après le chargement du document
         document.addEventListener('DOMContentLoaded', () => {
-            // Mise à jour de la vérification de la clé API après le chargement du DOM
-            isApiKeyValid = API_KEY && API_KEY !== "VOTRE_CLÉ_API_ICI";
+            // NOTE: isApiKeyValid est maintenant toujours true car l'API est gérée côté serveur
             
             initSQLite();
             

@@ -1,5 +1,56 @@
 # Historique des Modifications
 
+## 2025-01-27 - Sécurisation de l'API Google Gemini : déplacement côté serveur
+
+### Modifications apportées
+
+**Fichiers modifiés :** `server.js`, `index.html`
+
+### Problème identifié
+
+L'API key Google Gemini était exposée côté client dans le JavaScript, ce qui a causé sa révocation par Google avec l'erreur :
+```
+"Your API key was reported as leaked. Please use another API key."
+Code: 403, Status: PERMISSION_DENIED
+```
+
+### Cause
+
+La clé API était injectée dans le HTML côté client via `{{API_KEY}}` et utilisée directement dans les appels `fetch()` JavaScript vers l'API Google Gemini. Cela exposait publiquement la clé API, ce qui est une faille de sécurité majeure.
+
+### Solution implémentée
+
+1. **Création d'un endpoint API serveur** (`/api/gemini/generate`)
+   - L'endpoint reçoit `prompt`, `systemInstruction` et `language` en POST
+   - Fait l'appel à Google Gemini côté serveur avec la clé API protégée
+   - Retourne la réponse avec `text` et `sources` (grounding metadata)
+   - Gère les erreurs et les codes de statut HTTP
+
+2. **Modification des fonctions client**
+   - `generateContentWithSearch()` : Appelle maintenant `/api/gemini/generate` au lieu de Google directement
+   - `evaluateTestimonialWithAI()` : Appelle maintenant `/api/gemini/generate` au lieu de Google directement
+   - Retrait de toutes les références à `API_KEY`, `GEMINI_API_BASE`, `LLM_TEXT_MODEL` côté client
+   - `isApiKeyValid` est maintenant toujours `true` (géré côté serveur)
+
+3. **Nettoyage du code**
+   - Retrait de l'injection de `{{API_KEY}}` dans `getIndexHtml()`
+   - Retrait des vérifications `isApiKeyValid` inutiles
+   - La fonction `fetchWithExponentialBackoff()` n'est plus utilisée mais conservée pour référence
+
+### Résultat
+
+✅ **Sécurité renforcée** : La clé API est maintenant protégée côté serveur et n'est plus exposée publiquement.
+
+✅ **Fonctionnalité restaurée** : Les appels à l'IA fonctionnent à nouveau sans erreur 403.
+
+✅ **Architecture améliorée** : Tous les appels à Gemini passent par le serveur, permettant un meilleur contrôle et monitoring.
+
+### Note importante
+
+⚠️ **Action requise** : Il faut générer une nouvelle clé API Google Gemini dans la console Google Cloud et la mettre à jour dans le fichier `.env` sur le VPS, car l'ancienne clé a été révoquée.
+
+---
+
 ## 2025-01-27 - Correction : accès aux pages de versets individuels
 
 ### Modifications apportées

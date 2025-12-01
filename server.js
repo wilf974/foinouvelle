@@ -665,11 +665,8 @@ function getIndexHtml() {
     const indexPath = path.join(__dirname, 'index.html');
     let html = fs.readFileSync(indexPath, 'utf8');
     
-    // Remplacer les placeholders dans le HTML
-    html = html.replace(
-        /const API_KEY = "{{API_KEY}}";/,
-        `const API_KEY = "${process.env.API_KEY || ''}";`
-    );
+    // NOTE: L'API_KEY n'est plus injectée côté client pour des raisons de sécurité
+    // Tous les appels à Gemini passent maintenant par le serveur (/api/gemini/generate)
     
     html = html.replace(
         /const CONTACT_EMAIL = "{{CONTACT_EMAIL}}";/,
@@ -1014,6 +1011,124 @@ const server = http.createServer(async (req, res) => {
             console.error('Erreur API acceptance-counter increment:', error);
             sendJSON(res, 500, { success: false, error: error.message, count: 0 });
         }
+        return;
+    }
+    
+    // API endpoint pour générer du contenu avec Gemini (protège la clé API côté serveur)
+    if (parsedUrl.pathname === '/api/gemini/generate' && req.method === 'POST') {
+        const apiKey = process.env.API_KEY;
+        if (!apiKey) {
+            sendJSON(res, 500, { success: false, error: 'API_KEY non configurée côté serveur' });
+            return;
+        }
+        
+        let body = '';
+        req.on('data', chunk => {
+            body += chunk.toString();
+        });
+        
+        req.on('end', async () => {
+            try {
+                const { prompt, systemInstruction, language = 'fr' } = JSON.parse(body);
+                
+                if (!prompt) {
+                    sendJSON(res, 400, { success: false, error: 'Le prompt est requis' });
+                    return;
+                }
+                
+                // Noms de langues pour l'instruction système
+                const langNames = {
+                    'fr': 'Français', 'en': 'Anglais', 'es': 'Espagnol', 
+                    'de': 'Allemand', 'it': 'Italien', 'pt': 'Portugais', 
+                    'nl': 'Néerlandais', 'pl': 'Polonais'
+                };
+                const finalSystemInstruction = `${systemInstruction || ''} Répondez dans la langue: ${langNames[language] || 'Français'}.`.trim();
+                
+                const payload = {
+                    contents: [{ parts: [{ text: prompt }] }],
+                    tools: [{ "google_search": {} }], // Outil Google Search Grounding
+                    systemInstruction: { parts: [{ text: finalSystemInstruction }] },
+                };
+                
+                const options = {
+                    hostname: 'generativelanguage.googleapis.com',
+                    path: `/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`,
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+                
+                const geminiReq = https.request(options, (geminiRes) => {
+                    let data = '';
+                    
+                    geminiRes.on('data', (chunk) => {
+                        data += chunk;
+                    });
+                    
+                    geminiRes.on('end', () => {
+                        try {
+                            const result = JSON.parse(data);
+                            
+                            if (geminiRes.statusCode !== 200) {
+                                console.error('Erreur API Gemini:', result);
+                                sendJSON(res, geminiRes.statusCode || 500, { 
+                                    success: false, 
+                                    error: result.error?.message || 'Erreur API Gemini',
+                                    code: result.error?.code || 'UNKNOWN'
+                                });
+                                return;
+                            }
+                            
+                            const candidate = result.candidates?.[0];
+                            
+                            if (candidate && candidate.content?.parts?.[0]?.text) {
+                                const text = candidate.content.parts[0].text;
+                                let sources = [];
+                                const groundingMetadata = candidate.groundingMetadata;
+                                
+                                if (groundingMetadata && groundingMetadata.groundingAttributions) {
+                                    sources = groundingMetadata.groundingAttributions
+                                        .map(attribution => ({
+                                            uri: attribution.web?.uri,
+                                            title: attribution.web?.title,
+                                        }))
+                                        .filter(source => source.uri && source.title);
+                                }
+                                
+                                sendJSON(res, 200, { 
+                                    success: true, 
+                                    text: text, 
+                                    sources: sources 
+                                });
+                            } else {
+                                console.error("Gemini API error (no text candidate):", result);
+                                sendJSON(res, 500, { 
+                                    success: false, 
+                                    error: 'Aucune réponse générée par Gemini',
+                                    result: result
+                                });
+                            }
+                        } catch (error) {
+                            console.error('Erreur parsing réponse Gemini:', error);
+                            sendJSON(res, 500, { success: false, error: error.message });
+                        }
+                    });
+                });
+                
+                geminiReq.on('error', (error) => {
+                    console.error('Erreur requête Gemini:', error);
+                    sendJSON(res, 500, { success: false, error: error.message });
+                });
+                
+                geminiReq.write(JSON.stringify(payload));
+                geminiReq.end();
+                
+            } catch (error) {
+                console.error('Erreur API gemini/generate:', error);
+                sendJSON(res, 500, { success: false, error: error.message });
+            }
+        });
         return;
     }
     
