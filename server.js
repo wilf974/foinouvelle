@@ -879,8 +879,16 @@ function getAdminDashboardHtml() {
         
         <!-- Verset de la semaine -->
         <div class="bg-white p-6 rounded-lg shadow mb-8">
-            <h2 class="text-xl font-bold mb-4">Verset de la Semaine</h2>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">Verset de la Semaine</h2>
+                <button id="generateVerseBtn" onclick="generateNewVerse()" 
+                    class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition font-semibold text-sm">
+                    <span id="generateVerseText">🔄 Générer un nouveau verset</span>
+                    <span id="generateVerseSpinner" class="hidden">⏳ Génération...</span>
+                </button>
+            </div>
             <div id="weeklyVerse" class="text-gray-700"></div>
+            <div id="verseMessage" class="mt-4 hidden"></div>
         </div>
         
         <!-- Liste des témoignages -->
@@ -1026,6 +1034,49 @@ function getAdminDashboardHtml() {
                 }
             } catch (error) {
                 alert('Erreur de connexion');
+            }
+        }
+        
+        // Générer un nouveau verset
+        async function generateNewVerse() {
+            const btn = document.getElementById('generateVerseBtn');
+            const btnText = document.getElementById('generateVerseText');
+            const spinner = document.getElementById('generateVerseSpinner');
+            const messageDiv = document.getElementById('verseMessage');
+            
+            btn.disabled = true;
+            btnText.classList.add('hidden');
+            spinner.classList.remove('hidden');
+            messageDiv.classList.add('hidden');
+            
+            try {
+                const response = await fetch('/api/admin/generate-verse', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    messageDiv.className = 'mt-4 p-3 bg-green-100 border-l-4 border-green-500 rounded text-green-800';
+                    messageDiv.textContent = '✅ Nouveau verset généré avec succès !';
+                    messageDiv.classList.remove('hidden');
+                    
+                    // Recharger les statistiques pour afficher le nouveau verset
+                    loadStats();
+                } else {
+                    messageDiv.className = 'mt-4 p-3 bg-red-100 border-l-4 border-red-500 rounded text-red-800';
+                    messageDiv.textContent = '❌ Erreur: ' + (data.error || 'Impossible de générer le verset');
+                    messageDiv.classList.remove('hidden');
+                }
+            } catch (error) {
+                messageDiv.className = 'mt-4 p-3 bg-red-100 border-l-4 border-red-500 rounded text-red-800';
+                messageDiv.textContent = '❌ Erreur de connexion: ' + error.message;
+                messageDiv.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btnText.classList.remove('hidden');
+                spinner.classList.add('hidden');
             }
         }
         
@@ -1864,6 +1915,33 @@ const server = http.createServer(async (req, res) => {
             db.prepare('UPDATE acceptance_counter SET count = ? WHERE id = 1').run(count);
             sendJSON(res, 200, { success: true, count: count });
         } catch (error) {
+            sendJSON(res, 500, { success: false, error: error.message });
+        }
+        return;
+    }
+    
+    // API admin - Générer un nouveau verset manuellement
+    if (parsedUrl.pathname === '/api/admin/generate-verse' && req.method === 'POST') {
+        if (!requireAuth(req, res)) return;
+        
+        try {
+            console.log('🔄 Génération manuelle d\'un nouveau verset demandée par l\'admin...');
+            const newVerse = await generateWeeklyVerse();
+            
+            if (newVerse && newVerse.id) {
+                sendJSON(res, 200, { 
+                    success: true, 
+                    verse: newVerse,
+                    message: `Nouveau verset généré: ${newVerse.reference} (${newVerse.id})`
+                });
+            } else {
+                sendJSON(res, 500, { 
+                    success: false, 
+                    error: 'Impossible de générer le verset. Vérifiez la clé API Gemini.' 
+                });
+            }
+        } catch (error) {
+            console.error('Erreur génération manuelle verset:', error);
             sendJSON(res, 500, { success: false, error: error.message });
         }
         return;
