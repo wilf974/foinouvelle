@@ -1725,3 +1725,27 @@ Mise à jour du modèle utilisé dans `server.js` pour utiliser `gemini-2.5-flas
 
 ✅ **Cohérence** : Le même modèle est utilisé partout.
 ✅ **Résolution** : L'erreur de quota devrait être résolue en utilisant le modèle qui fonctionne déjà sur le frontend.
+
+---
+
+## 2025-12-01 - Correction d'une erreur de référence de variable dans l'admin
+
+### Modifications apportées
+
+**Fichier modifié :** `server.js`
+
+### Problème identifié
+
+Erreur 500 lors de la génération d'un verset depuis l'admin : `ReferenceError: VERSE_FILE is not defined`.
+
+### Cause
+
+La variable `VERSE_FILE` était utilisée dans la route `/api/admin/generate-verse` mais n'était pas définie. La bonne variable définie en début de fichier est `VERSE_CACHE_FILE`.
+
+### Solution implémentée
+
+Remplacement de `VERSE_FILE` par `VERSE_CACHE_FILE` dans `server.js`.
+
+### Résultat
+
+✅ **Correction** : La génération de verset devrait maintenant fonctionner correctement et sauvegarder le résultat dans le fichier de cache.

@@ -2355,7 +2355,7 @@ Le verset doit être :
                     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
                 });
 
-                fs.writeFileSync(VERSE_FILE, JSON.stringify(verse, null, 2));
+                fs.writeFileSync(VERSE_CACHE_FILE, JSON.stringify(verse, null, 2));
 
                 let archive = [];
                 if (fs.existsSync(VERSE_ARCHIVE_FILE)) {
