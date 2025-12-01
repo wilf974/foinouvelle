@@ -1982,7 +1982,29 @@ Le verset doit être :
 
                     res2.on('end', () => {
                         try {
+                            // Vérifier le code de statut HTTP
+                            if (res2.statusCode !== 200) {
+                                console.error('❌ Erreur API Gemini (status:', res2.statusCode, '):', data);
+                                sendJSON(res, res2.statusCode || 500, { 
+                                    success: false, 
+                                    error: `Erreur API Gemini (${res2.statusCode}): ${data.substring(0, 200)}` 
+                                });
+                                resolve();
+                                return;
+                            }
+                            
                             const response = JSON.parse(data);
+                            
+                            // Vérifier si c'est une erreur de l'API
+                            if (response.error) {
+                                console.error('❌ Erreur API Gemini:', response.error);
+                                sendJSON(res, 500, { 
+                                    success: false, 
+                                    error: `Erreur API Gemini: ${response.error.message || JSON.stringify(response.error)}` 
+                                });
+                                resolve();
+                                return;
+                            }
                             
                             if (response.candidates && response.candidates[0] && response.candidates[0].content) {
                                 const text = response.candidates[0].content.parts[0].text;
@@ -1990,10 +2012,27 @@ Le verset doit être :
                                 // Extraire le JSON de la réponse
                                 let jsonMatch = text.match(/\{[\s\S]*\}/);
                                 if (!jsonMatch) {
-                                    jsonMatch = [text];
+                                    console.error('❌ Aucun JSON trouvé dans la réponse:', text.substring(0, 200));
+                                    sendJSON(res, 500, { 
+                                        success: false, 
+                                        error: 'Format de réponse invalide de Gemini' 
+                                    });
+                                    resolve();
+                                    return;
                                 }
                                 
-                                const verseData = JSON.parse(jsonMatch[0]);
+                                let verseData;
+                                try {
+                                    verseData = JSON.parse(jsonMatch[0]);
+                                } catch (parseError) {
+                                    console.error('❌ Erreur parsing JSON:', parseError, 'Texte:', jsonMatch[0]);
+                                    sendJSON(res, 500, { 
+                                        success: false, 
+                                        error: 'Erreur lors du parsing du JSON: ' + parseError.message 
+                                    });
+                                    resolve();
+                                    return;
+                                }
                                 
                                 // Utiliser la date actuelle pour forcer un nouveau verset
                                 const now = new Date();
@@ -2009,7 +2048,11 @@ Le verset doit être :
                                 };
                                 
                                 // Sauvegarder dans le cache (verset actuel)
-                                fs.writeFileSync(VERSE_CACHE_FILE, JSON.stringify(verse, null, 2));
+                                try {
+                                    fs.writeFileSync(VERSE_CACHE_FILE, JSON.stringify(verse, null, 2));
+                                } catch (writeError) {
+                                    console.error('❌ Erreur écriture cache:', writeError);
+                                }
                                 
                                 // Ajouter à l'archive
                                 let archive = [];
@@ -2029,7 +2072,11 @@ Le verset doit être :
                                     if (archive.length > 52) {
                                         archive = archive.slice(0, 52);
                                     }
-                                    fs.writeFileSync(VERSE_ARCHIVE_FILE, JSON.stringify(archive, null, 2));
+                                    try {
+                                        fs.writeFileSync(VERSE_ARCHIVE_FILE, JSON.stringify(archive, null, 2));
+                                    } catch (writeError) {
+                                        console.error('❌ Erreur écriture archive:', writeError);
+                                    }
                                 }
                                 
                                 console.log('✅ Nouveau verset généré manuellement:', verse.reference, `(${verse.id})`);
@@ -2041,15 +2088,15 @@ Le verset doit être :
                                 });
                                 resolve();
                             } else {
-                                console.error('❌ Réponse API invalide:', response);
+                                console.error('❌ Réponse API invalide (pas de candidates):', JSON.stringify(response).substring(0, 500));
                                 sendJSON(res, 500, { 
                                     success: false, 
-                                    error: 'Réponse API invalide' 
+                                    error: 'Réponse API invalide: pas de candidates dans la réponse' 
                                 });
                                 resolve();
                             }
                         } catch (error) {
-                            console.error('❌ Erreur lors du parsing de la réponse:', error);
+                            console.error('❌ Erreur lors du parsing de la réponse:', error, 'Data:', data.substring(0, 500));
                             sendJSON(res, 500, { 
                                 success: false, 
                                 error: 'Erreur lors du parsing de la réponse: ' + error.message 
