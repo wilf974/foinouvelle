@@ -1328,10 +1328,10 @@ function getAdminDashboardHtml() {
                         }, 3000);
                     }
                 } else {
-                    alert('❌ Erreur: ' + (data.error || 'Impossible d\'enregistrer'));
+                    alert('❌ Erreur: ' + (data.error || 'Impossible d\\'enregistrer'));
                 }
             } catch (error) {
-                alert('Erreur lors de l\'enregistrement: ' + error.message);
+                alert('Erreur lors de l\\'enregistrement: ' + error.message);
             }
         }
         
