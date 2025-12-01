@@ -1161,15 +1161,22 @@ function getAdminDashboardHtml() {
                     
                     fields.forEach(field => {
                         const value = content[field.key] || '';
-                        html += \`
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">\${field.label}</label>
-                                \${field.type === 'textarea' 
-                                    ? \`<textarea id="field_\${section.key}_\${field.key}" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" rows="\${field.rows || 4}" placeholder="\${field.placeholder || ''}">\${escapeHtml(value)}</textarea>\`
-                                    : \`<input type="text" id="field_\${section.key}_\${field.key}" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value="\${escapeHtml(value)}" placeholder="\${field.placeholder || ''}">\`
-                                }
-                            </div>
-                        \`;
+                        const escapedValue = escapeHtml(value);
+                        const fieldId = \`field_\${section.key}_\${field.key}\`;
+                        const fieldLabel = escapeHtml(field.label);
+                        const placeholder = field.placeholder || '';
+                        
+                        if (field.type === 'textarea') {
+                            html += '<div class="mb-4">';
+                            html += '<label class="block text-sm font-medium text-gray-700 mb-2">' + fieldLabel + '</label>';
+                            html += '<textarea id="' + fieldId + '" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" rows="' + (field.rows || 4) + '" placeholder="' + escapeHtml(placeholder) + '">' + escapedValue + '</textarea>';
+                            html += '</div>';
+                        } else {
+                            html += '<div class="mb-4">';
+                            html += '<label class="block text-sm font-medium text-gray-700 mb-2">' + fieldLabel + '</label>';
+                            html += '<input type="text" id="' + fieldId + '" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value="' + escapedValue + '" placeholder="' + escapeHtml(placeholder) + '">';
+                            html += '</div>';
+                        }
                     });
                     
                     html += \`
