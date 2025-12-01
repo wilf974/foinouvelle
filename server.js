@@ -1467,6 +1467,31 @@ function getIndexHtml() {
         );
     }
     
+    // Charger tout le contenu personnalisé du site
+    let siteContent = {};
+    try {
+        const rows = db.prepare('SELECT section_key, content_json FROM site_content WHERE language = ?').all('fr');
+        rows.forEach(row => {
+            try {
+                const content = JSON.parse(row.content_json);
+                // Aplatir la structure pour correspondre aux clés de traduction
+                // Ex: section 'hero', champ 'title' -> clé 'hero_title'
+                // Sauf si la clé existe déjà dans translations (ex: 'hero_title')
+                
+                // Stratégie : on passe l'objet structuré au front, et le front fera le mapping
+                siteContent[row.section_key] = content;
+            } catch (e) {
+                console.error(`Erreur parsing JSON pour section ${row.section_key}:`, e);
+            }
+        });
+    } catch (error) {
+        console.error('Erreur chargement contenu site:', error);
+    }
+    
+    // Injecter le contenu dans le HTML
+    const contentScript = `<script>window.SERVER_CONTENT = ${JSON.stringify(siteContent)};</script>`;
+    html = html.replace('</head>', `${contentScript}\n</head>`);
+    
     return html;
 }
 
