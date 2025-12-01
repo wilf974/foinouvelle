@@ -1689,3 +1689,10 @@ L'application est maintenant multilingue avec un support complet pour 8 langues 
 ### Résultat
 
 ✅ **CMS Fonctionnel** : L'administrateur peut maintenant modifier n'importe quel texte du site depuis `/admin` et voir le résultat instantanément sur la page d'accueil.
+
+- **2025-12-01**:
+  - Implémentation de l'édition dynamique du contenu du site depuis le panel admin (`/admin`).
+  - Injection du contenu serveur (`window.SERVER_CONTENT`) dans `index.html`.
+  - Fusion dynamique des traductions côté client pour surcharger les textes par défaut.
+  - Ajout de la possibilité de modifier le texte de la "Prière de Conversion" depuis l'admin.
+  - Correction de bugs d'affichage et de syntaxe dans le dashboard admin.
