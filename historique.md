@@ -1749,3 +1749,26 @@ Remplacement de `VERSE_FILE` par `VERSE_CACHE_FILE` dans `server.js`.
 ### Résultat
 
 ✅ **Correction** : La génération de verset devrait maintenant fonctionner correctement et sauvegarder le résultat dans le fichier de cache.
+
+---
+
+## 2025-12-01 - Correction de l'erreur EISDIR sur le fichier de cache
+
+### Modifications apportées
+
+**Fichier modifié :** `server.js`
+
+### Problème identifié
+
+Erreur `EISDIR: illegal operation on a directory, open '/app/weekly-verse.json'` lors de la tentative d'écriture ou de lecture du fichier de cache des versets. Cela indique que `weekly-verse.json` existait en tant que dossier sur le serveur (probablement créé accidentellement ou par un montage de volume Docker).
+
+### Solution implémentée
+
+Ajout de vérifications `fs.statSync()` avant chaque lecture ou écriture de `VERSE_CACHE_FILE`.
+- Si le chemin existe et est un répertoire, il est automatiquement supprimé avec `fs.rmSync({ recursive: true, force: true })`.
+- Cela permet au code de recréer correctement le fichier JSON ensuite.
+
+### Résultat
+
+✅ **Robustesse** : Le serveur gère maintenant automatiquement le cas où le fichier de cache est corrompu ou transformé en dossier.
+

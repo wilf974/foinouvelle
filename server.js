@@ -142,6 +142,14 @@ transporter.verify((error, success) => {
 function loadWeeklyVerse() {
     try {
         if (fs.existsSync(VERSE_CACHE_FILE)) {
+            // Vérifier si c'est un dossier et le supprimer si nécessaire
+            const stats = fs.statSync(VERSE_CACHE_FILE);
+            if (stats.isDirectory()) {
+                console.log('⚠️ weekly-verse.json est un dossier, suppression...');
+                fs.rmSync(VERSE_CACHE_FILE, { recursive: true, force: true });
+                return null;
+            }
+
             const data = fs.readFileSync(VERSE_CACHE_FILE, 'utf8');
 
             // Vérifier que le fichier n'est pas vide
@@ -300,6 +308,13 @@ Le verset doit être :
                             };
 
                             // Sauvegarder dans le cache (verset actuel)
+                            if (fs.existsSync(VERSE_CACHE_FILE)) {
+                                const stats = fs.statSync(VERSE_CACHE_FILE);
+                                if (stats.isDirectory()) {
+                                    console.log('⚠️ weekly-verse.json est un dossier, suppression avant écriture...');
+                                    fs.rmSync(VERSE_CACHE_FILE, { recursive: true, force: true });
+                                }
+                            }
                             fs.writeFileSync(VERSE_CACHE_FILE, JSON.stringify(verse, null, 2));
 
                             // Ajouter à l'archive
@@ -2355,6 +2370,13 @@ Le verset doit être :
                     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
                 });
 
+                if (fs.existsSync(VERSE_CACHE_FILE)) {
+                    const stats = fs.statSync(VERSE_CACHE_FILE);
+                    if (stats.isDirectory()) {
+                        console.log('⚠️ weekly-verse.json est un dossier, suppression avant écriture...');
+                        fs.rmSync(VERSE_CACHE_FILE, { recursive: true, force: true });
+                    }
+                }
                 fs.writeFileSync(VERSE_CACHE_FILE, JSON.stringify(verse, null, 2));
 
                 let archive = [];
