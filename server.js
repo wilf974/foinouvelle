@@ -36,7 +36,7 @@ const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 heures
 function initDatabase() {
     try {
         db = new Database(DB_FILE);
-        
+
         // Créer la table pour le compteur global d'acceptations
         db.exec(`
             CREATE TABLE IF NOT EXISTS acceptance_counter (
@@ -44,7 +44,7 @@ function initDatabase() {
                 count INTEGER DEFAULT 0
             )
         `);
-        
+
         // Créer la table pour les témoignages côté serveur (pour l'admin)
         db.exec(`
             CREATE TABLE IF NOT EXISTS testimonials (
@@ -57,7 +57,7 @@ function initDatabase() {
                 adminApproved INTEGER DEFAULT 0
             )
         `);
-        
+
         // Créer la table pour le contenu personnalisable du site
         db.exec(`
             CREATE TABLE IF NOT EXISTS site_content (
@@ -68,13 +68,13 @@ function initDatabase() {
                 updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )
         `);
-        
+
         // Initialiser le compteur à 0 s'il n'existe pas
         const existing = db.prepare('SELECT count FROM acceptance_counter WHERE id = 1').get();
         if (!existing) {
             db.prepare('INSERT INTO acceptance_counter (id, count) VALUES (1, 0)').run();
         }
-        
+
         console.log('✅ Base de données SQLite initialisée:', DB_FILE);
     } catch (error) {
         console.error('❌ Erreur lors de l\'initialisation de la base de données:', error);
@@ -143,32 +143,32 @@ function loadWeeklyVerse() {
     try {
         if (fs.existsSync(VERSE_CACHE_FILE)) {
             const data = fs.readFileSync(VERSE_CACHE_FILE, 'utf8');
-            
+
             // Vérifier que le fichier n'est pas vide
             if (!data || data.trim().length === 0) {
                 console.log('⚠️ Fichier weekly-verse.json vide, génération d\'un nouveau verset...');
                 return null; // Retourner null pour forcer la génération
             }
-            
+
             const verse = JSON.parse(data);
-            
+
             // Vérifier que le verset a les propriétés nécessaires
             if (!verse || !verse.dateISO || !verse.text || !verse.reference) {
                 console.log('⚠️ Verset invalide dans le cache, génération d\'un nouveau verset...');
                 return null;
             }
-            
+
             // Vérifier si le verset est encore valide (pour la semaine en cours)
             const verseDate = new Date(verse.dateISO + 'T00:00:00');
             const now = new Date();
-            
+
             // Calculer le début de la semaine actuelle (lundi)
             const dayOfWeek = now.getDay();
             const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
             const currentWeekStart = new Date(now);
             currentWeekStart.setDate(now.getDate() - daysToMonday);
             currentWeekStart.setHours(0, 0, 0, 0);
-            
+
             // Si le verset est pour la semaine en cours, le retourner
             if (verseDate.getTime() === currentWeekStart.getTime()) {
                 return verse;
@@ -186,7 +186,7 @@ function loadWeeklyVerse() {
             console.error('Erreur lors de la suppression du fichier corrompu:', unlinkError);
         }
     }
-    
+
     // Retourner un verset par défaut si aucun cache valide
     // Calculer le début de la semaine actuelle (lundi)
     const now = new Date();
@@ -195,7 +195,7 @@ function loadWeeklyVerse() {
     const weekStart = new Date(now);
     weekStart.setDate(now.getDate() - daysToMonday);
     weekStart.setHours(0, 0, 0, 0);
-    
+
     const defaultDateISO = weekStart.toISOString().split('T')[0];
     return {
         id: defaultDateISO,
@@ -267,41 +267,41 @@ Le verset doit être :
                 res.on('end', () => {
                     try {
                         const response = JSON.parse(data);
-                        
+
                         if (response.candidates && response.candidates[0] && response.candidates[0].content) {
                             const text = response.candidates[0].content.parts[0].text;
-                            
+
                             // Extraire le JSON de la réponse
                             let jsonMatch = text.match(/\{[\s\S]*\}/);
                             if (!jsonMatch) {
                                 // Si pas de JSON, essayer de parser directement
                                 jsonMatch = [text];
                             }
-                            
+
                             const verseData = JSON.parse(jsonMatch[0]);
-                            
-            const now = new Date();
-            // Calculer le début de la semaine (lundi)
-            const dayOfWeek = now.getDay(); // 0 = dimanche, 1 = lundi, etc.
-            const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Si dimanche, aller au lundi précédent
-            const weekStart = new Date(now);
-            weekStart.setDate(now.getDate() - daysToMonday);
-            weekStart.setHours(0, 0, 0, 0);
-            
-            const verseId = weekStart.toISOString().split('T')[0];
-            const verse = {
-                id: verseId, // ID unique basé sur le début de la semaine (lundi)
-                text: verseData.text || 'Car Dieu a tant aimé le monde...',
-                reference: verseData.reference || 'Jean 3:16',
-                date: 'Semaine du ' + weekStart.toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).split(' ').slice(1).join(' '),
-                dateISO: verseId,
-                theme: verseData.theme || 'Amour de Dieu',
-                slug: `verset-${verseId}` // Slug pour l'URL
-            };
-                            
+
+                            const now = new Date();
+                            // Calculer le début de la semaine (lundi)
+                            const dayOfWeek = now.getDay(); // 0 = dimanche, 1 = lundi, etc.
+                            const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Si dimanche, aller au lundi précédent
+                            const weekStart = new Date(now);
+                            weekStart.setDate(now.getDate() - daysToMonday);
+                            weekStart.setHours(0, 0, 0, 0);
+
+                            const verseId = weekStart.toISOString().split('T')[0];
+                            const verse = {
+                                id: verseId, // ID unique basé sur le début de la semaine (lundi)
+                                text: verseData.text || 'Car Dieu a tant aimé le monde...',
+                                reference: verseData.reference || 'Jean 3:16',
+                                date: 'Semaine du ' + weekStart.toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).split(' ').slice(1).join(' '),
+                                dateISO: verseId,
+                                theme: verseData.theme || 'Amour de Dieu',
+                                slug: `verset-${verseId}` // Slug pour l'URL
+                            };
+
                             // Sauvegarder dans le cache (verset actuel)
                             fs.writeFileSync(VERSE_CACHE_FILE, JSON.stringify(verse, null, 2));
-                            
+
                             // Ajouter à l'archive
                             let archive = [];
                             if (fs.existsSync(VERSE_ARCHIVE_FILE)) {
@@ -311,7 +311,7 @@ Le verset doit être :
                                     archive = [];
                                 }
                             }
-                            
+
                             // Vérifier si ce verset n'existe pas déjà (éviter les doublons)
                             const exists = archive.find(v => v.id === verse.id);
                             if (!exists) {
@@ -322,9 +322,9 @@ Le verset doit être :
                                 }
                                 fs.writeFileSync(VERSE_ARCHIVE_FILE, JSON.stringify(archive, null, 2));
                             }
-                            
+
                             console.log('✅ Nouveau verset hebdomadaire généré:', verse.reference, `(${verse.id})`);
-                            
+
                             resolve(verse);
                         } else {
                             console.error('❌ Réponse API invalide:', response);
@@ -356,7 +356,7 @@ Le verset doit être :
  */
 async function checkAndUpdateWeeklyVerse() {
     const verse = loadWeeklyVerse();
-    
+
     // Si aucun verset valide n'a été chargé, en générer un nouveau
     if (!verse || !verse.dateISO) {
         const now = new Date();
@@ -369,17 +369,17 @@ async function checkAndUpdateWeeklyVerse() {
         await generateWeeklyVerse();
         return;
     }
-    
+
     const verseDate = new Date(verse.dateISO + 'T00:00:00');
     const now = new Date();
-    
+
     // Calculer le début de la semaine actuelle (lundi)
     const dayOfWeek = now.getDay();
     const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
     const currentWeekStart = new Date(now);
     currentWeekStart.setDate(now.getDate() - daysToMonday);
     currentWeekStart.setHours(0, 0, 0, 0);
-    
+
     // Si le verset n'est pas pour la semaine en cours, en générer un nouveau
     if (verseDate.getTime() !== currentWeekStart.getTime()) {
         console.log('🔄 Génération d\'un nouveau verset hebdomadaire pour la semaine du', currentWeekStart.toLocaleDateString('fr-FR'));
@@ -403,31 +403,31 @@ function getFullISO8601Date(dateISO) {
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
         const seconds = String(now.getSeconds()).padStart(2, '0');
-        
+
         // Déterminer le fuseau horaire (France : +01:00 en hiver, +02:00 en été)
         const offset = -now.getTimezoneOffset();
         const offsetHours = String(Math.floor(Math.abs(offset) / 60)).padStart(2, '0');
         const offsetMinutes = String(Math.abs(offset) % 60).padStart(2, '0');
         const offsetSign = offset >= 0 ? '+' : '-';
-        
+
         return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${offsetSign}${offsetHours}:${offsetMinutes}`;
     }
-    
+
     // Si on a une date ISO simple (YYYY-MM-DD), on ajoute l'heure et le fuseau horaire
     const date = new Date(dateISO + 'T00:00:00');
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
-    
+
     // Utiliser 10:00:00 comme heure par défaut (meilleure pratique)
     const hours = '10';
     const minutes = '00';
     const seconds = '00';
-    
+
     // Fuseau horaire France (UTC+1 en hiver, UTC+2 en été)
     // On utilise +01:00 par défaut (on pourrait détecter automatiquement)
     const offset = '+01:00';
-    
+
     return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${offset}`;
 }
 
@@ -472,7 +472,7 @@ function getVerseById(verseId) {
     if (archivedVerse) {
         return archivedVerse;
     }
-    
+
     // Si non trouvé dans l'archive, vérifier si c'est le verset de la semaine actuelle
     const weeklyVerse = loadWeeklyVerse();
     const weeklyVerseId = weeklyVerse.id || weeklyVerse.dateISO;
@@ -483,7 +483,7 @@ function getVerseById(verseId) {
             id: weeklyVerseId
         };
     }
-    
+
     return null;
 }
 
@@ -494,7 +494,7 @@ function getVerseById(verseId) {
 async function generateDynamicSitemap() {
     const archive = loadVerseArchive();
     const baseUrl = 'https://foinouvelle.woutils.com';
-    
+
     let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -529,7 +529,7 @@ async function generateDynamicSitemap() {
 
     sitemap += `
 </urlset>`;
-    
+
     return sitemap;
 }
 
@@ -544,7 +544,7 @@ function generateVersePage(verse) {
     const currentIndex = archive.findIndex(v => v.id === verse.id);
     const prevVerse = currentIndex > 0 ? archive[currentIndex - 1] : null;
     const nextVerse = currentIndex >= 0 && currentIndex < archive.length - 1 ? archive[currentIndex + 1] : null;
-    
+
     // Remplacer le contenu principal par la page du verset
     const verseHtml = `
         <section class="py-16 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl shadow-lg mb-12">
@@ -610,13 +610,13 @@ function generateVersePage(verse) {
             </div>
         </section>
     `;
-    
+
     // Injecter le verset dans le HTML de base
     let html = baseHtml.replace(
         /<main class="w-full max-w-4xl mx-auto p-4 md:p-8 flex-grow">[\s\S]*?<\/main>/,
         `<main class="w-full max-w-4xl mx-auto p-4 md:p-8 flex-grow">${verseHtml}</main>`
     );
-    
+
     // Ajouter le schéma Article pour ce verset spécifique (corrigé selon recommandations Google)
     const fullDateISO = getFullISO8601Date(verse.dateISO);
     const articleSchema = {
@@ -643,14 +643,14 @@ function generateVersePage(verse) {
         },
         "inLanguage": "fr"
     };
-    
+
     // Injecter le schéma Article dans le JSON-LD
     const articleJson = JSON.stringify(articleSchema, null, 2);
     html = html.replace(
         /(\]\s*\}\s*<\/script>)/,
         `,\n        ${articleJson.replace(/\n/g, '\n        ')}\n      $1`
     );
-    
+
     return html;
 }
 
@@ -661,7 +661,7 @@ function generateVersePage(verse) {
 function generateArchivePage() {
     const archive = loadVerseArchive();
     const baseHtml = getIndexHtml();
-    
+
     let archiveContent = `
         <section class="py-16">
             <div class="text-center mb-12">
@@ -684,7 +684,7 @@ function generateArchivePage() {
             
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
     `;
-    
+
     archive.forEach((verse, index) => {
         archiveContent += `
             <article class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition duration-300 border-l-4 border-indigo-500" itemscope itemtype="https://schema.org/Article">
@@ -702,7 +702,7 @@ function generateArchivePage() {
             </article>
         `;
     });
-    
+
     archiveContent += `
             </div>
             
@@ -724,7 +724,7 @@ function generateArchivePage() {
             </div>
         </section>
     `;
-    
+
     return baseHtml.replace(
         /<main class="w-full max-w-4xl mx-auto p-4 md:p-8 flex-grow">[\s\S]*?<\/main>/,
         `<main class="w-full max-w-4xl mx-auto p-4 md:p-8 flex-grow">${archiveContent}</main>`
@@ -1397,39 +1397,39 @@ function getAdminDashboardHtml() {
 function getIndexHtml() {
     const indexPath = path.join(__dirname, 'index.html');
     let html = fs.readFileSync(indexPath, 'utf8');
-    
+
     // NOTE: L'API_KEY n'est plus injectée côté client pour des raisons de sécurité
     // Tous les appels à Gemini passent maintenant par le serveur (/api/gemini/generate)
-    
+
     html = html.replace(
         /const CONTACT_EMAIL = "{{CONTACT_EMAIL}}";/,
         `const CONTACT_EMAIL = "${process.env.CONTACT_EMAIL || ''}";`
     );
-    
+
     html = html.replace(
         /const CONTACT_PHONE = "{{CONTACT_PHONE}}";/,
         `const CONTACT_PHONE = "${process.env.CONTACT_PHONE || ''}";`
     );
-    
+
     html = html.replace(
         /const ADMIN_NOTIFICATION_EMAIL = "{{ADMIN_NOTIFICATION_EMAIL}}";/,
         `const ADMIN_NOTIFICATION_EMAIL = "${process.env.ADMIN_NOTIFICATION_EMAIL || ''}";`
     );
-    
+
     // Remplacer les placeholders dans les données structurées Schema.org
     html = html.replace(/\{\{CONTACT_EMAIL\}\}/g, process.env.CONTACT_EMAIL || '');
     html = html.replace(/\{\{CONTACT_PHONE\}\}/g, process.env.CONTACT_PHONE || '');
-    
+
     // Charger et injecter le verset hebdomadaire
     const weeklyVerse = loadWeeklyVerse();
     const verseId = weeklyVerse.id || weeklyVerse.dateISO || new Date().toISOString().split('T')[0];
-    
+
     html = html.replace(/\{\{WEEKLY_VERSE_TEXT\}\}/g, weeklyVerse.text || 'Car Dieu a tant aimé le monde qu\'il a donné son Fils unique...');
     html = html.replace(/\{\{WEEKLY_VERSE_REFERENCE\}\}/g, weeklyVerse.reference || 'Jean 3:16');
     html = html.replace(/\{\{WEEKLY_VERSE_DATE\}\}/g, weeklyVerse.date || 'Semaine du ' + new Date().toLocaleDateString('fr-FR'));
     html = html.replace(/\{\{WEEKLY_VERSE_DATE_ISO\}\}/g, weeklyVerse.dateISO || new Date().toISOString().split('T')[0]);
     html = html.replace(/\{\{WEEKLY_VERSE_ID\}\}/g, verseId);
-    
+
     // Ajouter le schéma Article pour le verset actuel dans les données structurées (corrigé selon recommandations Google)
     if (weeklyVerse.id || weeklyVerse.dateISO) {
         const fullDateISO = getFullISO8601Date(weeklyVerse.dateISO || new Date().toISOString().split('T')[0]);
@@ -1457,7 +1457,7 @@ function getIndexHtml() {
             },
             "inLanguage": "fr"
         };
-        
+
         // Injecter le schéma Article dans le JSON-LD existant
         const articleJson = JSON.stringify(articleSchema, null, 2);
         // Remplacer la fin du @graph pour ajouter l'article
@@ -1466,7 +1466,7 @@ function getIndexHtml() {
             `,\n        ${articleJson.replace(/\n/g, '\n        ')}\n      $1`
         );
     }
-    
+
     // Charger tout le contenu personnalisé du site
     let siteContent = {};
     try {
@@ -1477,7 +1477,7 @@ function getIndexHtml() {
                 // Aplatir la structure pour correspondre aux clés de traduction
                 // Ex: section 'hero', champ 'title' -> clé 'hero_title'
                 // Sauf si la clé existe déjà dans translations (ex: 'hero_title')
-                
+
                 // Stratégie : on passe l'objet structuré au front, et le front fera le mapping
                 siteContent[row.section_key] = content;
             } catch (e) {
@@ -1487,11 +1487,11 @@ function getIndexHtml() {
     } catch (error) {
         console.error('Erreur chargement contenu site:', error);
     }
-    
+
     // Injecter le contenu dans le HTML
     const contentScript = `<script>window.SERVER_CONTENT = ${JSON.stringify(siteContent)};</script>`;
     html = html.replace('</head>', `${contentScript}\n</head>`);
-    
+
     return html;
 }
 
@@ -1606,7 +1606,7 @@ function parseBody(req) {
  * Envoie une réponse JSON
  */
 function sendJSON(res, statusCode, data) {
-    res.writeHead(statusCode, { 
+    res.writeHead(statusCode, {
         'Content-Type': 'application/json; charset=utf-8',
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
@@ -1626,12 +1626,12 @@ function getClientIP(req) {
     if (forwarded) {
         return forwarded.split(',')[0].trim();
     }
-    
+
     const realIP = req.headers['x-real-ip'];
     if (realIP) {
         return realIP;
     }
-    
+
     // Sinon, utiliser l'adresse de la socket
     return req.socket.remoteAddress || 'Inconnue';
 }
@@ -1657,14 +1657,14 @@ function getLocationFromIP(ip) {
 
         // Utiliser ip-api.com (gratuit, sans clé API)
         const apiUrl = `http://ip-api.com/json/${ip}?fields=status,message,country,regionName,city,isp,query`;
-        
+
         http.get(apiUrl, (res) => {
             let data = '';
-            
+
             res.on('data', (chunk) => {
                 data += chunk;
             });
-            
+
             res.on('end', () => {
                 try {
                     const result = JSON.parse(data);
@@ -1725,17 +1725,17 @@ const server = http.createServer(async (req, res) => {
     }
 
     const parsedUrl = url.parse(req.url, true);
-    
+
     // API endpoint pour l'envoi d'email lors de la visite
     if (parsedUrl.pathname === '/api/notify-visit' && req.method === 'POST') {
         try {
             const data = await parseBody(req);
             const { userAgent, language, timestamp, userId } = data;
-            
+
             // Récupérer l'IP et la localisation
             const clientIP = getClientIP(req);
             const location = await getLocationFromIP(clientIP);
-            
+
             const emailHtml = `
                 <h2>Nouvelle visite sur Foi Nouvelle</h2>
                 <p><strong>Date et heure:</strong> ${timestamp || new Date().toISOString()}</p>
@@ -1752,13 +1752,13 @@ const server = http.createServer(async (req, res) => {
                 <hr>
                 <p><em>Cette notification a été envoyée automatiquement lors de la visite du site.</em></p>
             `;
-            
+
             const result = await sendEmail({
                 to: process.env.ADMIN_NOTIFICATION_EMAIL || process.env.SMTP_USER,
                 subject: '🔔 Nouvelle visite sur Foi Nouvelle',
                 html: emailHtml
             });
-            
+
             sendJSON(res, result.success ? 200 : 500, result);
         } catch (error) {
             console.error('Erreur API notify-visit:', error);
@@ -1766,20 +1766,20 @@ const server = http.createServer(async (req, res) => {
         }
         return;
     }
-    
+
     // API endpoint pour l'envoi d'email lors de l'acceptation de Jésus
     if (parsedUrl.pathname === '/api/notify-acceptance' && req.method === 'POST') {
         try {
             const data = await parseBody(req);
             const { userAgent, language, timestamp, userId } = data;
-            
+
             // Récupérer le compteur depuis la base de données
             const counter = getAcceptanceCounter();
-            
+
             // Récupérer l'IP et la localisation
             const clientIP = getClientIP(req);
             const location = await getLocationFromIP(clientIP);
-            
+
             const emailHtml = `
                 <h2>🎉 Une personne a accepté Jésus !</h2>
                 <p><strong>Date et heure:</strong> ${timestamp || new Date().toISOString()}</p>
@@ -1798,13 +1798,13 @@ const server = http.createServer(async (req, res) => {
                 <p style="color: #16a34a; font-weight: bold;">Une nouvelle personne a fait le choix de suivre Jésus !</p>
                 <p><em>Cette notification a été envoyée automatiquement lors de l'acceptation de Jésus.</em></p>
             `;
-            
+
             const result = await sendEmail({
                 to: process.env.ADMIN_NOTIFICATION_EMAIL || process.env.SMTP_USER,
                 subject: '🎉 Nouvelle acceptation de Jésus sur Foi Nouvelle',
                 html: emailHtml
             });
-            
+
             sendJSON(res, result.success ? 200 : 500, result);
         } catch (error) {
             console.error('Erreur API notify-acceptance:', error);
@@ -1812,7 +1812,7 @@ const server = http.createServer(async (req, res) => {
         }
         return;
     }
-    
+
     // API endpoint pour récupérer le compteur global d'acceptations
     if (parsedUrl.pathname === '/api/acceptance-counter' && req.method === 'GET') {
         try {
@@ -1824,7 +1824,7 @@ const server = http.createServer(async (req, res) => {
         }
         return;
     }
-    
+
     // API endpoint pour incrémenter le compteur global d'acceptations
     if (parsedUrl.pathname === '/api/acceptance-counter/increment' && req.method === 'POST') {
         try {
@@ -1836,7 +1836,7 @@ const server = http.createServer(async (req, res) => {
         }
         return;
     }
-    
+
     // API endpoint pour générer du contenu avec Gemini (protège la clé API côté serveur)
     if (parsedUrl.pathname === '/api/gemini/generate' && req.method === 'POST') {
         const apiKey = process.env.API_KEY;
@@ -1844,35 +1844,35 @@ const server = http.createServer(async (req, res) => {
             sendJSON(res, 500, { success: false, error: 'API_KEY non configurée côté serveur' });
             return;
         }
-        
+
         let body = '';
         req.on('data', chunk => {
             body += chunk.toString();
         });
-        
+
         req.on('end', async () => {
             try {
                 const { prompt, systemInstruction, language = 'fr' } = JSON.parse(body);
-                
+
                 if (!prompt) {
                     sendJSON(res, 400, { success: false, error: 'Le prompt est requis' });
                     return;
                 }
-                
+
                 // Noms de langues pour l'instruction système
                 const langNames = {
-                    'fr': 'Français', 'en': 'Anglais', 'es': 'Espagnol', 
-                    'de': 'Allemand', 'it': 'Italien', 'pt': 'Portugais', 
+                    'fr': 'Français', 'en': 'Anglais', 'es': 'Espagnol',
+                    'de': 'Allemand', 'it': 'Italien', 'pt': 'Portugais',
                     'nl': 'Néerlandais', 'pl': 'Polonais'
                 };
                 const finalSystemInstruction = `${systemInstruction || ''} Répondez dans la langue: ${langNames[language] || 'Français'}.`.trim();
-                
+
                 const payload = {
                     contents: [{ parts: [{ text: prompt }] }],
                     tools: [{ "google_search": {} }], // Outil Google Search Grounding
                     systemInstruction: { parts: [{ text: finalSystemInstruction }] },
                 };
-                
+
                 const options = {
                     hostname: 'generativelanguage.googleapis.com',
                     path: `/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`,
@@ -1881,35 +1881,35 @@ const server = http.createServer(async (req, res) => {
                         'Content-Type': 'application/json'
                     }
                 };
-                
+
                 const geminiReq = https.request(options, (geminiRes) => {
                     let data = '';
-                    
+
                     geminiRes.on('data', (chunk) => {
                         data += chunk;
                     });
-                    
+
                     geminiRes.on('end', () => {
                         try {
                             const result = JSON.parse(data);
-                            
+
                             if (geminiRes.statusCode !== 200) {
                                 console.error('Erreur API Gemini:', result);
-                                sendJSON(res, geminiRes.statusCode || 500, { 
-                                    success: false, 
+                                sendJSON(res, geminiRes.statusCode || 500, {
+                                    success: false,
                                     error: result.error?.message || 'Erreur API Gemini',
                                     code: result.error?.code || 'UNKNOWN'
                                 });
                                 return;
                             }
-                            
+
                             const candidate = result.candidates?.[0];
-                            
+
                             if (candidate && candidate.content?.parts?.[0]?.text) {
                                 const text = candidate.content.parts[0].text;
                                 let sources = [];
                                 const groundingMetadata = candidate.groundingMetadata;
-                                
+
                                 if (groundingMetadata && groundingMetadata.groundingAttributions) {
                                     sources = groundingMetadata.groundingAttributions
                                         .map(attribution => ({
@@ -1918,16 +1918,16 @@ const server = http.createServer(async (req, res) => {
                                         }))
                                         .filter(source => source.uri && source.title);
                                 }
-                                
-                                sendJSON(res, 200, { 
-                                    success: true, 
-                                    text: text, 
-                                    sources: sources 
+
+                                sendJSON(res, 200, {
+                                    success: true,
+                                    text: text,
+                                    sources: sources
                                 });
                             } else {
                                 console.error("Gemini API error (no text candidate):", result);
-                                sendJSON(res, 500, { 
-                                    success: false, 
+                                sendJSON(res, 500, {
+                                    success: false,
                                     error: 'Aucune réponse générée par Gemini',
                                     result: result
                                 });
@@ -1938,15 +1938,15 @@ const server = http.createServer(async (req, res) => {
                         }
                     });
                 });
-                
+
                 geminiReq.on('error', (error) => {
                     console.error('Erreur requête Gemini:', error);
                     sendJSON(res, 500, { success: false, error: error.message });
                 });
-                
+
                 geminiReq.write(JSON.stringify(payload));
                 geminiReq.end();
-                
+
             } catch (error) {
                 console.error('Erreur API gemini/generate:', error);
                 sendJSON(res, 500, { success: false, error: error.message });
@@ -1954,7 +1954,7 @@ const server = http.createServer(async (req, res) => {
         });
         return;
     }
-    
+
     // Gérer robots.txt
     if (parsedUrl.pathname === '/robots.txt') {
         const robotsPath = path.join(__dirname, 'robots.txt');
@@ -1976,7 +1976,7 @@ const server = http.createServer(async (req, res) => {
         });
         return;
     }
-    
+
     // Gérer sitemap.xml (dynamique avec les versets)
     if (parsedUrl.pathname === '/sitemap.xml') {
         generateDynamicSitemap().then(sitemap => {
@@ -1989,7 +1989,7 @@ const server = http.createServer(async (req, res) => {
         });
         return;
     }
-    
+
     // Gérer la page d'archive des versets
     if (parsedUrl.pathname === '/archive-versets') {
         try {
@@ -2003,13 +2003,13 @@ const server = http.createServer(async (req, res) => {
         }
         return;
     }
-    
+
     // Gérer les pages individuelles de versets (/verset/YYYY-MM-DD)
     const verseMatch = parsedUrl.pathname.match(/^\/verset\/(\d{4}-\d{2}-\d{2})$/);
     if (verseMatch) {
         const verseId = verseMatch[1];
         const verse = getVerseById(verseId);
-        
+
         if (verse) {
             try {
                 const html = generateVersePage(verse);
@@ -2039,53 +2039,53 @@ const server = http.createServer(async (req, res) => {
                     </div>
                 </section>
             `;
-            
+
             const html = baseHtml.replace(
                 /<main class="w-full max-w-4xl mx-auto p-4 md:p-8 flex-grow">[\s\S]*?<\/main>/,
                 `<main class="w-full max-w-4xl mx-auto p-4 md:p-8 flex-grow">${errorHtml}</main>`
             );
-            
+
             res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
             res.end(html);
         }
         return;
     }
-    
+
     // =====================================================================
     // 🔐 ADMINISTRATION - Routes protégées
     // =====================================================================
-    
+
     // Page de connexion admin
     if (parsedUrl.pathname === '/admin' && req.method === 'GET') {
         const cookieHeader = req.headers.cookie || '';
         const sessionToken = getSessionToken(cookieHeader);
-        
+
         // Si déjà connecté, rediriger vers le dashboard
         if (sessionToken && isValidSession(sessionToken)) {
             res.writeHead(302, { 'Location': '/admin/dashboard' });
             res.end();
             return;
         }
-        
+
         // Afficher la page de connexion
         const loginHtml = getAdminLoginHtml();
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
         res.end(loginHtml);
         return;
     }
-    
+
     // API de connexion admin
     if (parsedUrl.pathname === '/api/admin/login' && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => {
             body += chunk.toString();
         });
-        
+
         req.on('end', () => {
             try {
                 const data = JSON.parse(body);
                 const { username, password } = data;
-                
+
                 if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
                     const token = createAdminSession();
                     res.writeHead(200, {
@@ -2111,12 +2111,12 @@ const server = http.createServer(async (req, res) => {
         });
         return;
     }
-    
+
     // API de vérification de session
     if (parsedUrl.pathname === '/api/admin/check' && req.method === 'GET') {
         const cookieHeader = req.headers.cookie || '';
         const sessionToken = getSessionToken(cookieHeader);
-        
+
         if (sessionToken && isValidSession(sessionToken)) {
             sendJSON(res, 200, { success: true, authenticated: true });
         } else {
@@ -2124,12 +2124,12 @@ const server = http.createServer(async (req, res) => {
         }
         return;
     }
-    
+
     // Middleware de vérification d'authentification pour les routes admin
     function requireAuth(req, res, next) {
         const cookieHeader = req.headers.cookie || '';
         const sessionToken = getSessionToken(cookieHeader);
-        
+
         if (!sessionToken || !isValidSession(sessionToken)) {
             res.writeHead(302, { 'Location': '/admin' });
             res.end();
@@ -2137,26 +2137,26 @@ const server = http.createServer(async (req, res) => {
         }
         return true;
     }
-    
+
     // Dashboard admin (protégé)
     if (parsedUrl.pathname === '/admin/dashboard' && req.method === 'GET') {
         if (!requireAuth(req, res)) return;
-        
+
         const dashboardHtml = getAdminDashboardHtml();
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
         res.end(dashboardHtml);
         return;
     }
-    
+
     // API admin - Récupérer les statistiques
     if (parsedUrl.pathname === '/api/admin/stats' && req.method === 'GET') {
         if (!requireAuth(req, res)) return;
-        
+
         try {
             const counter = getAcceptanceCounter();
             const testimonials = db.prepare('SELECT COUNT(*) as total, SUM(CASE WHEN adminApproved = 1 THEN 1 ELSE 0 END) as approved, SUM(CASE WHEN adminApproved = 0 AND aiApproved = 1 THEN 1 ELSE 0 END) as pending FROM testimonials').get();
             const weeklyVerse = loadWeeklyVerse();
-            
+
             sendJSON(res, 200, {
                 success: true,
                 stats: {
@@ -2174,11 +2174,11 @@ const server = http.createServer(async (req, res) => {
         }
         return;
     }
-    
+
     // API admin - Récupérer tous les témoignages
     if (parsedUrl.pathname === '/api/admin/testimonials' && req.method === 'GET') {
         if (!requireAuth(req, res)) return;
-        
+
         try {
             const testimonials = db.prepare('SELECT * FROM testimonials ORDER BY timestamp DESC').all();
             sendJSON(res, 200, { success: true, testimonials: testimonials });
@@ -2187,15 +2187,15 @@ const server = http.createServer(async (req, res) => {
         }
         return;
     }
-    
+
     // API admin - Approuver/Rejeter un témoignage
     if (parsedUrl.pathname === '/api/admin/testimonials' && req.method === 'POST') {
         if (!requireAuth(req, res)) return;
-        
+
         try {
             const data = await parseBody(req);
             const { id, action } = data; // action: 'approve' ou 'reject' ou 'delete'
-            
+
             if (action === 'approve') {
                 db.prepare('UPDATE testimonials SET adminApproved = 1 WHERE id = ?').run(id);
             } else if (action === 'reject') {
@@ -2206,27 +2206,27 @@ const server = http.createServer(async (req, res) => {
                 sendJSON(res, 400, { success: false, error: 'Action invalide' });
                 return;
             }
-            
+
             sendJSON(res, 200, { success: true });
         } catch (error) {
             sendJSON(res, 500, { success: false, error: error.message });
         }
         return;
     }
-    
+
     // API admin - Modifier le compteur d'acceptations
     if (parsedUrl.pathname === '/api/admin/counter' && req.method === 'POST') {
         if (!requireAuth(req, res)) return;
-        
+
         try {
             const data = await parseBody(req);
             const { count } = data;
-            
+
             if (typeof count !== 'number' || count < 0) {
                 sendJSON(res, 400, { success: false, error: 'Valeur invalide' });
                 return;
             }
-            
+
             db.prepare('UPDATE acceptance_counter SET count = ? WHERE id = 1').run(count);
             sendJSON(res, 200, { success: true, count: count });
         } catch (error) {
@@ -2234,21 +2234,21 @@ const server = http.createServer(async (req, res) => {
         }
         return;
     }
-    
+
     // API admin - Générer un nouveau verset manuellement
     if (parsedUrl.pathname === '/api/admin/generate-verse' && req.method === 'POST') {
         if (!requireAuth(req, res)) return;
-        
+
         try {
             console.log('🔄 Génération manuelle d\'un nouveau verset demandée par l\'admin...');
-            
+
             // Forcer la génération d'un nouveau verset (ignorer le cache)
             const apiKey = process.env.API_KEY;
             if (!apiKey) {
                 sendJSON(res, 500, { success: false, error: 'API_KEY non configurée côté serveur' });
                 return;
             }
-            
+
             const systemInstruction = `Tu es un assistant spirituel. Génère un verset biblique inspirant et approprié pour l'évangélisation, qui encourage les gens à découvrir la foi en Jésus-Christ. 
 
 Réponds UNIQUEMENT au format JSON suivant (sans markdown, sans code blocks) :
@@ -2300,9 +2300,9 @@ Le verset doit être :
                             // Vérifier le code de statut HTTP
                             if (res2.statusCode !== 200) {
                                 console.error('❌ Erreur API Gemini (status:', res2.statusCode, '):', data);
-                                
+
                                 let errorMessage = `Erreur API Gemini (${res2.statusCode})`;
-                                
+
                                 // Messages d'erreur spécifiques selon le code
                                 if (res2.statusCode === 429) {
                                     errorMessage = 'Quota API Gemini dépassé. Veuillez vérifier votre plan et votre facturation dans Google Cloud Console. Vous pouvez réessayer plus tard.';
@@ -2321,56 +2321,56 @@ Le verset doit être :
                                         errorMessage = `Erreur API Gemini (${res2.statusCode}): ${data.substring(0, 200)}`;
                                     }
                                 }
-                                
-                                sendJSON(res, res2.statusCode || 500, { 
-                                    success: false, 
-                                    error: errorMessage 
+
+                                sendJSON(res, res2.statusCode || 500, {
+                                    success: false,
+                                    error: errorMessage
                                 });
                                 resolve();
                                 return;
                             }
-                            
+
                             const response = JSON.parse(data);
-                            
+
                             // Vérifier si c'est une erreur de l'API
                             if (response.error) {
                                 console.error('❌ Erreur API Gemini:', response.error);
-                                sendJSON(res, 500, { 
-                                    success: false, 
-                                    error: `Erreur API Gemini: ${response.error.message || JSON.stringify(response.error)}` 
+                                sendJSON(res, 500, {
+                                    success: false,
+                                    error: `Erreur API Gemini: ${response.error.message || JSON.stringify(response.error)}`
                                 });
                                 resolve();
                                 return;
                             }
-                            
+
                             if (response.candidates && response.candidates[0] && response.candidates[0].content) {
                                 const text = response.candidates[0].content.parts[0].text;
-                                
+
                                 // Extraire le JSON de la réponse
                                 let jsonMatch = text.match(/\{[\s\S]*\}/);
                                 if (!jsonMatch) {
                                     console.error('❌ Aucun JSON trouvé dans la réponse:', text.substring(0, 200));
-                                    sendJSON(res, 500, { 
-                                        success: false, 
-                                        error: 'Format de réponse invalide de Gemini' 
+                                    sendJSON(res, 500, {
+                                        success: false,
+                                        error: 'Format de réponse invalide de Gemini'
                                     });
                                     resolve();
                                     return;
                                 }
-                                
+
                                 let verseData;
                                 try {
                                     verseData = JSON.parse(jsonMatch[0]);
                                 } catch (parseError) {
                                     console.error('❌ Erreur parsing JSON:', parseError, 'Texte:', jsonMatch[0]);
-                                    sendJSON(res, 500, { 
-                                        success: false, 
-                                        error: 'Erreur lors du parsing du JSON: ' + parseError.message 
+                                    sendJSON(res, 500, {
+                                        success: false,
+                                        error: 'Erreur lors du parsing du JSON: ' + parseError.message
                                     });
                                     resolve();
                                     return;
                                 }
-                                
+
                                 // Utiliser la date actuelle pour forcer un nouveau verset
                                 const now = new Date();
                                 const verseId = now.toISOString().split('T')[0] + '-' + now.getTime().toString().slice(-6); // Ajouter un timestamp pour l'unicité
@@ -2383,14 +2383,14 @@ Le verset doit être :
                                     theme: verseData.theme || 'Amour de Dieu',
                                     slug: `verset-${verseId}`
                                 };
-                                
+
                                 // Sauvegarder dans le cache (verset actuel)
                                 try {
                                     fs.writeFileSync(VERSE_CACHE_FILE, JSON.stringify(verse, null, 2));
                                 } catch (writeError) {
                                     console.error('❌ Erreur écriture cache:', writeError);
                                 }
-                                
+
                                 // Ajouter à l'archive
                                 let archive = [];
                                 if (fs.existsSync(VERSE_ARCHIVE_FILE)) {
@@ -2400,7 +2400,7 @@ Le verset doit être :
                                         archive = [];
                                     }
                                 }
-                                
+
                                 // Vérifier si ce verset n'existe pas déjà (éviter les doublons)
                                 const exists = archive.find(v => v.id === verse.id);
                                 if (!exists) {
@@ -2415,28 +2415,28 @@ Le verset doit être :
                                         console.error('❌ Erreur écriture archive:', writeError);
                                     }
                                 }
-                                
+
                                 console.log('✅ Nouveau verset généré manuellement:', verse.reference, `(${verse.id})`);
-                                
-                                sendJSON(res, 200, { 
-                                    success: true, 
+
+                                sendJSON(res, 200, {
+                                    success: true,
                                     verse: verse,
                                     message: `Nouveau verset généré: ${verse.reference} (${verse.id})`
                                 });
                                 resolve();
                             } else {
                                 console.error('❌ Réponse API invalide (pas de candidates):', JSON.stringify(response).substring(0, 500));
-                                sendJSON(res, 500, { 
-                                    success: false, 
-                                    error: 'Réponse API invalide: pas de candidates dans la réponse' 
+                                sendJSON(res, 500, {
+                                    success: false,
+                                    error: 'Réponse API invalide: pas de candidates dans la réponse'
                                 });
                                 resolve();
                             }
                         } catch (error) {
                             console.error('❌ Erreur lors du parsing de la réponse:', error, 'Data:', data.substring(0, 500));
-                            sendJSON(res, 500, { 
-                                success: false, 
-                                error: 'Erreur lors du parsing de la réponse: ' + error.message 
+                            sendJSON(res, 500, {
+                                success: false,
+                                error: 'Erreur lors du parsing de la réponse: ' + error.message
                             });
                             resolve();
                         }
@@ -2445,9 +2445,9 @@ Le verset doit être :
 
                 req.on('error', (error) => {
                     console.error('❌ Erreur lors de la requête API:', error);
-                    sendJSON(res, 500, { 
-                        success: false, 
-                        error: 'Erreur lors de la requête API: ' + error.message 
+                    sendJSON(res, 500, {
+                        success: false,
+                        error: 'Erreur lors de la requête API: ' + error.message
                     });
                     resolve();
                 });
@@ -2461,22 +2461,22 @@ Le verset doit être :
         }
         return;
     }
-    
+
     // API admin - Récupérer le contenu d'une section
     const contentMatch = parsedUrl.pathname.match(/^\/api\/admin\/content\/(.+)$/);
     if (contentMatch && req.method === 'GET') {
         const cookieHeader = req.headers.cookie || '';
         const sessionToken = getSessionToken(cookieHeader);
-        
+
         if (!sessionToken || !isValidSession(sessionToken)) {
             sendJSON(res, 401, { success: false, error: 'Non authentifié' });
             return;
         }
-        
+
         try {
             const sectionKey = contentMatch[1];
             const result = db.prepare('SELECT content_json FROM site_content WHERE section_key = ? AND language = ?').get(sectionKey, 'fr');
-            
+
             if (result) {
                 const content = JSON.parse(result.content_json);
                 sendJSON(res, 200, { success: true, content: content });
@@ -2488,24 +2488,24 @@ Le verset doit être :
         }
         return;
     }
-    
+
     // API admin - Sauvegarder le contenu d'une section
     if (contentMatch && req.method === 'POST') {
         if (!requireAuth(req, res)) return;
-        
+
         let body = '';
         req.on('data', chunk => {
             body += chunk.toString();
         });
-        
+
         req.on('end', () => {
             try {
                 const sectionKey = contentMatch[1];
                 const data = JSON.parse(body);
                 const { content } = data;
-                
+
                 const contentJson = JSON.stringify(content);
-                
+
                 // Insérer ou mettre à jour (SQLite syntax)
                 const existing = db.prepare('SELECT id FROM site_content WHERE section_key = ? AND language = ?').get(sectionKey, 'fr');
                 if (existing) {
@@ -2515,7 +2515,7 @@ Le verset doit être :
                     db.prepare('INSERT INTO site_content (section_key, content_json, language, updated_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)')
                         .run(sectionKey, contentJson, 'fr');
                 }
-                
+
                 console.log(`✅ Contenu sauvegardé pour section: ${sectionKey}`);
                 sendJSON(res, 200, { success: true, message: 'Contenu enregistré avec succès' });
             } catch (error) {
@@ -2525,15 +2525,15 @@ Le verset doit être :
         });
         return;
     }
-    
+
     // API admin - Supprimer/Réinitialiser le contenu d'une section
     if (contentMatch && req.method === 'DELETE') {
         if (!requireAuth(req, res)) return;
-        
+
         try {
             const sectionKey = contentMatch[1];
             db.prepare('DELETE FROM site_content WHERE section_key = ? AND language = ?').run(sectionKey, 'fr');
-            
+
             console.log(`✅ Contenu réinitialisé pour section: ${sectionKey}`);
             sendJSON(res, 200, { success: true, message: 'Section réinitialisée' });
         } catch (error) {
@@ -2541,16 +2541,16 @@ Le verset doit être :
         }
         return;
     }
-    
+
     // API admin - Déconnexion
     if (parsedUrl.pathname === '/api/admin/logout' && req.method === 'POST') {
         const cookieHeader = req.headers.cookie || '';
         const sessionToken = getSessionToken(cookieHeader);
-        
+
         if (sessionToken) {
             ADMIN_SESSIONS.delete(sessionToken);
         }
-        
+
         res.writeHead(200, {
             'Content-Type': 'application/json; charset=utf-8',
             'Set-Cookie': 'admin_session=; HttpOnly; Path=/; Max-Age=0'
@@ -2558,11 +2558,11 @@ Le verset doit être :
         sendJSON(res, 200, { success: true });
         return;
     }
-    
+
     // =====================================================================
     // FIN ADMINISTRATION
     // =====================================================================
-    
+
     // Gérer la racine et index.html
     if (req.url === '/' || req.url === '/index.html') {
         try {
@@ -2576,46 +2576,46 @@ Le verset doit être :
         }
         return;
     }
-    
+
     // Servir les autres fichiers statiques si nécessaire
     const filePath = path.join(__dirname, req.url);
-    
+
     // Sécurité : empêcher l'accès aux fichiers sensibles
     const sensitiveFiles = ['.env', '.env.local', '.env.production', 'package.json', 'node_modules'];
     const requestedFile = path.basename(req.url);
     const requestedPath = req.url.toLowerCase();
-    
+
     // Bloquer l'accès aux fichiers sensibles
-    if (sensitiveFiles.some(file => requestedPath.includes(file)) || 
-        requestedPath.includes('/.env') || 
+    if (sensitiveFiles.some(file => requestedPath.includes(file)) ||
+        requestedPath.includes('/.env') ||
         requestedPath.includes('/node_modules/') ||
         requestedPath.includes('/package.json')) {
         res.writeHead(403, { 'Content-Type': 'text/plain' });
         res.end('Accès interdit');
         return;
     }
-    
+
     // Sécurité : empêcher l'accès aux fichiers en dehors du répertoire
     if (!filePath.startsWith(__dirname)) {
         res.writeHead(403, { 'Content-Type': 'text/plain' });
         res.end('Accès interdit');
         return;
     }
-    
+
     fs.access(filePath, fs.constants.F_OK, (err) => {
         if (err) {
             res.writeHead(404, { 'Content-Type': 'text/plain' });
             res.end('Fichier non trouvé');
             return;
         }
-        
+
         fs.readFile(filePath, (err, data) => {
             if (err) {
                 res.writeHead(500, { 'Content-Type': 'text/plain' });
                 res.end('Erreur lors de la lecture du fichier');
                 return;
             }
-            
+
             res.writeHead(200, { 'Content-Type': getContentType(filePath) });
             res.end(data);
         });
