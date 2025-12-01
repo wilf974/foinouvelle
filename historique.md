@@ -1664,3 +1664,28 @@ Le projet supporte maintenant **8 langues** :
 
 L'application est maintenant multilingue avec un support complet pour 8 langues européennes. Tous les textes, messages d'erreur, textes de prière et fonctionnalités sont traduits et fonctionnels dans toutes les langues supportées.
 
+
+---
+
+## 2025-12-01 - Activation de l'édition dynamique du contenu depuis l'admin
+
+### Modifications apportées
+
+**Fichiers modifiés :** `server.js`, `index.html`
+
+### Fonctionnalités implémentées
+
+1. **Injection du contenu serveur (`server.js`)**
+   - Récupération de tout le contenu de la table `site_content` pour la langue 'fr'.
+   - Injection d'un objet JSON global `window.SERVER_CONTENT` dans le `<head>` de `index.html`.
+   - Structure optimisée pour le transfert de données.
+
+2. **Fusion dynamique côté client (`index.html`)**
+   - Détection automatique de `window.SERVER_CONTENT`.
+   - Algorithme de fusion intelligent qui mappe les clés de section/champ vers les clés de traduction existantes (i18n).
+   - Support de toutes les sections : Hero, Message, Plan, Explore, Community, Testimonials, Share, Steps, Footer.
+   - Les modifications faites dans l'admin sont immédiatement visibles sur le site public sans redéploiement.
+
+### Résultat
+
+✅ **CMS Fonctionnel** : L'administrateur peut maintenant modifier n'importe quel texte du site depuis `/admin` et voir le résultat instantanément sur la page d'accueil.
