@@ -134,12 +134,19 @@ function loadWeeklyVerse() {
             const data = fs.readFileSync(VERSE_CACHE_FILE, 'utf8');
             const verse = JSON.parse(data);
             
-            // Vérifier si le verset est encore valide (moins d'une semaine)
-            const verseDate = new Date(verse.dateISO);
+            // Vérifier si le verset est encore valide (pour la semaine en cours)
+            const verseDate = new Date(verse.dateISO + 'T00:00:00');
             const now = new Date();
-            const daysDiff = (now - verseDate) / (1000 * 60 * 60 * 24);
             
-            if (daysDiff < 7) {
+            // Calculer le début de la semaine actuelle (lundi)
+            const dayOfWeek = now.getDay();
+            const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+            const currentWeekStart = new Date(now);
+            currentWeekStart.setDate(now.getDate() - daysToMonday);
+            currentWeekStart.setHours(0, 0, 0, 0);
+            
+            // Si le verset est pour la semaine en cours, le retourner
+            if (verseDate.getTime() === currentWeekStart.getTime()) {
                 return verse;
             }
         }
@@ -148,12 +155,20 @@ function loadWeeklyVerse() {
     }
     
     // Retourner un verset par défaut si aucun cache valide
-    const defaultDateISO = new Date().toISOString().split('T')[0];
+    // Calculer le début de la semaine actuelle (lundi)
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - daysToMonday);
+    weekStart.setHours(0, 0, 0, 0);
+    
+    const defaultDateISO = weekStart.toISOString().split('T')[0];
     return {
         id: defaultDateISO,
         text: 'Car Dieu a tant aimé le monde qu\'il a donné son Fils unique, afin que quiconque croit en lui ne périsse point, mais qu\'il ait la vie éternelle.',
         reference: 'Jean 3:16',
-        date: 'Semaine du ' + new Date().toLocaleDateString('fr-FR'),
+        date: 'Semaine du ' + weekStart.toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).split(' ').slice(1).join(' '),
         dateISO: defaultDateISO
     };
 }
@@ -232,16 +247,24 @@ Le verset doit être :
                             
                             const verseData = JSON.parse(jsonMatch[0]);
                             
-                            const now = new Date();
-                            const verse = {
-                                id: now.toISOString().split('T')[0], // ID unique basé sur la date
-                                text: verseData.text || 'Car Dieu a tant aimé le monde...',
-                                reference: verseData.reference || 'Jean 3:16',
-                                date: 'Semaine du ' + now.toLocaleDateString('fr-FR'),
-                                dateISO: now.toISOString().split('T')[0],
-                                theme: verseData.theme || 'Amour de Dieu',
-                                slug: `verset-${now.toISOString().split('T')[0]}` // Slug pour l'URL
-                            };
+            const now = new Date();
+            // Calculer le début de la semaine (lundi)
+            const dayOfWeek = now.getDay(); // 0 = dimanche, 1 = lundi, etc.
+            const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Si dimanche, aller au lundi précédent
+            const weekStart = new Date(now);
+            weekStart.setDate(now.getDate() - daysToMonday);
+            weekStart.setHours(0, 0, 0, 0);
+            
+            const verseId = weekStart.toISOString().split('T')[0];
+            const verse = {
+                id: verseId, // ID unique basé sur le début de la semaine (lundi)
+                text: verseData.text || 'Car Dieu a tant aimé le monde...',
+                reference: verseData.reference || 'Jean 3:16',
+                date: 'Semaine du ' + weekStart.toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).split(' ').slice(1).join(' '),
+                dateISO: verseId,
+                theme: verseData.theme || 'Amour de Dieu',
+                slug: `verset-${verseId}` // Slug pour l'URL
+            };
                             
                             // Sauvegarder dans le cache (verset actuel)
                             fs.writeFileSync(VERSE_CACHE_FILE, JSON.stringify(verse, null, 2));
@@ -300,14 +323,22 @@ Le verset doit être :
  */
 async function checkAndUpdateWeeklyVerse() {
     const verse = loadWeeklyVerse();
-    const verseDate = new Date(verse.dateISO);
+    const verseDate = new Date(verse.dateISO + 'T00:00:00');
     const now = new Date();
-    const daysDiff = (now - verseDate) / (1000 * 60 * 60 * 24);
     
-    // Si le verset a plus d'une semaine, en générer un nouveau
-    if (daysDiff >= 7) {
-        console.log('🔄 Génération d\'un nouveau verset hebdomadaire...');
+    // Calculer le début de la semaine actuelle (lundi)
+    const dayOfWeek = now.getDay();
+    const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    const currentWeekStart = new Date(now);
+    currentWeekStart.setDate(now.getDate() - daysToMonday);
+    currentWeekStart.setHours(0, 0, 0, 0);
+    
+    // Si le verset n'est pas pour la semaine en cours, en générer un nouveau
+    if (verseDate.getTime() !== currentWeekStart.getTime()) {
+        console.log('🔄 Génération d\'un nouveau verset hebdomadaire pour la semaine du', currentWeekStart.toLocaleDateString('fr-FR'));
         await generateWeeklyVerse();
+    } else {
+        console.log('✅ Verset hebdomadaire actuel valide jusqu\'au', new Date(currentWeekStart.getTime() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR'));
     }
 }
 

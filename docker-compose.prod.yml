@@ -10,6 +10,11 @@ services:
     restart: unless-stopped
     networks:
       - foi-nouvelle-network
+    # Volumes pour persister les données (versets et base de données)
+    volumes:
+      - ./weekly-verse.json:/app/weekly-verse.json
+      - ./verses-archive.json:/app/verses-archive.json
+      - ./foi-nouvelle.db:/app/foi-nouvelle.db
     # Limites de ressources
     deploy:
       resources:
