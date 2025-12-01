@@ -2436,7 +2436,13 @@ Le verset doit être :
     // API admin - Récupérer le contenu d'une section
     const contentMatch = parsedUrl.pathname.match(/^\/api\/admin\/content\/(.+)$/);
     if (contentMatch && req.method === 'GET') {
-        if (!requireAuth(req, res)) return;
+        const cookieHeader = req.headers.cookie || '';
+        const sessionToken = getSessionToken(cookieHeader);
+        
+        if (!sessionToken || !isValidSession(sessionToken)) {
+            sendJSON(res, 401, { success: false, error: 'Non authentifié' });
+            return;
+        }
         
         try {
             const sectionKey = contentMatch[1];
