@@ -250,7 +250,7 @@ Le verset doit être :
         return new Promise((resolve, reject) => {
             const options = {
                 hostname: 'generativelanguage.googleapis.com',
-                path: `/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`,
+                path: `/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`,
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -2297,7 +2297,7 @@ Le verset doit être :
                     const apiKey = API_KEYS[keyIndex];
                     const options = {
                         hostname: 'generativelanguage.googleapis.com',
-                        path: `/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`,
+                        path: `/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`,
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' }
                     };

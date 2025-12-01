@@ -1697,3 +1697,31 @@ L'application est maintenant multilingue avec un support complet pour 8 langues 
   - Ajout de la possibilité de modifier le texte de la "Prière de Conversion" depuis l'admin.
   - Correction de bugs d'affichage et de syntaxe dans le dashboard admin.
   - Implémentation de la rotation automatique des clés API Gemini pour contourner les limites de quota (erreur 429).
+
+---
+
+## 2025-12-01 - Correction de l'erreur de quota API sur la page d'administration
+
+### Modifications apportées
+
+**Fichier modifié :** `server.js`
+
+### Problème identifié
+
+L'utilisateur rencontrait une erreur "Quota exceeded" sur la page d'administration lors de la génération d'un nouveau verset, alors que la fonctionnalité similaire sur le site public fonctionnait correctement.
+
+### Cause
+
+Le backend utilisait le modèle `gemini-2.0-flash-exp` pour les requêtes d'administration, qui semble avoir des limites de quota plus strictes ou épuisées. Le site public utilisait le modèle `gemini-2.5-flash-preview-09-2025` qui fonctionnait correctement.
+
+### Solution implémentée
+
+Mise à jour du modèle utilisé dans `server.js` pour utiliser `gemini-2.5-flash-preview-09-2025` partout, assurant la cohérence entre le site public et l'interface d'administration.
+
+- Mise à jour de la fonction `generateWeeklyVerse`
+- Mise à jour de la route `/api/admin/generate-verse`
+
+### Résultat
+
+✅ **Cohérence** : Le même modèle est utilisé partout.
+✅ **Résolution** : L'erreur de quota devrait être résolue en utilisant le modèle qui fonctionne déjà sur le frontend.
