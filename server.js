@@ -1985,9 +1985,31 @@ Le verset doit être :
                             // Vérifier le code de statut HTTP
                             if (res2.statusCode !== 200) {
                                 console.error('❌ Erreur API Gemini (status:', res2.statusCode, '):', data);
+                                
+                                let errorMessage = `Erreur API Gemini (${res2.statusCode})`;
+                                
+                                // Messages d'erreur spécifiques selon le code
+                                if (res2.statusCode === 429) {
+                                    errorMessage = 'Quota API Gemini dépassé. Veuillez vérifier votre plan et votre facturation dans Google Cloud Console. Vous pouvez réessayer plus tard.';
+                                } else if (res2.statusCode === 401 || res2.statusCode === 403) {
+                                    errorMessage = 'Clé API Gemini invalide ou expirée. Vérifiez votre clé API dans le fichier .env';
+                                } else if (res2.statusCode === 400) {
+                                    errorMessage = 'Requête invalide vers l\'API Gemini. Vérifiez la configuration.';
+                                } else {
+                                    // Essayer de parser l'erreur JSON
+                                    try {
+                                        const errorData = JSON.parse(data);
+                                        if (errorData.error && errorData.error.message) {
+                                            errorMessage = `Erreur API Gemini: ${errorData.error.message}`;
+                                        }
+                                    } catch (e) {
+                                        errorMessage = `Erreur API Gemini (${res2.statusCode}): ${data.substring(0, 200)}`;
+                                    }
+                                }
+                                
                                 sendJSON(res, res2.statusCode || 500, { 
                                     success: false, 
-                                    error: `Erreur API Gemini (${res2.statusCode}): ${data.substring(0, 200)}` 
+                                    error: errorMessage 
                                 });
                                 resolve();
                                 return;
