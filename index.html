@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- SEO CRITIQUE: Titre plus ciblé et descriptif pour ne pas braquer -->
     <title data-i18n="app_title">Trouver la Foi en Dieu | Guide, Prière et Communauté de Foi</title>
-    <meta name="description" content="Découvrez les étapes concrètes pour une rencontre avec Dieu, faites une prière sincère et trouvez une communauté accueillante. Notre guide utilise l'IA pour répondre à vos questions spirituelles.">
-    <meta name="keywords" content="trouver la foi, prière de conversion, église, témoignage, comment trouver Dieu, aide spirituelle, explorer la bible, Jésus">
+    <meta name="description"
+        content="Découvrez les étapes concrètes pour une rencontre avec Dieu, faites une prière sincère et trouvez une communauté accueillante. Notre guide utilise l'IA pour répondre à vos questions spirituelles.">
+    <meta name="keywords"
+        content="trouver la foi, prière de conversion, église, témoignage, comment trouver Dieu, aide spirituelle, explorer la bible, Jésus">
 
     <!-- Schema.org Structured Data for SEO -->
     <script type="application/ld+json">
@@ -137,21 +140,25 @@
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <style>
         /* Configuration de police pour un look moderne et lisible */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f7f9fb;
         }
+
         .section-separator {
             height: 1px;
-            background-color: #e0e7ff; /* Bleu très clair */
+            background-color: #e0e7ff;
+            /* Bleu très clair */
             margin: 3rem auto;
             width: 80%;
             max-width: 600px;
         }
+
         .spinner {
             border: 4px solid rgba(0, 0, 0, 0.1);
             border-left-color: #4f46e5;
@@ -163,17 +170,36 @@
             vertical-align: middle;
             margin-right: 8px;
         }
+
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
+
         /* Couleurs pour les boutons sociaux */
-        .btn-facebook { background-color: #1877f2; }
-        .btn-twitter { background-color: #1da1f2; }
-        .btn-whatsapp { background-color: #25d366; }
-        .btn-linkedin { background-color: #0a66c2; }
-        .btn-sms { background-color: #6c757d; }
+        .btn-facebook {
+            background-color: #1877f2;
+        }
+
+        .btn-twitter {
+            background-color: #1da1f2;
+        }
+
+        .btn-whatsapp {
+            background-color: #25d366;
+        }
+
+        .btn-linkedin {
+            background-color: #0a66c2;
+        }
+
+        .btn-sms {
+            background-color: #6c757d;
+        }
     </style>
 </head>
+
 <body class="text-gray-800">
 
     <div id="app" class="min-h-screen flex flex-col items-center">
@@ -181,13 +207,15 @@
         <!-- HEADER & NAVIGATION -->
         <header class="w-full bg-white shadow-md p-4 sticky top-0 z-10">
             <div class="max-w-4xl mx-auto flex justify-between items-center">
-                <a href="#" class="text-2xl font-bold text-indigo-700 hover:text-indigo-900 transition duration-300" data-i18n="app_name">
+                <a href="#" class="text-2xl font-bold text-indigo-700 hover:text-indigo-900 transition duration-300"
+                    data-i18n="app_name">
                     Foi Nouvelle
                 </a>
                 <div class="flex items-center">
-                    
+
                     <!-- SÉLECTEUR DE LANGUE (i18n) -->
-                    <select id="language-selector" onchange="setLanguage(this.value)" class="p-2 border border-gray-300 rounded-lg text-sm mr-4">
+                    <select id="language-selector" onchange="setLanguage(this.value)"
+                        class="p-2 border border-gray-300 rounded-lg text-sm mr-4">
                         <option value="fr">Français</option>
                         <option value="en">English</option>
                         <option value="es">Español</option>
@@ -199,12 +227,24 @@
                     </select>
 
                     <nav class="hidden sm:flex items-center">
-                        <a href="#message" class="text-sm md:text-base text-gray-600 hover:text-indigo-600 ml-4 transition duration-300" data-i18n="nav_message">Message</a>
-                        <a href="#explore" class="text-sm md:text-base text-gray-600 hover:text-indigo-600 ml-4 transition duration-300" data-i18n="nav_explore">Explorer l'IA</a>
-                        <a href="#find-church" class="text-sm md:text-base text-gray-600 hover:text-indigo-600 ml-4 transition duration-300" data-i18n="nav_community">Communauté</a>
-                        <a href="#temoignages" class="text-sm md:text-base text-gray-600 hover:text-indigo-600 ml-4 transition duration-300" data-i18n="nav_testimonials">Témoignages</a>
-                        <a href="#share" class="text-sm md:text-base text-gray-600 hover:text-indigo-600 ml-4 transition duration-300" data-i18n="nav_share">Partager</a>
-                        <a href="#etapes" class="ml-4 px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-full shadow-lg hover:bg-indigo-700 transition duration-300 transform hover:scale-105" data-i18n="nav_start">Commencer</a>
+                        <a href="#message"
+                            class="text-sm md:text-base text-gray-600 hover:text-indigo-600 ml-4 transition duration-300"
+                            data-i18n="nav_message">Message</a>
+                        <a href="#explore"
+                            class="text-sm md:text-base text-gray-600 hover:text-indigo-600 ml-4 transition duration-300"
+                            data-i18n="nav_explore">Explorer l'IA</a>
+                        <a href="#find-church"
+                            class="text-sm md:text-base text-gray-600 hover:text-indigo-600 ml-4 transition duration-300"
+                            data-i18n="nav_community">Communauté</a>
+                        <a href="#temoignages"
+                            class="text-sm md:text-base text-gray-600 hover:text-indigo-600 ml-4 transition duration-300"
+                            data-i18n="nav_testimonials">Témoignages</a>
+                        <a href="#share"
+                            class="text-sm md:text-base text-gray-600 hover:text-indigo-600 ml-4 transition duration-300"
+                            data-i18n="nav_share">Partager</a>
+                        <a href="#etapes"
+                            class="ml-4 px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-full shadow-lg hover:bg-indigo-700 transition duration-300 transform hover:scale-105"
+                            data-i18n="nav_start">Commencer</a>
                     </nav>
                 </div>
             </div>
@@ -221,24 +261,31 @@
                 </h1>
                 <!-- Mots-clés pour la longue traîne, répondant à l'intention de recherche sans dénomination -->
                 <p class="text-lg font-medium text-indigo-500 max-w-2xl mx-auto mb-2" data-i18n="hero_subtitle_1">
-                    Vous cherchez un sens à votre vie ? Découvrez comment **trouver la foi en Dieu**, le chemin vers Jésus et une communauté accueillante.
+                    Vous cherchez un sens à votre vie ? Découvrez comment **trouver la foi en Dieu**, le chemin vers
+                    Jésus et une communauté accueillante.
                 </p>
                 <p class="text-xl text-gray-600 max-w-2xl mx-auto mb-8" data-i18n="hero_subtitle_2">
-                    Découvrez l'amour inconditionnel et la puissance transformatrice de la foi. Où que vous soyez dans votre recherche, vous êtes le bienvenu.
+                    Découvrez l'amour inconditionnel et la puissance transformatrice de la foi. Où que vous soyez dans
+                    votre recherche, vous êtes le bienvenu.
                 </p>
-                <a href="#message" class="inline-block px-8 py-3 text-lg font-bold text-white bg-green-500 rounded-full shadow-xl hover:bg-green-600 transition duration-300 transform hover:scale-105" data-i18n="hero_button">
+                <a href="#message"
+                    class="inline-block px-8 py-3 text-lg font-bold text-white bg-green-500 rounded-full shadow-xl hover:bg-green-600 transition duration-300 transform hover:scale-105"
+                    data-i18n="hero_button">
                     Je veux comprendre
                 </a>
             </section>
-            
+
             <div class="section-separator"></div>
 
             <!-- SECTION: VERSET DE LA SEMAINE (SEO-Friendly) -->
-            <section id="verset-semaine" class="py-12 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl shadow-lg mb-12">
+            <section id="verset-semaine"
+                class="py-12 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl shadow-lg mb-12">
                 <div class="text-center">
-                    <h2 class="text-3xl font-bold mb-6 text-indigo-800" data-i18n="verse_weekly_title">Verset de la Semaine</h2>
+                    <h2 class="text-3xl font-bold mb-6 text-indigo-800" data-i18n="verse_weekly_title">Verset de la
+                        Semaine</h2>
                     <div class="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md border-l-4 border-indigo-500">
-                        <blockquote class="text-xl md:text-2xl font-medium text-gray-800 italic mb-4" id="weekly-verse-text">
+                        <blockquote class="text-xl md:text-2xl font-medium text-gray-800 italic mb-4"
+                            id="weekly-verse-text">
                             {{WEEKLY_VERSE_TEXT}}
                         </blockquote>
                         <cite class="text-lg text-indigo-600 font-semibold" id="weekly-verse-reference">
@@ -248,34 +295,43 @@
                             {{WEEKLY_VERSE_DATE}}
                         </p>
                         <div class="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
-                            <a href="/verset/{{WEEKLY_VERSE_ID}}" class="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-300 text-sm" data-i18n="verse_read_more">
+                            <a href="/verset/{{WEEKLY_VERSE_ID}}"
+                                class="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-300 text-sm"
+                                data-i18n="verse_read_more">
                                 Lire ce verset en détail
                             </a>
-                            <a href="/archive-versets" class="px-4 py-2 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition duration-300 text-sm" data-i18n="verse_archive_link">
+                            <a href="/archive-versets"
+                                class="px-4 py-2 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition duration-300 text-sm"
+                                data-i18n="verse_archive_link">
                                 Voir l'archive complète
                             </a>
                         </div>
                     </div>
                 </div>
             </section>
-            
+
             <div class="section-separator"></div>
 
             <!-- SECTION 2: LE MESSAGE DU CŒUR (APPROFONDI) -->
             <section id="message" class="py-12">
                 <!-- H2 optimisé pour la recherche : "fondamentaux de la foi" -->
-                <h2 class="text-3xl font-bold text-center mb-10 text-indigo-700" data-i18n="message_title">Comprendre les Fondamentaux de la Foi en Dieu</h2>
-                
+                <h2 class="text-3xl font-bold text-center mb-10 text-indigo-700" data-i18n="message_title">Comprendre
+                    les Fondamentaux de la Foi en Dieu</h2>
+
                 <div class="grid md:grid-cols-3 gap-8">
 
                     <!-- Carte 1: L'Amour Inconditionnel de Dieu (Approfondi) -->
-                    <article class="p-6 bg-white rounded-lg shadow-xl hover:shadow-2xl transition duration-300 border-t-4 border-indigo-500">
+                    <article
+                        class="p-6 bg-white rounded-lg shadow-xl hover:shadow-2xl transition duration-300 border-t-4 border-indigo-500">
                         <div class="text-indigo-500 text-4xl mb-3">
                             <span aria-hidden="true">&#9733;</span>
                         </div>
-                        <h3 class="text-xl font-semibold mb-2 text-gray-900" data-i18n="message_card_1_title">1. L'Amour Inconditionnel de Dieu</h3>
+                        <h3 class="text-xl font-semibold mb-2 text-gray-900" data-i18n="message_card_1_title">1. L'Amour
+                            Inconditionnel de Dieu</h3>
                         <p class="text-gray-600 text-sm" data-i18n="message_card_1_text">
-                            Dieu est la source de toute existence et vous a créé(e) par amour. Son amour n'a pas de condition : il est total et éternel. Il n'attend pas que vous soyez parfait(e), mais que vous acceptiez Sa présence.
+                            Dieu est la source de toute existence et vous a créé(e) par amour. Son amour n'a pas de
+                            condition : il est total et éternel. Il n'attend pas que vous soyez parfait(e), mais que
+                            vous acceptiez Sa présence.
                         </p>
                         <p class="mt-3 text-xs font-semibold text-indigo-400" data-i18n="message_card_1_footer">
                             *Le point de départ de tout : Sa grâce est disponible, quel que soit votre passé.*
@@ -283,13 +339,18 @@
                     </article>
 
                     <!-- Carte 2: La Séparation et le Péché (Approfondi) -->
-                    <article class="p-6 bg-white rounded-lg shadow-xl hover:shadow-2xl transition duration-300 border-t-4 border-indigo-500">
+                    <article
+                        class="p-6 bg-white rounded-lg shadow-xl hover:shadow-2xl transition duration-300 border-t-4 border-indigo-500">
                         <div class="text-indigo-500 text-4xl mb-3">
                             <span aria-hidden="true">&#9900;</span>
                         </div>
-                        <h3 class="text-xl font-semibold mb-2 text-gray-900" data-i18n="message_card_2_title">2. La Réalité de la Séparation (Péché)</h3>
+                        <h3 class="text-xl font-semibold mb-2 text-gray-900" data-i18n="message_card_2_title">2. La
+                            Réalité de la Séparation (Péché)</h3>
                         <p class="text-gray-600 text-sm" data-i18n="message_card_2_text">
-                            Bien que nous soyons aimés, nos choix autonomes et nos erreurs (appelés péché) ont créé une distance. Ce n'est pas une liste de fautes, mais un état de séparation qui vous empêche d'atteindre la plénitude et de connaître Dieu intimement. C'est l'origine du vide que beaucoup ressentent.
+                            Bien que nous soyons aimés, nos choix autonomes et nos erreurs (appelés péché) ont créé une
+                            distance. Ce n'est pas une liste de fautes, mais un état de séparation qui vous empêche
+                            d'atteindre la plénitude et de connaître Dieu intimement. C'est l'origine du vide que
+                            beaucoup ressentent.
                         </p>
                         <p class="mt-3 text-xs font-semibold text-indigo-400" data-i18n="message_card_2_footer">
                             *Le péché crée une barrière. C'est pourquoi nous avons besoin d'un pont.*
@@ -297,13 +358,18 @@
                     </article>
 
                     <!-- Carte 3: Le Pont du Salut (Jésus) (Approfondi) -->
-                    <article class="p-6 bg-white rounded-lg shadow-xl hover:shadow-2xl transition duration-300 border-t-4 border-indigo-500">
+                    <article
+                        class="p-6 bg-white rounded-lg shadow-xl hover:shadow-2xl transition duration-300 border-t-4 border-indigo-500">
                         <div class="text-indigo-500 text-4xl mb-3">
                             <span aria-hidden="true">&#10003;</span>
                         </div>
-                        <h3 class="text-xl font-semibold mb-2 text-gray-900" data-i18n="message_card_3_title">3. Le Pont du Salut : Jésus-Christ</h3>
+                        <h3 class="text-xl font-semibold mb-2 text-gray-900" data-i18n="message_card_3_title">3. Le Pont
+                            du Salut : Jésus-Christ</h3>
                         <p class="text-gray-600 text-sm" data-i18n="message_card_3_text">
-                            Jésus est venu sur Terre pour combler la distance. Sa mort sur la croix et sa résurrection ne sont pas seulement un fait historique, mais l'acte qui rend le pardon total et la réconciliation possible. En L'acceptant comme Seigneur et Sauveur, vous traversez ce pont vers la relation avec Dieu.
+                            Jésus est venu sur Terre pour combler la distance. Sa mort sur la croix et sa résurrection
+                            ne sont pas seulement un fait historique, mais l'acte qui rend le pardon total et la
+                            réconciliation possible. En L'acceptant comme Seigneur et Sauveur, vous traversez ce pont
+                            vers la relation avec Dieu.
                         </p>
                         <p class="mt-3 text-xs font-semibold text-indigo-400" data-i18n="message_card_3_footer">
                             *C'est un cadeau à accepter par la foi, non à mériter par les œuvres.*
@@ -316,23 +382,35 @@
 
             <!-- NOUVELLE SECTION: PLAN DE LECTURE (UX) -->
             <section id="bible-plan" class="py-12 bg-white rounded-xl p-8 shadow-lg">
-                <h2 class="text-3xl font-bold text-center mb-8 text-indigo-700" data-i18n="plan_title">Plan de Lecture 7 Jours : Commencer avec Jésus</h2>
+                <h2 class="text-3xl font-bold text-center mb-8 text-indigo-700" data-i18n="plan_title">Plan de Lecture 7
+                    Jours : Commencer avec Jésus</h2>
                 <div class="grid md:grid-cols-2 gap-6 text-left">
                     <article class="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2" data-i18n="plan_days_1_3_title">Jours 1-3 : L'Amour et le Pardon</h3>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2" data-i18n="plan_days_1_3_title">Jours 1-3 :
+                            L'Amour et le Pardon</h3>
                         <ul class="list-disc list-inside text-gray-600 space-y-1 text-sm">
-                            <li><strong data-i18n="plan_day_1_label">Jour 1 :</strong> <span data-i18n="plan_day_1_text">L'amour de Dieu - Jean 3:16</span></li>
-                            <li><strong data-i18n="plan_day_2_label">Jour 2 :</strong> <span data-i18n="plan_day_2_text">L'humanité et la nécessité du pardon - Romains 3:23</span></li>
-                            <li><strong data-i18n="plan_day_3_label">Jour 3 :</strong> <span data-i18n="plan_day_3_text">La réponse de Jésus - 1 Jean 1:9</span></li>
+                            <li><strong data-i18n="plan_day_1_label">Jour 1 :</strong> <span
+                                    data-i18n="plan_day_1_text">L'amour de Dieu - Jean 3:16</span></li>
+                            <li><strong data-i18n="plan_day_2_label">Jour 2 :</strong> <span
+                                    data-i18n="plan_day_2_text">L'humanité et la nécessité du pardon - Romains
+                                    3:23</span></li>
+                            <li><strong data-i18n="plan_day_3_label">Jour 3 :</strong> <span
+                                    data-i18n="plan_day_3_text">La réponse de Jésus - 1 Jean 1:9</span></li>
                         </ul>
                     </article>
                     <article class="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2" data-i18n="plan_days_4_7_title">Jours 4-7 : La Nouvelle Vie</h3>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2" data-i18n="plan_days_4_7_title">Jours 4-7 :
+                            La Nouvelle Vie</h3>
                         <ul class="list-disc list-inside text-gray-600 space-y-1 text-sm">
-                            <li><strong data-i18n="plan_day_4_label">Jour 4 :</strong> <span data-i18n="plan_day_4_text">L'assurance du salut - Romains 10:9</span></li>
-                            <li><strong data-i18n="plan_day_5_label">Jour 5 :</strong> <span data-i18n="plan_day_5_text">Le rôle de l'Esprit Saint - Actes 1:8</span></li>
-                            <li><strong data-i18n="plan_day_6_label">Jour 6 :</strong> <span data-i18n="plan_day_6_text">La vie en communauté - Hébreux 10:25</span></li>
-                            <li><strong data-i18n="plan_day_7_label">Jour 7 :</strong> <span data-i18n="plan_day_7_text">Les fondations pour la croissance - Matthieu 7:24-27</span></li>
+                            <li><strong data-i18n="plan_day_4_label">Jour 4 :</strong> <span
+                                    data-i18n="plan_day_4_text">L'assurance du salut - Romains 10:9</span></li>
+                            <li><strong data-i18n="plan_day_5_label">Jour 5 :</strong> <span
+                                    data-i18n="plan_day_5_text">Le rôle de l'Esprit Saint - Actes 1:8</span></li>
+                            <li><strong data-i18n="plan_day_6_label">Jour 6 :</strong> <span
+                                    data-i18n="plan_day_6_text">La vie en communauté - Hébreux 10:25</span></li>
+                            <li><strong data-i18n="plan_day_7_label">Jour 7 :</strong> <span
+                                    data-i18n="plan_day_7_text">Les fondations pour la croissance - Matthieu
+                                    7:24-27</span></li>
                         </ul>
                     </article>
                 </div>
@@ -340,33 +418,42 @@
                     Ces versets sont un point de départ pour une lecture personnelle et quotidienne.
                 </p>
             </section>
-            
+
             <div class="section-separator"></div>
 
 
             <!-- SECTION 3: EXPLORATION DE LA FOI (GEMINI FEATURE 1 RÉTABLIE) -->
             <section id="explore" class="py-12 bg-indigo-50 rounded-xl p-8 shadow-lg">
                 <!-- H2 optimisé pour la recherche : "questions sur la bible" -->
-                <h2 class="text-3xl font-bold text-center mb-6 text-indigo-700" data-i18n="explore_title">✨ Poser des Questions sur la Foi (Explorateur IA)</h2>
+                <h2 class="text-3xl font-bold text-center mb-6 text-indigo-700" data-i18n="explore_title">✨ Poser des
+                    Questions sur la Foi (Explorateur IA)</h2>
                 <p class="text-center text-gray-700 mb-6" data-i18n="explore_subtitle">
-                    Posez une question simple sur la foi. Notre IA (recherche assistée) vous fournira une explication claire et bienveillante.
+                    Posez une question simple sur la foi. Notre IA (recherche assistée) vous fournira une explication
+                    claire et bienveillante.
                 </p>
 
                 <div class="max-w-2xl mx-auto">
                     <!-- Message d'alerte API Key -->
-                    <div id="api-key-alert" class="hidden p-4 mb-4 text-sm text-yellow-700 bg-yellow-100 rounded-lg" role="alert" data-i18n="alert_api_key">
-                        ⚠️ **ATTENTION :** La clé API est manquante ou invalide. Les fonctions d'IA ne fonctionneront pas tant que vous n'aurez pas inséré votre clé.
+                    <div id="api-key-alert" class="hidden p-4 mb-4 text-sm text-yellow-700 bg-yellow-100 rounded-lg"
+                        role="alert" data-i18n="alert_api_key">
+                        ⚠️ **ATTENTION :** La clé API est manquante ou invalide. Les fonctions d'IA ne fonctionneront
+                        pas tant que vous n'aurez pas inséré votre clé.
                     </div>
-                
+
                     <div class="flex flex-col sm:flex-row gap-4 mb-4">
-                        <input type="text" id="faith-query" placeholder="Ex: Comment puis-je prier ?" class="flex-grow p-3 border border-indigo-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" data-i18n="explore_placeholder" />
-                        <button onclick="handleFaithQuery()" id="query-button" class="px-6 py-3 bg-indigo-600 text-white font-bold rounded-lg shadow-md hover:bg-indigo-700 transition duration-300 transform hover:scale-105 disabled:opacity-50" disabled>
+                        <input type="text" id="faith-query" placeholder="Ex: Comment puis-je prier ?"
+                            class="flex-grow p-3 border border-indigo-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                            data-i18n="explore_placeholder" />
+                        <button onclick="handleFaithQuery()" id="query-button"
+                            class="px-6 py-3 bg-indigo-600 text-white font-bold rounded-lg shadow-md hover:bg-indigo-700 transition duration-300 transform hover:scale-105 disabled:opacity-50"
+                            disabled>
                             <span id="button-text" data-i18n="explore_button_explain">Expliquer</span>
                             <span id="query-spinner" class="spinner hidden"></span>
                         </button>
                     </div>
 
-                    <div id="query-result" class="mt-4 p-4 bg-white border border-indigo-200 rounded-lg shadow-md text-left hidden">
+                    <div id="query-result"
+                        class="mt-4 p-4 bg-white border border-indigo-200 rounded-lg shadow-md text-left hidden">
                         <!-- Résultat de l'IA s'affichera ici -->
                     </div>
                 </div>
@@ -377,13 +464,19 @@
             <!-- NOUVELLE SECTION: TROUVER UNE ÉGLISE -->
             <section id="find-church" class="py-12 bg-gray-100 rounded-xl p-8 shadow-lg">
                 <!-- H2 optimisé pour la recherche (Universel) -->
-                <h2 class="text-3xl font-bold text-center mb-6 text-indigo-700" data-i18n="community_title">Trouver une Communauté de Foi Accueillante</h2>
+                <h2 class="text-3xl font-bold text-center mb-6 text-indigo-700" data-i18n="community_title">Trouver une
+                    Communauté de Foi Accueillante</h2>
                 <p class="text-center text-gray-700 mb-6" data-i18n="community_subtitle">
-                    La foi est vécue en communauté. Trouvez une communauté locale pour être mieux accompagné dans votre marche.
+                    La foi est vécue en communauté. Trouvez une communauté locale pour être mieux accompagné dans votre
+                    marche.
                 </p>
                 <div class="max-w-2xl mx-auto flex flex-col sm:flex-row gap-4">
-                    <input type="text" id="church-city" placeholder="Entrez votre ville (Ex: Paris, Ajaccio, Marseille)" class="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" data-i18n="community_placeholder" />
-                    <button onclick="searchForChurch()" class="px-6 py-3 bg-red-600 text-white font-bold rounded-lg shadow-md hover:bg-red-700 transition duration-300 transform hover:scale-105" data-i18n="community_button">
+                    <input type="text" id="church-city" placeholder="Entrez votre ville (Ex: Paris, Ajaccio, Marseille)"
+                        class="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                        data-i18n="community_placeholder" />
+                    <button onclick="searchForChurch()"
+                        class="px-6 py-3 bg-red-600 text-white font-bold rounded-lg shadow-md hover:bg-red-700 transition duration-300 transform hover:scale-105"
+                        data-i18n="community_button">
                         Rechercher
                     </button>
                 </div>
@@ -395,22 +488,31 @@
             <!-- SECTION 4: TÉMOIGNAGES (Contenu Dynamique) -->
             <section id="temoignages" class="py-12">
                 <!-- H2 optimisé pour la recherche : "histoires de conversion" (Universel) -->
-                <h2 class="text-3xl font-bold text-center mb-10 text-indigo-700" data-i18n="testimonials_title">Histoires de Vie Transformée et Témoignages</h2>
-                
+                <h2 class="text-3xl font-bold text-center mb-10 text-indigo-700" data-i18n="testimonials_title">
+                    Histoires de Vie Transformée et Témoignages</h2>
+
                 <div class="space-y-6" id="testimonial-list">
                     <!-- Les témoignages seront ajoutés ici par JS (statiques et dynamiques) -->
                 </div>
 
                 <!-- Sous-section: Ajouter un témoignage -->
                 <div class="mt-16 p-8 bg-green-50 rounded-xl shadow-lg border-t-4 border-green-500">
-                    <h3 class="text-2xl font-bold text-green-700 mb-4 text-center" data-i18n="submit_title">Partagez Votre Histoire !</h3>
+                    <h3 class="text-2xl font-bold text-green-700 mb-4 text-center" data-i18n="submit_title">Partagez
+                        Votre Histoire !</h3>
                     <p class="text-center text-gray-700 mb-6" data-i18n="submit_subtitle">
-                        Votre expérience peut inspirer quelqu'un d'autre. Racontez-nous comment votre rencontre avec Dieu a transformé votre vie.
+                        Votre expérience peut inspirer quelqu'un d'autre. Racontez-nous comment votre rencontre avec
+                        Dieu a transformé votre vie.
                     </p>
                     <div class="max-w-xl mx-auto space-y-4">
-                        <input type="text" id="new-testimonial-name" placeholder="Votre nom ou pseudonyme" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" required data-i18n="submit_name_placeholder" />
-                        <textarea id="new-testimonial-story" placeholder="Votre témoignage de vie..." rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" required data-i18n="submit_story_placeholder"></textarea>
-                        <button onclick="submitTestimonial()" id="submit-testimonial-button" class="w-full px-6 py-3 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700 transition duration-300 transform hover:scale-105 disabled:opacity-50" disabled>
+                        <input type="text" id="new-testimonial-name" placeholder="Votre nom ou pseudonyme"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
+                            required data-i18n="submit_name_placeholder" />
+                        <textarea id="new-testimonial-story" placeholder="Votre témoignage de vie..." rows="4"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
+                            required data-i18n="submit_story_placeholder"></textarea>
+                        <button onclick="submitTestimonial()" id="submit-testimonial-button"
+                            class="w-full px-6 py-3 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700 transition duration-300 transform hover:scale-105 disabled:opacity-50"
+                            disabled>
                             <span id="submit-button-text" data-i18n="submit_button">Soumettre le Témoignage</span>
                             <span id="submit-spinner" class="spinner hidden"></span>
                         </button>
@@ -420,57 +522,71 @@
             </section>
 
             <div class="section-separator"></div>
-            
+
             <!-- NOUVELLE SECTION: PARTAGE SOCIAL -->
             <section id="share" class="py-12 bg-white rounded-xl p-8 shadow-lg">
-                <h2 class="text-3xl font-bold text-center mb-6 text-indigo-700" data-i18n="share_title">Partager le Message avec vos Proches</h2>
+                <h2 class="text-3xl font-bold text-center mb-6 text-indigo-700" data-i18n="share_title">Partager le
+                    Message avec vos Proches</h2>
                 <p class="text-center text-gray-700 mb-8 max-w-2xl mx-auto" data-i18n="share_subtitle">
                     Aidez d'autres personnes à découvrir la foi ! Cliquez sur un bouton pour partager cette page.
                 </p>
                 <div class="flex flex-wrap justify-center gap-4 max-w-2xl mx-auto">
-                    
+
                     <!-- Bouton Copier le Lien (pour SMS, E-mail, etc.) -->
-                    <button onclick="copyLink(this)" class="px-5 py-3 text-white font-semibold rounded-lg shadow-md transition duration-300 transform hover:scale-105 bg-gray-500 hover:bg-gray-600" data-i18n="share_copy_button">
+                    <button onclick="copyLink(this)"
+                        class="px-5 py-3 text-white font-semibold rounded-lg shadow-md transition duration-300 transform hover:scale-105 bg-gray-500 hover:bg-gray-600"
+                        data-i18n="share_copy_button">
                         🔗 Copier le Lien
                     </button>
-                    
+
                     <!-- Boutons Réseaux Sociaux -->
-                    <button onclick="shareOnSocial('facebook')" class="px-5 py-3 text-white font-semibold rounded-lg shadow-md transition duration-300 transform hover:scale-105 btn-facebook">
+                    <button onclick="shareOnSocial('facebook')"
+                        class="px-5 py-3 text-white font-semibold rounded-lg shadow-md transition duration-300 transform hover:scale-105 btn-facebook">
                         <span aria-hidden="true">&#xf09a;</span> Facebook
                     </button>
-                    <button onclick="shareOnSocial('twitter')" class="px-5 py-3 text-white font-semibold rounded-lg shadow-md transition duration-300 transform hover:scale-105 btn-twitter">
+                    <button onclick="shareOnSocial('twitter')"
+                        class="px-5 py-3 text-white font-semibold rounded-lg shadow-md transition duration-300 transform hover:scale-105 btn-twitter">
                         <span aria-hidden="true">&#x1f5c6;</span> X / Twitter
                     </button>
-                    <button onclick="shareOnSocial('whatsapp')" class="px-5 py-3 text-white font-semibold rounded-lg shadow-md transition duration-300 transform hover:scale-105 btn-whatsapp">
+                    <button onclick="shareOnSocial('whatsapp')"
+                        class="px-5 py-3 text-white font-semibold rounded-lg shadow-md transition duration-300 transform hover:scale-105 btn-whatsapp">
                         <span aria-hidden="true">&#xf232;</span> WhatsApp
                     </button>
-                    <button onclick="shareOnSocial('email')" class="px-5 py-3 text-white font-semibold rounded-lg shadow-md transition duration-300 transform hover:scale-105 bg-red-500 hover:bg-red-600">
+                    <button onclick="shareOnSocial('email')"
+                        class="px-5 py-3 text-white font-semibold rounded-lg shadow-md transition duration-300 transform hover:scale-105 bg-red-500 hover:bg-red-600">
                         ✉️ E-mail
                     </button>
-                    <button onclick="shareOnSocial('sms')" class="px-5 py-3 text-white font-semibold rounded-lg shadow-md transition duration-300 transform hover:scale-105 btn-sms">
+                    <button onclick="shareOnSocial('sms')"
+                        class="px-5 py-3 text-white font-semibold rounded-lg shadow-md transition duration-300 transform hover:scale-105 btn-sms">
                         💬 SMS
                     </button>
                 </div>
             </section>
-            
+
             <div class="section-separator"></div>
 
             <!-- SECTION 5: PROCHAINES ÉTAPES (Call to Action principal) -->
             <section id="etapes" class="py-12 text-center bg-indigo-50 rounded-xl p-8 shadow-inner">
-                <h2 class="text-3xl font-bold mb-4 text-indigo-700" data-i18n="steps_title">Prière de Conversion : Faire le Premier Pas</h2>
+                <h2 class="text-3xl font-bold mb-4 text-indigo-700" data-i18n="steps_title">Prière de Conversion : Faire
+                    le Premier Pas</h2>
                 <p class="text-lg text-gray-700 mb-6" data-i18n="steps_subtitle">
                     Si le message résonne en vous, voici les étapes simples pour commencer votre voyage de foi.
                 </p>
                 <div class="flex flex-col md:flex-row justify-center items-center gap-4">
-                    <button onclick="displayMessage('prayer')" class="w-full md:w-auto px-6 py-3 bg-indigo-600 text-white font-bold rounded-lg shadow-md hover:bg-indigo-700 transition duration-300 transform hover:scale-105" data-i18n="steps_button_prayer">
+                    <button onclick="displayMessage('prayer')"
+                        class="w-full md:w-auto px-6 py-3 bg-indigo-600 text-white font-bold rounded-lg shadow-md hover:bg-indigo-700 transition duration-300 transform hover:scale-105"
+                        data-i18n="steps_button_prayer">
                         Faire une Prière
                     </button>
-                    <button onclick="displayMessage('contact')" class="w-full md:w-auto px-6 py-3 bg-gray-200 text-indigo-600 font-bold rounded-lg shadow-md hover:bg-gray-300 transition duration-300 transform hover:scale-105" data-i18n="steps_button_contact">
+                    <button onclick="displayMessage('contact')"
+                        class="w-full md:w-auto px-6 py-3 bg-gray-200 text-indigo-600 font-bold rounded-lg shadow-md hover:bg-gray-300 transition duration-300 transform hover:scale-105"
+                        data-i18n="steps_button_contact">
                         Contacter Quelqu'un
                     </button>
                 </div>
 
-                <div id="action-message" class="mt-8 p-4 bg-white border border-indigo-200 rounded-lg shadow-md text-left hidden">
+                <div id="action-message"
+                    class="mt-8 p-4 bg-white border border-indigo-200 rounded-lg shadow-md text-left hidden">
                     <!-- Le message de l'action s'affichera ici -->
                 </div>
             </section>
@@ -480,10 +596,13 @@
         <!-- FOOTER -->
         <footer class="w-full bg-gray-800 text-white p-6 mt-12">
             <div class="max-w-4xl mx-auto text-center text-sm">
-                <p>&copy; 2025 <span data-i18n="app_name_footer">Foi Nouvelle</span>. <span data-i18n="footer_rights">Tous droits réservés.</span></p>
-                <p class="mt-2" data-i18n="footer_subtitle">Ce site est optimisé pour la recherche et le partage du message de la foi.</p>
+                <p>&copy; 2025 <span data-i18n="app_name_footer">Foi Nouvelle</span>. <span
+                        data-i18n="footer_rights">Tous droits réservés.</span></p>
+                <p class="mt-2" data-i18n="footer_subtitle">Ce site est optimisé pour la recherche et le partage du
+                    message de la foi.</p>
                 <p class="mt-4 text-indigo-300 font-semibold" id="acceptance-counter">
-                    <span id="counter-number">0</span> <span data-i18n="footer_counter_text">personnes ayant accepté Jésus par le biais de cette page</span>
+                    <span id="counter-number">0</span> <span data-i18n="footer_counter_text">personnes ayant accepté
+                        Jésus par le biais de cette page</span>
                 </p>
             </div>
         </footer>
@@ -495,12 +614,12 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script type="module">
-        
+
         // --- SQLITE SETUP ---
         let db = null; // Base de données SQLite
         let userId = null; // ID utilisateur local (généré une fois)
         let isDbReady = false;
-        
+
         // Nom de la base de données dans IndexedDB
         const DB_NAME = 'foi_nouvelle_db';
         const DB_VERSION = 1;
@@ -525,7 +644,7 @@
                 // Hero
                 hero_title: "Découvrez le Chemin vers Dieu et l'Espoir", hero_subtitle_1: "Vous cherchez un sens à votre vie ? Découvrez comment **trouver la foi en Dieu**, le chemin vers Jésus et une communauté accueillante.", hero_subtitle_2: "Découvrez l'amour inconditionnel et la puissance transformatrice de la foi. Où que vous soyez dans votre recherche, vous êtes le bienvenu.", hero_button: "Je veux comprendre",
                 // Message
-                message_title: "Comprendre les Fondamentaux de la Foi en Dieu", 
+                message_title: "Comprendre les Fondamentaux de la Foi en Dieu",
                 message_card_1_title: "1. L'Amour Inconditionnel de Dieu", message_card_1_text: "Dieu est la source de toute existence et vous a créé(e) par amour. Son amour n'a pas de condition : il est total et éternel. Il n'attend pas que vous soyez parfait(e), mais que vous acceptiez Sa présence.", message_card_1_footer: "*Le point de départ de tout : Sa grâce est disponible, quel que soit votre passé.*",
                 message_card_2_title: "2. La Réalité de la Séparation (Péché)", message_card_2_text: "Bien que nous soyons aimés, nos choix autonomes et nos erreurs (appelés péché) ont créé une distance. Ce n'est pas une liste de fautes, mais un état de séparation qui vous empêche d'atteindre la plénitude et de connaître Dieu intimement. C'est l'origine du vide que beaucoup ressentent.", message_card_2_footer: "*Le péché crée une barrière. C'est pourquoi nous avons besoin d'un pont.*",
                 message_card_3_title: "3. Le Pont du Salut : Jésus-Christ", message_card_3_text: "Jésus est venu sur Terre pour combler la distance. Sa mort sur la croix et sa résurrection ne sont pas seulement un fait historique, mais l'acte qui rend le pardon total et la réconciliation possible. En L'acceptant comme Seigneur et Sauveur, vous traversez ce pont vers la relation avec Dieu.", message_card_3_footer: "*C'est un cadeau à accepter par la foi, non à mériter par les œuvres.*",
@@ -541,7 +660,7 @@
 
                 // Communauté
                 community_title: "Trouver une Communauté de Foi Accueillante", community_subtitle: "La foi est vécue en communauté. Trouvez une communauté locale pour être mieux accompagné dans votre marche.", community_placeholder: "Entrez votre ville (Ex: Paris, Ajaccio, Marseille)", community_button: "Rechercher",
-                
+
                 // Témoignages
                 testimonials_title: "Histoires de Vie Transformée et Témoignages", submit_title: "Partagez Votre Histoire !", submit_subtitle: "Votre expérience peut inspirer quelqu'un d'autre. Racontez-nous comment votre rencontre avec Dieu a transformé votre vie.", submit_name_placeholder: "Votre nom ou pseudonyme", submit_story_placeholder: "Votre témoignage de vie...", submit_button: "Soumettre le Témoignage",
                 testimonial_label: "Témoignage",
@@ -572,7 +691,7 @@
                 steps_contact_prompt: "Nous serions ravis de discuter avec vous et de répondre à vos questions. N'hésitez pas à nous appeler ou à nous écrire.",
                 steps_contact_email_label: "Email",
                 steps_contact_phone_label: "Téléphone",
-                
+
                 // Alerts & Errors
                 alert_api_key: "⚠️ ATTENTION : La clé API est manquante ou invalide. Les fonctions d'IA ne fonctionneront pas tant que vous n'aurez pas inséré votre clé.",
                 alert_api_key_error: "Erreur : La clé API semble invalide. Veuillez vérifier votre clé Gemini.",
@@ -612,13 +731,13 @@
                 // Hero
                 hero_title: "Discover the Path to God and Hope", hero_subtitle_1: "Are you looking for meaning in your life? Discover how to **find faith in God**, the way to Jesus, and a welcoming community.", hero_subtitle_2: "Discover unconditional love and the transformative power of faith. Wherever you are in your search, you are welcome.", hero_button: "I want to understand",
                 // Message
-                message_title: "Understanding the Fundamentals of Faith in God", 
+                message_title: "Understanding the Fundamentals of Faith in God",
                 message_card_1_title: "1. Unconditional Love of God", message_card_1_text: "God is the source of all existence and created you out of love. His love has no conditions: it is total and eternal. He doesn't wait for you to be perfect, but for you to accept His presence.", message_card_1_footer: "*The starting point of everything: His grace is available, regardless of your past.*",
                 message_card_2_title: "2. The Reality of Separation (Sin)", message_card_2_text: "Although we are loved, our autonomous choices and mistakes (called sin) have created a distance. This is not a list of faults, but a state of separation that prevents you from reaching fullness and knowing God intimately. It is the origin of the emptiness many feel.", message_card_2_footer: "*Sin creates a barrier. That's why we need a bridge.*",
                 message_card_3_title: "3. The Bridge of Salvation: Jesus Christ", message_card_3_text: "Jesus came to Earth to bridge the distance. His death on the cross and resurrection are not just historical facts, but the act that makes total forgiveness and reconciliation possible. By accepting Him as Lord and Savior, you cross this bridge to a relationship with God.", message_card_3_footer: "*It is a gift to be accepted by faith, not earned by works.*",
                 // Plan de lecture
                 plan_title: "7-Day Reading Plan: Starting with Jesus", plan_days_1_3_title: "Days 1-3: Love and Forgiveness", plan_days_4_7_title: "Days 4-7: The New Life", plan_day_1_label: "Day 1:", plan_day_1_text: "God's love - John 3:16", plan_day_2_label: "Day 2:", plan_day_2_text: "Humanity and the need for forgiveness - Romans 3:23", plan_day_3_label: "Day 3:", plan_day_3_text: "Jesus' response - 1 John 1:9", plan_day_4_label: "Day 4:", plan_day_4_text: "Assurance of salvation - Romans 10:9", plan_day_5_label: "Day 5:", plan_day_5_text: "The role of the Holy Spirit - Acts 1:8", plan_day_6_label: "Day 6:", plan_day_6_text: "Life in community - Hebrews 10:25", plan_day_7_label: "Day 7:", plan_day_7_text: "Foundations for growth - Matthew 7:24-27", plan_footer: "These verses are a starting point for personal and daily reading.",
-                 // Explorateur IA
+                // Explorateur IA
                 explore_title: "✨ Ask Questions about Faith (AI Explorer)", explore_subtitle: "Ask a simple question about faith. Our AI (search-assisted) will provide a clear and benevolent explanation.", explore_placeholder: "Ex: How can I pray?", explore_button_explain: "Explain",
                 explore_button_searching: "Searching...",
                 explore_response_to: "Response to",
@@ -629,7 +748,7 @@
 
                 // Communauté
                 community_title: "Find a Welcoming Faith Community", community_subtitle: "Faith is lived in community. Find a local community to be better guided in your walk.", community_placeholder: "Enter your city (e.g., London, New York, Sydney)", community_button: "Search",
-                
+
                 // Témoignages
                 testimonials_title: "Stories of Transformed Lives and Testimonials", submit_title: "Share Your Story!", submit_subtitle: "Your experience can inspire someone else. Tell us how your encounter with God transformed your life.", submit_name_placeholder: "Your name or nickname", submit_story_placeholder: "Your life story...", submit_button: "Submit Testimonial",
                 testimonial_label: "Testimony",
@@ -701,7 +820,7 @@
                 // Hero
                 hero_title: "Descubre el Camino a Dios y la Esperanza", hero_subtitle_1: "¿Buscas un sentido en tu vida? Descubre cómo **encontrar la fe en Dios**, el camino a Jesús y una comunidad acogedora.", hero_subtitle_2: "Descubre el amor incondicional y el poder transformador de la fe. Dondequiera que estés en tu búsqueda, eres bienvenido.", hero_button: "Quiero entender",
                 // Message
-                message_title: "Comprender los Fundamentos de la Fe en Dios", 
+                message_title: "Comprender los Fundamentos de la Fe en Dios",
                 message_card_1_title: "1. Amor Incondicional de Dios", message_card_1_text: "Dios es la fuente de toda existencia y te creó por amor. Su amor no tiene condición: es total y eterno. No espera que seas perfecto(a), sino que aceptes Su presencia.", message_card_1_footer: "*El punto de partida de todo: Su gracia está disponible, sin importar tu pasado.*",
                 message_card_2_title: "2. La Realidad de la Separación (Pecado)", message_card_2_text: "Aunque somos amados, nuestras elecciones y errores (llamados pecado) han creado una distancia. No es una lista de fallas, sino un estado de separación que te impide alcanzar la plenitud y conocer a Dios íntimamente. Es el origen del vacío que muchos sienten.", message_card_2_footer: "*El pecado crea una barrera. Por eso necesitamos un puente.*",
                 message_card_3_title: "3. El Puente de la Salvación: Jesucristo", message_card_3_text: "Jesús vino a la Tierra para salvar la distancia. Su muerte en la cruz y resurrección no son solo hechos históricos, sino el acto que hace posible el perdón total y la reconciliación. Al aceptarlo como Señor y Salvador, cruzas este puente hacia la relación con Dios.", message_card_3_footer: "*Es un regalo para ser aceptado por fe, no ganado por obras.*",
@@ -717,7 +836,7 @@
 
                 // Communauté
                 community_title: "Encuentra una Comunidad de Fe Acogedora", community_subtitle: "La fe se vive en comunidad. Encuentra una comunidad local para ser mejor guiado en tu caminar.", community_placeholder: "Ingresa tu ciudad (Ej: Madrid, Buenos Aires, México)", community_button: "Buscar",
-                
+
                 // Témoignages
                 testimonials_title: "Historias de Vidas Transformadas y Testimonios", submit_title: "¡Comparte tu Historia!", submit_subtitle: "Tu experiencia puede inspirar a otra persona. Cuéntanos cómo tu encuentro con Dios transformó tu vida.", submit_name_placeholder: "Tu nombre o apodo", submit_story_placeholder: "Tu historia de vida...", submit_button: "Enviar Testimonio",
                 testimonial_label: "Testimonio",
@@ -1215,7 +1334,7 @@
 
                 // Communauté
                 community_title: "Finde eine einladende Glaubensgemeinschaft", community_subtitle: "Glaube wird in Gemeinschaft gelebt. Finde eine lokale Gemeinschaft, um auf deinem Weg besser begleitet zu werden.", community_placeholder: "Gib deine Stadt ein (z.B. Berlin, München, Hamburg)", community_button: "Suchen",
-                
+
                 // Témoignages
                 testimonials_title: "Geschichten von transformierten Leben und Zeugnisse", submit_title: "Teile deine Geschichte!", submit_subtitle: "Deine Erfahrung kann jemand anderen inspirieren. Erzähle uns, wie deine Begegnung mit Gott dein Leben verändert hat.", submit_name_placeholder: "Dein Name oder Pseudonym", submit_story_placeholder: "Deine Lebensgeschichte...", submit_button: "Zeugnis absenden",
                 testimonial_label: "Zeugnis",
@@ -1245,7 +1364,7 @@
                 steps_contact_prompt: "Wir würden uns freuen, mit dir zu sprechen und deine Fragen zu beantworten. Zögere nicht, uns anzurufen oder uns zu schreiben.",
                 steps_contact_email_label: "E-Mail",
                 steps_contact_phone_label: "Telefon",
-                
+
                 // Alerts & Errors
                 alert_api_key: "⚠️ WARNUNG: Der Gemini API-Schlüssel fehlt oder ist ungültig. KI-Funktionen funktionieren erst, wenn du deinen Schlüssel eingibst.",
                 alert_api_key_error: "Fehler: Der API-Schlüssel scheint ungültig zu sein. Bitte überprüfe deinen Gemini-Schlüssel.",
@@ -1286,11 +1405,11 @@
         // Si du contenu personnalisé est injecté par le serveur, on l'utilise pour surcharger les traductions FR
         if (window.SERVER_CONTENT && typeof window.SERVER_CONTENT === 'object') {
             console.log('📦 Contenu personnalisé détecté, application des surcharges...');
-            
+
             // Parcourir chaque section du contenu serveur
             Object.keys(window.SERVER_CONTENT).forEach(sectionKey => {
                 const sectionContent = window.SERVER_CONTENT[sectionKey];
-                
+
                 // Parcourir chaque champ de la section
                 Object.keys(sectionContent).forEach(fieldKey => {
                     const value = sectionContent[fieldKey];
@@ -1298,7 +1417,7 @@
                         // Construire la clé de traduction (ex: 'hero_title')
                         // Cas particuliers pour les clés composées
                         let translationKey = '';
-                        
+
                         if (sectionKey === 'hero') {
                             translationKey = `hero_${fieldKey}`;
                         } else if (sectionKey.startsWith('message_card_')) {
@@ -1332,7 +1451,7 @@
                         } else if (sectionKey === 'footer') {
                             if (fieldKey === 'subtitle') translationKey = 'footer_subtitle';
                         }
-                        
+
                         // Appliquer la surcharge si la clé existe
                         if (translationKey && translations.fr[translationKey] !== undefined) {
                             translations.fr[translationKey] = value;
@@ -1343,7 +1462,7 @@
         }
 
         let currentLang = 'fr'; // Langue par défaut
-        
+
         /**
          * Applique la traduction en changeant les attributs data-i18n.
          * @param {string} lang - La langue cible ('fr', 'en', 'es').
@@ -1362,7 +1481,7 @@
                     // Les inputs doivent mettre à jour leur placeholder
                     if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
                         el.setAttribute('placeholder', translations[lang][key]);
-                    } 
+                    }
                     // Les autres éléments mettent à jour leur contenu textuel
                     else {
                         // Attention à ne pas écraser les éléments HTML enfants si nécessaire
@@ -1376,26 +1495,26 @@
                     }
                 }
             });
-            
+
             // Mise à jour du contenu des messages d'action (doit être fait ici car il est stocké dans actionContents)
             updateActionContents(lang);
-            
+
             // Si la section de message d'action est déjà affichée, la mettre à jour avec la nouvelle langue
             const messageBox = document.getElementById('action-message');
             if (messageBox && !messageBox.classList.contains('hidden')) {
                 // Déterminer quel type de message est affiché (prayer ou contact)
                 const prayerQuote = messageBox.querySelector('#prayer-quote');
                 const contactSection = messageBox.querySelector('a[href^="mailto:"]');
-                
+
                 if (prayerQuote) {
                     // C'est la section de prière, mettre à jour avec le nouveau contenu
                     // Préserver l'état du bouton s'il a déjà été cliqué
                     const existingButton = messageBox.querySelector('#prayer-acceptance-button');
                     const wasButtonClicked = existingButton && existingButton.disabled;
                     const confirmationWasVisible = document.getElementById('prayer-confirmation-message') && !document.getElementById('prayer-confirmation-message').classList.contains('hidden');
-                    
+
                     messageBox.innerHTML = actionContents.prayer;
-                    
+
                     // Si le bouton avait été cliqué, le désactiver à nouveau et afficher le message
                     if (wasButtonClicked || confirmationWasVisible) {
                         const newButton = messageBox.querySelector('#prayer-acceptance-button');
@@ -1405,7 +1524,7 @@
                             newButton.classList.remove('bg-indigo-600', 'hover:bg-indigo-700', 'hover:scale-105', 'active:scale-95');
                             newButton.classList.add('bg-green-600', 'cursor-not-allowed');
                             const t = translations[lang] || translations.fr;
-                            
+
                             // Afficher la coche dans le bouton
                             const buttonText = newButton.querySelector('#prayer-button-text');
                             const buttonCheck = newButton.querySelector('#prayer-button-check');
@@ -1415,7 +1534,7 @@
                             } else {
                                 newButton.innerHTML = `<span class="flex items-center justify-center gap-2"><span>✓</span> <span>${t.steps_prayer_button_label}</span></span>`;
                             }
-                            
+
                             newConfirmationMessage.classList.remove('hidden');
                             const confirmationP = newConfirmationMessage.querySelector('p');
                             if (confirmationP) {
@@ -1428,25 +1547,30 @@
                     messageBox.innerHTML = actionContents.contact;
                 }
             }
-            
+
             // Re-render les témoignages si nécessaire pour mettre à jour les dates et les textes statiques des témoignages
             if (isDbReady) {
                 // Recharger les témoignages depuis SQLite
                 loadTestimonials();
             } else {
-                 renderTestimonials(staticTestimonials.filter(t => t.isStatic)); 
+                renderTestimonials(staticTestimonials.filter(t => t.isStatic));
             }
-            
+
             // Mettre à jour l'affichage du compteur d'acceptations (après la mise à jour des traductions)
             setTimeout(() => updateAcceptanceCounterDisplay(), 100);
         }
-        
+
         /**
          * Met à jour le contenu des messages affichés par displayMessage.
          */
         function updateActionContents(lang) {
             const t = translations[lang];
-            const prayerTextLocalized = PRAYER_TEXT[lang] || PRAYER_TEXT.fr;
+
+            // Utiliser le texte de prière dynamique s'il est disponible (uniquement pour le français pour l'instant)
+            let prayerTextLocalized = PRAYER_TEXT[lang] || PRAYER_TEXT.fr;
+            if (lang === 'fr' && window.SERVER_CONTENT && window.SERVER_CONTENT.steps && window.SERVER_CONTENT.steps.prayer_text) {
+                prayerTextLocalized = window.SERVER_CONTENT.steps.prayer_text;
+            }
 
             actionContents.prayer = `
                 <h3 class="text-2xl font-bold text-indigo-700 mb-3">${t.steps_title_prayer_section}</h3>
@@ -1491,9 +1615,9 @@
                 </p>
             `;
         }
-        
+
         // Fonction exposée pour le sélecteur HTML
-        window.setLanguage = function(lang) {
+        window.setLanguage = function (lang) {
             applyTranslations(lang);
         };
 
@@ -1504,13 +1628,13 @@
 
         // La variable `prayerText` n'est plus utilisée directement ici, mais conservée pour référence si besoin.
         // const prayerText = PRAYER_TEXT.fr; 
-        
+
         // =====================================================================
         // 🚨 VARIABLES D'ENVIRONNEMENT : Injectées par le serveur depuis .env
         // =====================================================================
         // NOTE: L'API_KEY n'est plus injectée côté client pour des raisons de sécurité
         // Tous les appels à Gemini passent maintenant par le serveur (/api/gemini/generate)
-        
+
         // Rétablissement des configurations Gemini (URL de base implicite, modèles explicites)
         const LLM_TTS_MODEL = "gemini-2.5-flash-preview-tts"; // Modèle Gemini pour l'audio
 
@@ -1522,7 +1646,7 @@
 
         // Variable pour vérifier si l'API est disponible (toujours true car géré côté serveur)
         let isApiKeyValid = true; // L'API est maintenant gérée côté serveur
-        
+
         /**
          * Sauvegarde la base de données SQLite dans IndexedDB pour la persistance.
          */
@@ -1532,12 +1656,12 @@
                 const data = db.export();
                 const buffer = data.buffer;
                 const STORE_NAME = 'database';
-                
+
                 return new Promise((resolve, reject) => {
                     const request = indexedDB.open(DB_NAME, DB_VERSION);
-                    
+
                     request.onerror = () => reject(request.error);
-                    
+
                     request.onsuccess = () => {
                         const idb = request.result;
                         const transaction = idb.transaction([STORE_NAME], 'readwrite');
@@ -1546,7 +1670,7 @@
                         transaction.oncomplete = () => resolve();
                         transaction.onerror = () => reject(transaction.error);
                     };
-                    
+
                     request.onupgradeneeded = (event) => {
                         const idb = event.target.result;
                         if (!idb.objectStoreNames.contains(STORE_NAME)) {
@@ -1565,15 +1689,15 @@
         async function loadDatabase() {
             try {
                 const STORE_NAME = 'database';
-                
+
                 return new Promise((resolve) => {
                     const request = indexedDB.open(DB_NAME, DB_VERSION);
-                    
+
                     request.onerror = () => {
                         // Si IndexedDB n'est pas disponible, on crée une nouvelle base
                         resolve(null);
                     };
-                    
+
                     request.onsuccess = () => {
                         const idb = request.result;
                         if (!idb.objectStoreNames.contains(STORE_NAME)) {
@@ -1583,14 +1707,14 @@
                         const transaction = idb.transaction([STORE_NAME], 'readonly');
                         const store = transaction.objectStore(STORE_NAME);
                         const getRequest = store.get('db');
-                        
+
                         getRequest.onsuccess = () => {
                             resolve(getRequest.result);
                         };
-                        
+
                         getRequest.onerror = () => resolve(null);
                     };
-                    
+
                     request.onupgradeneeded = (event) => {
                         const idb = event.target.result;
                         if (!idb.objectStoreNames.contains(STORE_NAME)) {
@@ -1620,11 +1744,11 @@
 
                 // Charger la base existante ou créer une nouvelle
                 const savedData = await loadDatabase();
-                
+
                 if (savedData) {
                     db = new SQL.Database(new Uint8Array(savedData));
                     console.log("Base de données chargée depuis IndexedDB");
-                        } else {
+                } else {
                     db = new SQL.Database();
                     console.log("Nouvelle base de données créée");
                 }
@@ -1669,22 +1793,22 @@
 
                 isDbReady = true;
                 console.log("SQLite initialisé avec succès");
-                        
-                        // Enregistrer la connexion
+
+                // Enregistrer la connexion
                 logActivity('USER_CONNECTED');
-                
+
                 // Envoyer une notification par email lors de la visite
                 sendEmailNotification('notify-visit', {});
-                        
+
                 // Activer les boutons
-                        if (isApiKeyValid) {
-                            document.getElementById('query-button').disabled = false;
-                        }
-                        document.getElementById('submit-testimonial-button').disabled = false;
-                        
+                if (isApiKeyValid) {
+                    document.getElementById('query-button').disabled = false;
+                }
+                document.getElementById('submit-testimonial-button').disabled = false;
+
                 // Charger et afficher les témoignages
                 loadTestimonials();
-                
+
                 // Afficher le compteur d'acceptations
                 updateAcceptanceCounterDisplay();
 
@@ -1702,7 +1826,7 @@
          */
         async function logActivity(action, details = {}) {
             if (!db || !userId) return;
-            
+
             try {
                 const detailsJson = JSON.stringify(details);
                 db.run(
@@ -1737,7 +1861,7 @@
                         timestamp: new Date().toISOString()
                     })
                 });
-                
+
                 const result = await response.json();
                 if (result.success) {
                     console.log(`✅ Email de notification envoyé (${endpoint})`);
@@ -1762,11 +1886,11 @@
                         'Content-Type': 'application/json'
                     }
                 });
-                
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                
+
                 const data = await response.json();
                 return data.success ? data.count : 0;
             } catch (e) {
@@ -1782,11 +1906,11 @@
         async function getAcceptanceCounter() {
             try {
                 const response = await fetch('/api/acceptance-counter');
-                
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                
+
                 const data = await response.json();
                 return data.success ? data.count : 0;
             } catch (e) {
@@ -1802,11 +1926,11 @@
         async function updateAcceptanceCounterDisplay() {
             const count = await getAcceptanceCounter();
             const counterNumberElement = document.getElementById('counter-number');
-            
+
             if (counterNumberElement) {
                 counterNumberElement.textContent = count.toLocaleString();
             }
-            
+
             // Le texte sera mis à jour automatiquement par applyTranslations via data-i18n
         }
 
@@ -1831,20 +1955,20 @@
                 if (result.length > 0) {
                     const columns = result[0].columns;
                     const values = result[0].values;
-                    
+
                     for (let i = 0; i < values.length; i++) {
                         const row = {};
                         columns.forEach((col, idx) => {
                             row[col] = values[i][idx];
                         });
-                        
+
                         // Convertir la date string en objet Date pour compatibilité
                         if (row.timestamp) {
                             row.timestamp = {
                                 toDate: () => new Date(row.timestamp)
                             };
                         }
-                        
+
                         dynamicTestimonials.push(row);
                     }
                 }
@@ -1904,14 +2028,14 @@
                         language: currentLang
                     })
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (result.success && result.text) {
                     return { text: result.text, sources: result.sources || [] };
                 } else {
                     console.error("Erreur API serveur Gemini:", result);
-                    const errorMsg = result.error?.includes('API_KEY') 
+                    const errorMsg = result.error?.includes('API_KEY')
                         ? translations[currentLang]?.alert_api_invalid || "Erreur : La clé API semble invalide côté serveur."
                         : translations[currentLang]?.alert_generation_failed || "Désolé, je n'ai pas pu générer de réponse claire. Veuillez réessayer ou reformuler.";
                     return { text: errorMsg, sources: [] };
@@ -1970,9 +2094,9 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
                         language: currentLang
                     })
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (result.success && result.text) {
                     const responseText = result.text.trim().toUpperCase();
                     // Vérifier si la réponse contient "APPROUVÉ"
@@ -2007,20 +2131,20 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
         async function executeSearch(queryText) {
             const queryInput = document.getElementById('faith-query');
             const resultDiv = document.getElementById('query-result');
-            
+
             if (!queryInput || !resultDiv) {
                 return;
             }
-            
+
             // Remplir le champ de recherche
             queryInput.value = queryText;
-            
+
             // Faire défiler vers la section de recherche
             const exploreSection = document.getElementById('explore');
             if (exploreSection) {
                 exploreSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
-            
+
             // Attendre un peu pour que le scroll se termine
             setTimeout(() => {
                 // Lancer la recherche
@@ -2043,21 +2167,21 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
                 resultDiv.classList.remove('hidden');
                 return;
             }
-            
+
             // Afficher l'état de chargement
             button.disabled = true;
             buttonText.textContent = translations[currentLang].explore_button_searching || "Recherche...";
             spinner.classList.remove('hidden');
             resultDiv.classList.add('hidden');
-            
+
             // Enregistrer la question posée
             logActivity('IA_QUESTION_ASKED', { query: query, lang: currentLang }); // APPEL AJOUTÉ
-            
+
             // NOUVELLE INSTRUCTION SYSTÈME AVEC APPEL À L'ACTION
             const systemInstruction = `Vous êtes un conseiller spirituel bienveillant et sage. Votre tâche est d'expliquer les concepts bibliques ou les versets de manière claire, concise, encourageante et accessible. Concentrez-vous sur l'amour de Dieu et la personne de Jésus.
             
             Après votre explication principale, ajoutez un paragraphe de conclusion intitulé "${translations[currentLang].explore_next_steps_title || "Prochaines Étapes pour Aller Plus Loin"}". Dans cette conclusion, encouragez chaleureusement l'utilisateur à ne pas rester seul avec ses questions et à contacter l'église pour une meilleure guidance. Mentionnez l'email et le téléphone suivants: ${CONTACT_EMAIL} ou ${CONTACT_PHONE}.`;
-            
+
             // Utilisation de la fonction Gemini
             const { text, sources } = await generateContentWithSearch(query, systemInstruction);
 
@@ -2073,11 +2197,11 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
                 });
                 htmlContent += `</div>`;
             } else {
-                 htmlContent += `<div class="mt-4 pt-4 border-t border-indigo-100">`;
-                 htmlContent += `<p class="text-xs font-semibold text-gray-500 mb-1">${translations[currentLang].explore_no_sources || "Information générée par IA (sans source externe trouvée)."}</p>`;
-                 htmlContent += `</div>`;
+                htmlContent += `<div class="mt-4 pt-4 border-t border-indigo-100">`;
+                htmlContent += `<p class="text-xs font-semibold text-gray-500 mb-1">${translations[currentLang].explore_no_sources || "Information générée par IA (sans source externe trouvée)."}</p>`;
+                htmlContent += `</div>`;
             }
-            
+
             resultDiv.innerHTML = htmlContent;
             resultDiv.classList.remove('hidden');
 
@@ -2085,7 +2209,7 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
             buttonText.textContent = translations[currentLang].explore_button_explain || "Expliquer";
             spinner.classList.add('hidden');
             if (isDbReady && isApiKeyValid) {
-                 button.disabled = false;
+                button.disabled = false;
             }
         }
 
@@ -2118,7 +2242,7 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
             }
             return new Blob([view], { type: 'audio/wav' });
         }
-        
+
         function writeString(view, offset, string) {
             for (let i = 0; i < string.length; i++) {
                 view.setUint8(offset + i, string.charCodeAt(i));
@@ -2160,7 +2284,7 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
                     tempInput.select();
                     document.execCommand('copy');
                     document.body.removeChild(tempInput);
-                    
+
                     buttonElement.textContent = translations[currentLang].alert_link_copied || "Lien Copié ! ✅";
                     setTimeout(() => {
                         buttonElement.textContent = originalText;
@@ -2172,7 +2296,7 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
                 setTimeout(() => document.getElementById('copy-error')?.remove(), 3000);
             }
         }
-        
+
         // Nouvelle fonction pour le partage sur les réseaux sociaux
         function shareOnSocial(platform) {
             logActivity('SHARE_BUTTON_CLICKED', { platform: platform }); // APPEL AJOUTÉ
@@ -2182,7 +2306,7 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
             const text = encodeURIComponent(shareMessage);
             let shareUrl = '';
 
-            switch(platform) {
+            switch (platform) {
                 case 'facebook':
                     // Partage par URL, plus fiable que l'API JS
                     shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
@@ -2195,8 +2319,8 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
                     shareUrl = `https://api.whatsapp.com/send?text=${text}%20${url}`;
                     break;
                 case 'email':
-                     shareUrl = `mailto:?subject=${translations[currentLang].share_email_subject || "Découvrez la Foi en Dieu"}&body=${text}%20${url}`;
-                     break;
+                    shareUrl = `mailto:?subject=${translations[currentLang].share_email_subject || "Découvrez la Foi en Dieu"}&body=${text}%20${url}`;
+                    break;
                 case 'sms':
                     // Utilise le schéma sms: pour les mobiles
                     shareUrl = `sms:?body=${text}%20${url}`;
@@ -2204,7 +2328,7 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
                 default:
                     return;
             }
-            
+
             // Ouvrir dans une nouvelle fenêtre pour les plateformes sociales, pour ne pas quitter l'application
             if (platform === 'email' || platform === 'sms') {
                 window.location.href = shareUrl;
@@ -2226,7 +2350,7 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
                 const searchQuery = translations[currentLang]?.church_search_query || "église évangélique proche de";
                 const query = `${searchQuery} ${city}`;
                 const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
-                
+
                 window.open(googleSearchUrl, '_blank');
             } else {
                 // On peut ajouter un petit message d'erreur si la ville est vide
@@ -2264,10 +2388,10 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
         function renderTestimonials(dynamicTestimonials = []) {
             const list = document.getElementById('testimonial-list');
             list.innerHTML = ''; // Vider la liste
-            
+
             // Combiner statiques et dynamiques
             const allTestimonials = [...staticTestimonials, ...dynamicTestimonials];
-            
+
             // Récupération des libellés de traduction
             const staticLabel = translations[currentLang].testimonial_static_label || "(inspiré)";
             const userLabel = translations[currentLang].testimonial_user_label || "(utilisateur)";
@@ -2278,7 +2402,7 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
             allTestimonials.forEach(t => {
                 const card = document.createElement('article');
                 card.className = 'p-6 bg-white rounded-lg shadow-md border-l-4 border-green-400';
-                
+
                 // Gestion des dates localisées
                 let dateText;
                 if (t.isStatic) {
@@ -2341,14 +2465,14 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
 
             try {
                 if (!db || !isDbReady) {
-                     const errorMsg = translations[currentLang]?.alert_firestore_error || "Base de données non initialisée.";
-                     throw new Error(errorMsg);
+                    const errorMsg = translations[currentLang]?.alert_firestore_error || "Base de données non initialisée.";
+                    throw new Error(errorMsg);
                 }
-                
+
                 // Évaluer le témoignage avec l'IA avant de l'enregistrer
                 submitButton.querySelector('#submit-button-text').textContent = translations[currentLang].submit_button_evaluating || 'Évaluation en cours...';
                 const isApproved = await evaluateTestimonialWithAI(name, story);
-                
+
                 if (!isApproved) {
                     // Le témoignage a été rejeté par l'IA
                     logActivity('TESTIMONIAL_REJECTED_BY_AI', { name: name.substring(0, 50), story_length: story.length, lang: currentLang });
@@ -2362,19 +2486,19 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
                     }
                     return;
                 }
-                
+
                 // Le témoignage est approuvé, on peut l'enregistrer dans SQLite
                 submitButton.querySelector('#submit-button-text').textContent = translations[currentLang].submit_button_sending || 'Envoi...';
-                
+
                 // Insérer le témoignage dans SQLite
                 db.run(
                     `INSERT INTO testimonials (name, story, userId, aiApproved) VALUES (?, ?, ?, ?)`,
                     [name, story, userId, 1]
                 );
-                
+
                 // Sauvegarder la base de données
                 await saveDatabase();
-                
+
                 const lastInsertId = db.exec("SELECT last_insert_rowid() as id")[0].values[0][0];
                 console.log("Témoignage enregistré avec ID:", lastInsertId);
 
@@ -2418,15 +2542,15 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
             const messageBox = document.getElementById('action-message');
             messageBox.innerHTML = actionContents[action];
             messageBox.classList.remove('hidden');
-            
+
             // Mise à jour du texte de prière dans la bonne langue
             if (action === 'prayer') {
                 const prayerQuote = document.getElementById('prayer-quote');
-                if(prayerQuote) {
+                if (prayerQuote) {
                     prayerQuote.innerHTML = `« ${PRAYER_TEXT[currentLang] || PRAYER_TEXT.fr} »`;
                     prayerQuote.classList.add('whitespace-pre-wrap');
                 }
-                
+
             }
             // Faites défiler l'écran vers le message
             messageBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -2439,35 +2563,35 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
         function handlePrayerAcceptance() {
             const button = document.getElementById('prayer-acceptance-button');
             const confirmationMessage = document.getElementById('prayer-confirmation-message');
-            
+
             if (!button || !confirmationMessage) {
                 return;
             }
-            
+
             // Vérifier si le bouton n'a pas déjà été cliqué
             if (button.disabled) {
                 return;
             }
-            
+
             // Journaliser l'activité
-                logActivity('PRAYER_ACCEPTANCE_CONFIRMED');
-            
+            logActivity('PRAYER_ACCEPTANCE_CONFIRMED');
+
             // Incrémenter le compteur global côté serveur
             incrementAcceptanceCounter().then(async newCount => {
                 // Mettre à jour l'affichage du compteur
                 updateAcceptanceCounterDisplay();
                 console.log(`Compteur d'acceptations mis à jour: ${newCount}`);
-                
+
                 // Envoyer une notification par email lors de l'acceptation
                 // Le serveur récupère automatiquement le compteur depuis la base de données
                 await sendEmailNotification('notify-acceptance', {});
             });
-            
+
             // Afficher le message de confirmation avec encouragement
-                confirmationMessage.classList.remove('hidden');
-                
-                // Mettre à jour le message de confirmation avec la traduction actuelle
-                const t = translations[currentLang] || translations.fr;
+            confirmationMessage.classList.remove('hidden');
+
+            // Mettre à jour le message de confirmation avec la traduction actuelle
+            const t = translations[currentLang] || translations.fr;
             const confirmationP = confirmationMessage.querySelector('p');
             if (confirmationP) {
                 // Message d'encouragement enrichi
@@ -2478,12 +2602,12 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
                     <span class="text-green-700 mt-2 block text-sm font-normal">${t.steps_prayer_encouragement || 'Que Dieu vous bénisse dans votre nouvelle vie avec Lui !'}</span>
                 `;
             }
-            
+
             // Désactiver le bouton et changer son style pour indiquer qu'il a été cliqué
             button.disabled = true;
             button.classList.remove('bg-indigo-600', 'hover:bg-indigo-700', 'hover:scale-105', 'active:scale-95');
             button.classList.add('bg-green-600', 'cursor-not-allowed');
-            
+
             // Afficher la coche dans le bouton
             const buttonText = button.querySelector('#prayer-button-text');
             const buttonCheck = button.querySelector('#prayer-button-check');
@@ -2494,30 +2618,30 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
                 // Fallback si la structure n'est pas trouvée
                 button.innerHTML = `<span class="flex items-center justify-center gap-2"><span>✓</span> <span>${t.steps_prayer_button_label}</span></span>`;
             }
-                
-                // Faire défiler vers le message de confirmation
-                confirmationMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            // Faire défiler vers le message de confirmation
+            confirmationMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
-        
+
         // Exposer les fonctions globales après l'import (pour utilisation dans le HTML)
         window.handleFaithQuery = handleFaithQuery;
-        window.displayMessage = displayMessage; 
-        window.submitTestimonial = submitTestimonial; 
-        window.searchForChurch = searchForChurch; 
-        window.copyLink = copyLink; 
+        window.displayMessage = displayMessage;
+        window.submitTestimonial = submitTestimonial;
+        window.searchForChurch = searchForChurch;
+        window.copyLink = copyLink;
         window.shareOnSocial = shareOnSocial;
-        window.handlePrayerAcceptance = handlePrayerAcceptance; 
+        window.handlePrayerAcceptance = handlePrayerAcceptance;
 
         // Lancement de l'initialisation après le chargement du document
         document.addEventListener('DOMContentLoaded', () => {
             // NOTE: isApiKeyValid est maintenant toujours true car l'API est gérée côté serveur
-            
+
             initSQLite();
-            
+
             // Appliquer la langue par défaut (fr) au chargement
             updateActionContents('fr'); // Assure que les messages cachés sont prêts
             applyTranslations('fr'); // Applique la traduction FR au DOM visible
-            
+
             // Vérifier si une recherche est demandée via l'URL (?q=)
             const searchQuery = getSearchQueryFromURL();
             if (searchQuery) {
@@ -2529,12 +2653,13 @@ Réponds uniquement par "APPROUVÉ" ou "REJETÉ".`;
 
             // Si un sélecteur existe, le mettre à 'fr'
             const selector = document.getElementById('language-selector');
-            if(selector) selector.value = 'fr';
-            
+            if (selector) selector.value = 'fr';
+
             console.log("Application d'évangélisation chargée et optimisée pour l'expérience utilisateur, le SEO et l'IA.");
         });
 
     </script>
 
 </body>
+
 </html>

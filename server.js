@@ -1276,6 +1276,7 @@ function getAdminDashboardHtml() {
                     { key: 'button_prayer', label: 'Texte du bouton Prière', type: 'text' },
                     { key: 'button_contact', label: 'Texte du bouton Contact', type: 'text' },
                     { key: 'prayer_title', label: 'Titre section Prière', type: 'text' },
+                    { key: 'prayer_text', label: 'Texte de la Prière', type: 'textarea', rows: 6 },
                     { key: 'contact_title', label: 'Titre section Contact', type: 'text' }
                 ],
                 footer: [
@@ -2529,7 +2530,8 @@ Le verset doit être :
             button_prayer: "Faire une Prière",
             button_contact: "Contacter Quelqu'un",
             prayer_title: "Votre Prière de Premier Pas",
-            contact_title: "Nous Contacter"
+            contact_title: "Nous Contacter",
+            prayer_text: "« Père Céleste, je viens humblement devant Toi. Je reconnais que j'ai péché et que je me suis éloigné de Ton chemin. Je me repens sincèrement de toutes mes fautes et je Te demande pardon. Je crois que Jésus-Christ est Ton Fils, qu'Il est mort sur la croix pour mes péchés et qu'Il est ressuscité. Aujourd'hui, je T'ouvre mon cœur et je L'accepte comme mon Seigneur et mon Sauveur personnel. Je Te donne ma vie et je Te prie de me guider par Ton Saint-Esprit dès maintenant. Je veux vivre pour Toi. Au nom de Jésus, amen. »"
         },
         footer: {
             subtitle: "Trouver la Foi en Dieu | Guide, Prière et Communauté de Foi"
