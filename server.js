@@ -1148,43 +1148,51 @@ function getAdminDashboardHtml() {
                         continue;
                     }
                     
-                    // Construire le HTML de la section avec concaténation pour éviter les problèmes de template literals imbriqués
-                    html += '<div class="border-2 border-gray-200 rounded-lg p-6 hover:border-indigo-300 transition mb-6">';
-                    html += '<div class="flex justify-between items-center mb-4">';
-                    html += '<h3 class="text-lg font-bold text-indigo-700">' + escapeHtml(section.icon) + ' ' + escapeHtml(section.title) + '</h3>';
-                    html += '<button onclick="saveSectionContent(\\'' + escapeHtml(section.key) + '\\')" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 text-sm font-semibold">';
-                    html += '💾 Enregistrer';
-                    html += '</button>';
-                    html += '</div>';
-                    html += '<div class="space-y-4" id="section_' + escapeHtml(section.key) + '">';
+                    // Utilisation de template literals pour une génération plus propre
+                    html += \`
+                        <div class="border-2 border-gray-200 rounded-lg p-6 hover:border-indigo-300 transition mb-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-bold text-indigo-700">\${escapeHtml(section.icon)} \${escapeHtml(section.title)}</h3>
+                                <button onclick="saveSectionContent('\${escapeHtml(section.key)}')" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 text-sm font-semibold">
+                                    💾 Enregistrer
+                                </button>
+                            </div>
+                            <div class="space-y-4" id="section_\${escapeHtml(section.key)}">
+                    \`;
                     
                     fields.forEach(field => {
                         const value = content[field.key] || '';
                         const escapedValue = escapeHtml(value);
-                        const fieldId = 'field_' + escapeHtml(section.key) + '_' + escapeHtml(field.key);
+                        const fieldId = \`field_\${section.key}_\${field.key}\`;
                         const fieldLabel = escapeHtml(field.label);
                         const placeholder = field.placeholder || '';
                         
                         if (field.type === 'textarea') {
-                            html += '<div class="mb-4">';
-                            html += '<label class="block text-sm font-medium text-gray-700 mb-2">' + fieldLabel + '</label>';
-                            html += '<textarea id="' + fieldId + '" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" rows="' + (field.rows || 4) + '" placeholder="' + escapeHtml(placeholder) + '">' + escapedValue + '</textarea>';
-                            html += '</div>';
+                            html += \`
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">\${fieldLabel}</label>
+                                    <textarea id="\${fieldId}" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" rows="\${field.rows || 4}" placeholder="\${escapeHtml(placeholder)}">\${escapedValue}</textarea>
+                                </div>
+                            \`;
                         } else {
-                            html += '<div class="mb-4">';
-                            html += '<label class="block text-sm font-medium text-gray-700 mb-2">' + fieldLabel + '</label>';
-                            html += '<input type="text" id="' + fieldId + '" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value="' + escapedValue + '" placeholder="' + escapeHtml(placeholder) + '">';
-                            html += '</div>';
+                            html += \`
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">\${fieldLabel}</label>
+                                    <input type="text" id="\${fieldId}" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value="\${escapedValue}" placeholder="\${escapeHtml(placeholder)}">
+                                </div>
+                            \`;
                         }
                     });
                     
-                    html += '</div>';
-                    html += '<div class="mt-4 pt-4 border-t">';
-                    html += '<button onclick="resetSectionContent(\\'' + escapeHtml(section.key) + '\\')" class="text-sm text-gray-600 hover:text-red-600 underline">';
-                    html += '🔄 Réinitialiser aux valeurs par défaut';
-                    html += '</button>';
-                    html += '</div>';
-                    html += '</div>';
+                    html += \`
+                            </div>
+                            <div class="mt-4 pt-4 border-t">
+                                <button onclick="resetSectionContent('\${escapeHtml(section.key)}')" class="text-sm text-gray-600 hover:text-red-600 underline">
+                                    🔄 Réinitialiser aux valeurs par défaut
+                                </button>
+                            </div>
+                        </div>
+                    \`;
                 } catch (error) {
                     console.error(\`Erreur chargement section \${section.key}:\`, error);
                     html += \`
