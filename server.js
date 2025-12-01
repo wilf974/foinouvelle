@@ -1104,7 +1104,12 @@ function getAdminDashboardHtml() {
         // Charger tout le contenu du site
         async function loadAllSectionsContent() {
             const editorDiv = document.getElementById('allSectionsEditor');
-            editorDiv.innerHTML = '<p class="text-gray-500">Chargement...</p>';
+            if (!editorDiv) {
+                console.error('Élément allSectionsEditor non trouvé');
+                return;
+            }
+            
+            editorDiv.innerHTML = '<p class="text-gray-500">Chargement du contenu...</p>';
             
             const sections = [
                 { key: 'hero', title: 'Hero - Section Principale', icon: '🏠' },
@@ -1125,15 +1130,29 @@ function getAdminDashboardHtml() {
             for (const section of sections) {
                 try {
                     const response = await fetch(\`/api/admin/content/\${section.key}\`);
+                    if (!response.ok) {
+                        console.error(\`Erreur HTTP \${response.status} pour \${section.key}\`);
+                        continue;
+                    }
+                    
                     const data = await response.json();
+                    if (!data.success) {
+                        console.error(\`Erreur API pour \${section.key}:\`, data.error);
+                    }
+                    
                     const content = data.success && data.content ? data.content : {};
                     const fields = getSectionFields(section.key);
                     
+                    if (!fields || fields.length === 0) {
+                        console.warn(\`Aucun champ défini pour \${section.key}\`);
+                        continue;
+                    }
+                    
                     html += \`
-                        <div class="border-2 border-gray-200 rounded-lg p-6 hover:border-indigo-300 transition">
+                        <div class="border-2 border-gray-200 rounded-lg p-6 hover:border-indigo-300 transition mb-6">
                             <div class="flex justify-between items-center mb-4">
                                 <h3 class="text-lg font-bold text-indigo-700">\${section.icon} \${section.title}</h3>
-                                <button onclick="saveSectionContent('\${section.key}')" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 text-sm">
+                                <button onclick="saveSectionContent('\${section.key}')" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 text-sm font-semibold">
                                     💾 Enregistrer
                                 </button>
                             </div>
@@ -1146,8 +1165,8 @@ function getAdminDashboardHtml() {
                             <div class="mb-4">
                                 <label class="block text-sm font-medium text-gray-700 mb-2">\${field.label}</label>
                                 \${field.type === 'textarea' 
-                                    ? \`<textarea id="field_\${section.key}_\${field.key}" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" rows="\${field.rows || 4}">\${escapeHtml(value)}</textarea>\`
-                                    : \`<input type="text" id="field_\${section.key}_\${field.key}" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" value="\${escapeHtml(value)}">\`
+                                    ? \`<textarea id="field_\${section.key}_\${field.key}" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" rows="\${field.rows || 4}" placeholder="\${field.placeholder || ''}">\${escapeHtml(value)}</textarea>\`
+                                    : \`<input type="text" id="field_\${section.key}_\${field.key}" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" value="\${escapeHtml(value)}" placeholder="\${field.placeholder || ''}">\`
                                 }
                             </div>
                         \`;
@@ -1156,7 +1175,7 @@ function getAdminDashboardHtml() {
                     html += \`
                             </div>
                             <div class="mt-4 pt-4 border-t">
-                                <button onclick="resetSectionContent('\${section.key}')" class="text-sm text-gray-600 hover:text-red-600">
+                                <button onclick="resetSectionContent('\${section.key}')" class="text-sm text-gray-600 hover:text-red-600 underline">
                                     🔄 Réinitialiser aux valeurs par défaut
                                 </button>
                             </div>
@@ -1164,10 +1183,20 @@ function getAdminDashboardHtml() {
                     \`;
                 } catch (error) {
                     console.error(\`Erreur chargement section \${section.key}:\`, error);
+                    html += \`
+                        <div class="border-2 border-red-200 rounded-lg p-6 mb-6">
+                            <h3 class="text-lg font-bold text-red-700">\${section.icon} \${section.title}</h3>
+                            <p class="text-red-600 mt-2">Erreur lors du chargement: \${error.message}</p>
+                        </div>
+                    \`;
                 }
             }
             
-            editorDiv.innerHTML = html;
+            if (html === '') {
+                editorDiv.innerHTML = '<p class="text-red-600">Erreur: Impossible de charger le contenu. Vérifiez la console pour plus de détails.</p>';
+            } else {
+                editorDiv.innerHTML = html;
+            }
         }
         
         // Charger le contenu d'une section (ancienne fonction, gardée pour compatibilité)
@@ -1334,10 +1363,19 @@ function getAdminDashboardHtml() {
         });
         
         // Initialisation
-        checkAuth();
-        loadStats();
-        loadTestimonials();
-        loadAllSectionsContent();
+        async function init() {
+            await checkAuth();
+            loadStats();
+            loadTestimonials();
+            
+            // Attendre un peu pour que le DOM soit complètement chargé
+            setTimeout(() => {
+                loadAllSectionsContent();
+            }, 500);
+        }
+        
+        // Démarrer l'initialisation
+        init();
         
         // Rafraîchir toutes les 30 secondes
         setInterval(() => {
