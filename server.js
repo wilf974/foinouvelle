@@ -1926,20 +1926,151 @@ const server = http.createServer(async (req, res) => {
         
         try {
             console.log('🔄 Génération manuelle d\'un nouveau verset demandée par l\'admin...');
-            const newVerse = await generateWeeklyVerse();
             
-            if (newVerse && newVerse.id) {
-                sendJSON(res, 200, { 
-                    success: true, 
-                    verse: newVerse,
-                    message: `Nouveau verset généré: ${newVerse.reference} (${newVerse.id})`
-                });
-            } else {
-                sendJSON(res, 500, { 
-                    success: false, 
-                    error: 'Impossible de générer le verset. Vérifiez la clé API Gemini.' 
-                });
+            // Forcer la génération d'un nouveau verset (ignorer le cache)
+            const apiKey = process.env.API_KEY;
+            if (!apiKey) {
+                sendJSON(res, 500, { success: false, error: 'API_KEY non configurée côté serveur' });
+                return;
             }
+            
+            const systemInstruction = `Tu es un assistant spirituel. Génère un verset biblique inspirant et approprié pour l'évangélisation, qui encourage les gens à découvrir la foi en Jésus-Christ. 
+
+Réponds UNIQUEMENT au format JSON suivant (sans markdown, sans code blocks) :
+{
+  "text": "Le texte complet du verset",
+  "reference": "Référence biblique (ex: Jean 3:16, Romains 8:28)",
+  "theme": "Thème du verset en une phrase"
+}
+
+Le verset doit être :
+- Inspirant et encourageant
+- Adapté pour l'évangélisation
+- Provenant de la Bible (Ancien ou Nouveau Testament)
+- Complet et fidèle au texte biblique`;
+
+            const requestBody = JSON.stringify({
+                contents: [{
+                    parts: [{
+                        text: systemInstruction
+                    }]
+                }],
+                generationConfig: {
+                    temperature: 0.7,
+                    topK: 40,
+                    topP: 0.95,
+                    maxOutputTokens: 1024
+                }
+            });
+
+            return new Promise((resolve) => {
+                const options = {
+                    hostname: 'generativelanguage.googleapis.com',
+                    path: `/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`,
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+
+                const req = https.request(options, (res2) => {
+                    let data = '';
+
+                    res2.on('data', (chunk) => {
+                        data += chunk;
+                    });
+
+                    res2.on('end', () => {
+                        try {
+                            const response = JSON.parse(data);
+                            
+                            if (response.candidates && response.candidates[0] && response.candidates[0].content) {
+                                const text = response.candidates[0].content.parts[0].text;
+                                
+                                // Extraire le JSON de la réponse
+                                let jsonMatch = text.match(/\{[\s\S]*\}/);
+                                if (!jsonMatch) {
+                                    jsonMatch = [text];
+                                }
+                                
+                                const verseData = JSON.parse(jsonMatch[0]);
+                                
+                                // Utiliser la date actuelle pour forcer un nouveau verset
+                                const now = new Date();
+                                const verseId = now.toISOString().split('T')[0] + '-' + now.getTime().toString().slice(-6); // Ajouter un timestamp pour l'unicité
+                                const verse = {
+                                    id: verseId,
+                                    text: verseData.text || 'Car Dieu a tant aimé le monde...',
+                                    reference: verseData.reference || 'Jean 3:16',
+                                    date: 'Semaine du ' + now.toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).split(' ').slice(1).join(' '),
+                                    dateISO: now.toISOString().split('T')[0],
+                                    theme: verseData.theme || 'Amour de Dieu',
+                                    slug: `verset-${verseId}`
+                                };
+                                
+                                // Sauvegarder dans le cache (verset actuel)
+                                fs.writeFileSync(VERSE_CACHE_FILE, JSON.stringify(verse, null, 2));
+                                
+                                // Ajouter à l'archive
+                                let archive = [];
+                                if (fs.existsSync(VERSE_ARCHIVE_FILE)) {
+                                    try {
+                                        archive = JSON.parse(fs.readFileSync(VERSE_ARCHIVE_FILE, 'utf8'));
+                                    } catch (e) {
+                                        archive = [];
+                                    }
+                                }
+                                
+                                // Vérifier si ce verset n'existe pas déjà (éviter les doublons)
+                                const exists = archive.find(v => v.id === verse.id);
+                                if (!exists) {
+                                    archive.unshift(verse); // Ajouter au début
+                                    // Garder seulement les 52 derniers versets (1 an)
+                                    if (archive.length > 52) {
+                                        archive = archive.slice(0, 52);
+                                    }
+                                    fs.writeFileSync(VERSE_ARCHIVE_FILE, JSON.stringify(archive, null, 2));
+                                }
+                                
+                                console.log('✅ Nouveau verset généré manuellement:', verse.reference, `(${verse.id})`);
+                                
+                                sendJSON(res, 200, { 
+                                    success: true, 
+                                    verse: verse,
+                                    message: `Nouveau verset généré: ${verse.reference} (${verse.id})`
+                                });
+                                resolve();
+                            } else {
+                                console.error('❌ Réponse API invalide:', response);
+                                sendJSON(res, 500, { 
+                                    success: false, 
+                                    error: 'Réponse API invalide' 
+                                });
+                                resolve();
+                            }
+                        } catch (error) {
+                            console.error('❌ Erreur lors du parsing de la réponse:', error);
+                            sendJSON(res, 500, { 
+                                success: false, 
+                                error: 'Erreur lors du parsing de la réponse: ' + error.message 
+                            });
+                            resolve();
+                        }
+                    });
+                });
+
+                req.on('error', (error) => {
+                    console.error('❌ Erreur lors de la requête API:', error);
+                    sendJSON(res, 500, { 
+                        success: false, 
+                        error: 'Erreur lors de la requête API: ' + error.message 
+                    });
+                    resolve();
+                });
+
+                req.write(requestBody);
+                req.end();
+            });
         } catch (error) {
             console.error('Erreur génération manuelle verset:', error);
             sendJSON(res, 500, { success: false, error: error.message });
