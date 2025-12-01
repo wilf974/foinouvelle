@@ -910,38 +910,13 @@ function getAdminDashboardHtml() {
             </div>
         </div>
         
-        <!-- Édition du contenu du site -->
+        <!-- Édition du contenu du site - Vue complète -->
         <div class="bg-white p-6 rounded-lg shadow">
-            <h2 class="text-xl font-bold mb-4">Édition du Contenu du Site</h2>
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Section à modifier</label>
-                <select id="contentSection" class="w-full px-3 py-2 border rounded-lg mb-4" onchange="loadSectionContent()">
-                    <option value="">Sélectionner une section...</option>
-                    <option value="hero">Hero (Titre principal)</option>
-                    <option value="message_card_1">Message - Carte 1 (Amour de Dieu)</option>
-                    <option value="message_card_2">Message - Carte 2 (Séparation/Péché)</option>
-                    <option value="message_card_3">Message - Carte 3 (Jésus-Christ)</option>
-                    <option value="plan">Plan de Lecture</option>
-                    <option value="explore">Explorateur IA</option>
-                    <option value="community">Communauté</option>
-                    <option value="testimonials">Témoignages</option>
-                    <option value="share">Partage</option>
-                    <option value="steps">Prochaines Étapes</option>
-                    <option value="footer">Footer</option>
-                </select>
-            </div>
+            <h2 class="text-xl font-bold mb-6">Édition du Contenu du Site</h2>
+            <p class="text-gray-600 mb-6">Modifiez directement le contenu de chaque section du site. Les modifications sont sauvegardées immédiatement.</p>
             
-            <div id="contentEditor" class="hidden space-y-4">
-                <div id="editorFields"></div>
-                <div class="flex gap-2">
-                    <button onclick="saveSectionContent()" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">
-                        💾 Enregistrer
-                    </button>
-                    <button onclick="resetSectionContent()" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700">
-                        🔄 Réinitialiser
-                    </button>
-                </div>
-                <div id="contentMessage" class="hidden mt-4 p-3 rounded"></div>
+            <div id="allSectionsEditor" class="space-y-6">
+                <p class="text-gray-500">Chargement du contenu...</p>
             </div>
         </div>
     </div>
@@ -1126,43 +1101,78 @@ function getAdminDashboardHtml() {
             }
         }
         
-        // Charger le contenu d'une section
-        async function loadSectionContent() {
-            const sectionKey = document.getElementById('contentSection').value;
-            if (!sectionKey) {
-                document.getElementById('contentEditor').classList.add('hidden');
-                return;
+        // Charger tout le contenu du site
+        async function loadAllSectionsContent() {
+            const editorDiv = document.getElementById('allSectionsEditor');
+            editorDiv.innerHTML = '<p class="text-gray-500">Chargement...</p>';
+            
+            const sections = [
+                { key: 'hero', title: 'Hero - Section Principale', icon: '🏠' },
+                { key: 'message_card_1', title: 'Message - Carte 1 (Amour de Dieu)', icon: '💝' },
+                { key: 'message_card_2', title: 'Message - Carte 2 (Séparation/Péché)', icon: '⚠️' },
+                { key: 'message_card_3', title: 'Message - Carte 3 (Jésus-Christ)', icon: '✝️' },
+                { key: 'plan', title: 'Plan de Lecture', icon: '📖' },
+                { key: 'explore', title: 'Explorateur IA', icon: '🤖' },
+                { key: 'community', title: 'Communauté', icon: '👥' },
+                { key: 'testimonials', title: 'Témoignages', icon: '💬' },
+                { key: 'share', title: 'Partage', icon: '📤' },
+                { key: 'steps', title: 'Prochaines Étapes', icon: '🚀' },
+                { key: 'footer', title: 'Footer', icon: '📄' }
+            ];
+            
+            let html = '';
+            
+            for (const section of sections) {
+                try {
+                    const response = await fetch(\`/api/admin/content/\${section.key}\`);
+                    const data = await response.json();
+                    const content = data.success && data.content ? data.content : {};
+                    const fields = getSectionFields(section.key);
+                    
+                    html += \`
+                        <div class="border-2 border-gray-200 rounded-lg p-6 hover:border-indigo-300 transition">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-bold text-indigo-700">\${section.icon} \${section.title}</h3>
+                                <button onclick="saveSectionContent('\${section.key}')" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 text-sm">
+                                    💾 Enregistrer
+                                </button>
+                            </div>
+                            <div class="space-y-4" id="section_\${section.key}">
+                    \`;
+                    
+                    fields.forEach(field => {
+                        const value = content[field.key] || '';
+                        html += \`
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">\${field.label}</label>
+                                \${field.type === 'textarea' 
+                                    ? \`<textarea id="field_\${section.key}_\${field.key}" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" rows="\${field.rows || 4}">\${escapeHtml(value)}</textarea>\`
+                                    : \`<input type="text" id="field_\${section.key}_\${field.key}" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" value="\${escapeHtml(value)}">\`
+                                }
+                            </div>
+                        \`;
+                    });
+                    
+                    html += \`
+                            </div>
+                            <div class="mt-4 pt-4 border-t">
+                                <button onclick="resetSectionContent('\${section.key}')" class="text-sm text-gray-600 hover:text-red-600">
+                                    🔄 Réinitialiser aux valeurs par défaut
+                                </button>
+                            </div>
+                        </div>
+                    \`;
+                } catch (error) {
+                    console.error(\`Erreur chargement section \${section.key}:\`, error);
+                }
             }
             
-            try {
-                const response = await fetch(\`/api/admin/content/\${sectionKey}\`);
-                const data = await response.json();
-                
-                const editorFields = document.getElementById('editorFields');
-                editorFields.innerHTML = '';
-                
-                const fields = getSectionFields(sectionKey);
-                const content = data.success && data.content ? data.content : {};
-                
-                fields.forEach(field => {
-                    const value = content[field.key] || '';
-                    const div = document.createElement('div');
-                    div.className = 'mb-4';
-                    div.innerHTML = \`
-                        <label class="block text-sm font-medium text-gray-700 mb-2">\${field.label}</label>
-                        \${field.type === 'textarea' 
-                            ? \`<textarea id="field_\${field.key}" class="w-full px-3 py-2 border rounded-lg" rows="4">\${escapeHtml(value)}</textarea>\`
-                            : \`<input type="text" id="field_\${field.key}" class="w-full px-3 py-2 border rounded-lg" value="\${escapeHtml(value)}">\`
-                        }
-                    \`;
-                    editorFields.appendChild(div);
-                });
-                
-                document.getElementById('contentEditor').classList.remove('hidden');
-            } catch (error) {
-                console.error('Erreur chargement contenu:', error);
-                alert('Erreur lors du chargement du contenu');
-            }
+            editorDiv.innerHTML = html;
+        }
+        
+        // Charger le contenu d'une section (ancienne fonction, gardée pour compatibilité)
+        async function loadSectionContent() {
+            loadAllSectionsContent();
         }
         
         // Obtenir les champs pour une section
@@ -1197,30 +1207,35 @@ function getAdminDashboardHtml() {
                 ],
                 explore: [
                     { key: 'title', label: 'Titre', type: 'text' },
-                    { key: 'subtitle', label: 'Sous-titre', type: 'textarea' },
-                    { key: 'placeholder', label: 'Placeholder', type: 'text' },
+                    { key: 'subtitle', label: 'Sous-titre', type: 'textarea', rows: 3 },
+                    { key: 'placeholder', label: 'Placeholder du champ de recherche', type: 'text' },
                     { key: 'button', label: 'Texte du bouton', type: 'text' }
                 ],
                 community: [
                     { key: 'title', label: 'Titre', type: 'text' },
-                    { key: 'subtitle', label: 'Sous-titre', type: 'textarea' },
-                    { key: 'placeholder', label: 'Placeholder', type: 'text' },
+                    { key: 'subtitle', label: 'Sous-titre', type: 'textarea', rows: 3 },
+                    { key: 'placeholder', label: 'Placeholder du champ de recherche', type: 'text' },
                     { key: 'button', label: 'Texte du bouton', type: 'text' }
                 ],
                 testimonials: [
-                    { key: 'title', label: 'Titre', type: 'text' },
-                    { key: 'submit_title', label: 'Titre soumission', type: 'text' },
-                    { key: 'submit_subtitle', label: 'Sous-titre soumission', type: 'textarea' }
+                    { key: 'title', label: 'Titre de la section', type: 'text' },
+                    { key: 'submit_title', label: 'Titre du formulaire de soumission', type: 'text' },
+                    { key: 'submit_subtitle', label: 'Sous-titre du formulaire', type: 'textarea', rows: 3 },
+                    { key: 'submit_name_placeholder', label: 'Placeholder nom', type: 'text' },
+                    { key: 'submit_story_placeholder', label: 'Placeholder témoignage', type: 'text' },
+                    { key: 'submit_button', label: 'Texte du bouton de soumission', type: 'text' }
                 ],
                 share: [
                     { key: 'title', label: 'Titre', type: 'text' },
-                    { key: 'subtitle', label: 'Sous-titre', type: 'textarea' }
+                    { key: 'subtitle', label: 'Sous-titre', type: 'textarea', rows: 3 }
                 ],
                 steps: [
                     { key: 'title', label: 'Titre', type: 'text' },
-                    { key: 'subtitle', label: 'Sous-titre', type: 'textarea' },
-                    { key: 'button_prayer', label: 'Bouton Prière', type: 'text' },
-                    { key: 'button_contact', label: 'Bouton Contact', type: 'text' }
+                    { key: 'subtitle', label: 'Sous-titre', type: 'textarea', rows: 3 },
+                    { key: 'button_prayer', label: 'Texte du bouton Prière', type: 'text' },
+                    { key: 'button_contact', label: 'Texte du bouton Contact', type: 'text' },
+                    { key: 'prayer_title', label: 'Titre section Prière', type: 'text' },
+                    { key: 'contact_title', label: 'Titre section Contact', type: 'text' }
                 ],
                 footer: [
                     { key: 'subtitle', label: 'Sous-titre', type: 'textarea' }
@@ -1231,15 +1246,17 @@ function getAdminDashboardHtml() {
         }
         
         // Sauvegarder le contenu d'une section
-        async function saveSectionContent() {
-            const sectionKey = document.getElementById('contentSection').value;
-            if (!sectionKey) return;
+        async function saveSectionContent(sectionKey) {
+            if (!sectionKey) {
+                sectionKey = document.getElementById('contentSection')?.value;
+                if (!sectionKey) return;
+            }
             
             const fields = getSectionFields(sectionKey);
             const content = {};
             
             fields.forEach(field => {
-                const input = document.getElementById(\`field_\${field.key}\`);
+                const input = document.getElementById(\`field_\${sectionKey}_\${field.key}\`) || document.getElementById(\`field_\${field.key}\`);
                 if (input) {
                     content[field.key] = input.value;
                 }
@@ -1253,30 +1270,38 @@ function getAdminDashboardHtml() {
                 });
                 
                 const data = await response.json();
-                const messageDiv = document.getElementById('contentMessage');
                 
                 if (data.success) {
-                    messageDiv.className = 'mt-4 p-3 bg-green-100 border-l-4 border-green-500 rounded text-green-800';
-                    messageDiv.textContent = '✅ Contenu enregistré avec succès !';
-                    messageDiv.classList.remove('hidden');
+                    // Afficher un message de succès temporaire
+                    const sectionDiv = document.getElementById(\`section_\${sectionKey}\`)?.parentElement;
+                    if (sectionDiv) {
+                        let messageDiv = sectionDiv.querySelector('.save-message');
+                        if (!messageDiv) {
+                            messageDiv = document.createElement('div');
+                            messageDiv.className = 'save-message mt-2 p-2 bg-green-100 border-l-4 border-green-500 rounded text-green-800 text-sm';
+                            sectionDiv.insertBefore(messageDiv, sectionDiv.firstChild);
+                        }
+                        messageDiv.textContent = '✅ Contenu enregistré avec succès !';
+                        setTimeout(() => {
+                            if (messageDiv) messageDiv.remove();
+                        }, 3000);
+                    }
                 } else {
-                    messageDiv.className = 'mt-4 p-3 bg-red-100 border-l-4 border-red-500 rounded text-red-800';
-                    messageDiv.textContent = '❌ Erreur: ' + (data.error || 'Impossible d\'enregistrer');
-                    messageDiv.classList.remove('hidden');
+                    alert('❌ Erreur: ' + (data.error || 'Impossible d\'enregistrer'));
                 }
-                
-                setTimeout(() => messageDiv.classList.add('hidden'), 3000);
             } catch (error) {
                 alert('Erreur lors de l\'enregistrement: ' + error.message);
             }
         }
         
         // Réinitialiser le contenu d'une section
-        async function resetSectionContent() {
-            if (!confirm('Êtes-vous sûr de vouloir réinitialiser cette section aux valeurs par défaut ?')) return;
+        async function resetSectionContent(sectionKey) {
+            if (!sectionKey) {
+                sectionKey = document.getElementById('contentSection')?.value;
+                if (!sectionKey) return;
+            }
             
-            const sectionKey = document.getElementById('contentSection').value;
-            if (!sectionKey) return;
+            if (!confirm('Êtes-vous sûr de vouloir réinitialiser cette section aux valeurs par défaut ?')) return;
             
             try {
                 const response = await fetch(\`/api/admin/content/\${sectionKey}\`, {
@@ -1285,12 +1310,10 @@ function getAdminDashboardHtml() {
                 
                 const data = await response.json();
                 if (data.success) {
-                    loadSectionContent();
-                    const messageDiv = document.getElementById('contentMessage');
-                    messageDiv.className = 'mt-4 p-3 bg-green-100 border-l-4 border-green-500 rounded text-green-800';
-                    messageDiv.textContent = '✅ Section réinitialisée aux valeurs par défaut';
-                    messageDiv.classList.remove('hidden');
-                    setTimeout(() => messageDiv.classList.add('hidden'), 3000);
+                    // Recharger toutes les sections
+                    loadAllSectionsContent();
+                } else {
+                    alert('Erreur lors de la réinitialisation');
                 }
             } catch (error) {
                 alert('Erreur lors de la réinitialisation: ' + error.message);
@@ -1314,6 +1337,7 @@ function getAdminDashboardHtml() {
         checkAuth();
         loadStats();
         loadTestimonials();
+        loadAllSectionsContent();
         
         // Rafraîchir toutes les 30 secondes
         setInterval(() => {
