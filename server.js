@@ -2251,10 +2251,14 @@ const server = http.createServer(async (req, res) => {
         try {
             console.log('🔄 Génération manuelle d\'un nouveau verset demandée par l\'admin...');
 
-            // Forcer la génération d'un nouveau verset (ignorer le cache)
-            const apiKey = process.env.API_KEY;
-            if (!apiKey) {
-                sendJSON(res, 500, { success: false, error: 'API_KEY non configurée côté serveur' });
+            // Clés API disponibles (Principale + Backup)
+            const API_KEYS = [
+                process.env.API_KEY,
+                'AIzaSyCm0Kz_07zdEzYYoscDaxW1C8L9Tn76Os8' // Clé de secours
+            ].filter(k => k); // Filtrer les clés vides
+
+            if (API_KEYS.length === 0) {
+                sendJSON(res, 500, { success: false, error: 'Aucune API_KEY configurée' });
                 return;
             }
 
@@ -2287,186 +2291,101 @@ Le verset doit être :
                 }
             });
 
-            return new Promise((resolve) => {
-                const options = {
-                    hostname: 'generativelanguage.googleapis.com',
-                    path: `/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`,
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                };
+            // Fonction pour appeler l'API avec une clé spécifique
+            const callApi = (keyIndex) => {
+                return new Promise((resolve, reject) => {
+                    const apiKey = API_KEYS[keyIndex];
+                    const options = {
+                        hostname: 'generativelanguage.googleapis.com',
+                        path: `/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`,
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    };
 
-                const req = https.request(options, (res2) => {
-                    let data = '';
-
-                    res2.on('data', (chunk) => {
-                        data += chunk;
-                    });
-
-                    res2.on('end', () => {
-                        try {
-                            // Vérifier le code de statut HTTP
-                            if (res2.statusCode !== 200) {
-                                console.error('❌ Erreur API Gemini (status:', res2.statusCode, '):', data);
-
-                                let errorMessage = `Erreur API Gemini (${res2.statusCode})`;
-
-                                // Messages d'erreur spécifiques selon le code
-                                if (res2.statusCode === 429) {
-                                    errorMessage = 'Quota API Gemini dépassé. Veuillez vérifier votre plan et votre facturation dans Google Cloud Console. Vous pouvez réessayer plus tard.';
-                                } else if (res2.statusCode === 401 || res2.statusCode === 403) {
-                                    errorMessage = 'Clé API Gemini invalide ou expirée. Vérifiez votre clé API dans le fichier .env';
-                                } else if (res2.statusCode === 400) {
-                                    errorMessage = 'Requête invalide vers l\'API Gemini. Vérifiez la configuration.';
-                                } else {
-                                    // Essayer de parser l'erreur JSON
-                                    try {
-                                        const errorData = JSON.parse(data);
-                                        if (errorData.error && errorData.error.message) {
-                                            errorMessage = `Erreur API Gemini: ${errorData.error.message}`;
-                                        }
-                                    } catch (e) {
-                                        errorMessage = `Erreur API Gemini (${res2.statusCode}): ${data.substring(0, 200)}`;
-                                    }
-                                }
-
-                                sendJSON(res, res2.statusCode || 500, {
-                                    success: false,
-                                    error: errorMessage
-                                });
-                                resolve();
-                                return;
-                            }
-
-                            const response = JSON.parse(data);
-
-                            // Vérifier si c'est une erreur de l'API
-                            if (response.error) {
-                                console.error('❌ Erreur API Gemini:', response.error);
-                                sendJSON(res, 500, {
-                                    success: false,
-                                    error: `Erreur API Gemini: ${response.error.message || JSON.stringify(response.error)}`
-                                });
-                                resolve();
-                                return;
-                            }
-
-                            if (response.candidates && response.candidates[0] && response.candidates[0].content) {
-                                const text = response.candidates[0].content.parts[0].text;
-
-                                // Extraire le JSON de la réponse
-                                let jsonMatch = text.match(/\{[\s\S]*\}/);
-                                if (!jsonMatch) {
-                                    console.error('❌ Aucun JSON trouvé dans la réponse:', text.substring(0, 200));
-                                    sendJSON(res, 500, {
-                                        success: false,
-                                        error: 'Format de réponse invalide de Gemini'
-                                    });
-                                    resolve();
-                                    return;
-                                }
-
-                                let verseData;
-                                try {
-                                    verseData = JSON.parse(jsonMatch[0]);
-                                } catch (parseError) {
-                                    console.error('❌ Erreur parsing JSON:', parseError, 'Texte:', jsonMatch[0]);
-                                    sendJSON(res, 500, {
-                                        success: false,
-                                        error: 'Erreur lors du parsing du JSON: ' + parseError.message
-                                    });
-                                    resolve();
-                                    return;
-                                }
-
-                                // Utiliser la date actuelle pour forcer un nouveau verset
-                                const now = new Date();
-                                const verseId = now.toISOString().split('T')[0] + '-' + now.getTime().toString().slice(-6); // Ajouter un timestamp pour l'unicité
-                                const verse = {
-                                    id: verseId,
-                                    text: verseData.text || 'Car Dieu a tant aimé le monde...',
-                                    reference: verseData.reference || 'Jean 3:16',
-                                    date: 'Semaine du ' + now.toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).split(' ').slice(1).join(' '),
-                                    dateISO: now.toISOString().split('T')[0],
-                                    theme: verseData.theme || 'Amour de Dieu',
-                                    slug: `verset-${verseId}`
-                                };
-
-                                // Sauvegarder dans le cache (verset actuel)
-                                try {
-                                    fs.writeFileSync(VERSE_CACHE_FILE, JSON.stringify(verse, null, 2));
-                                } catch (writeError) {
-                                    console.error('❌ Erreur écriture cache:', writeError);
-                                }
-
-                                // Ajouter à l'archive
-                                let archive = [];
-                                if (fs.existsSync(VERSE_ARCHIVE_FILE)) {
-                                    try {
-                                        archive = JSON.parse(fs.readFileSync(VERSE_ARCHIVE_FILE, 'utf8'));
-                                    } catch (e) {
-                                        archive = [];
-                                    }
-                                }
-
-                                // Vérifier si ce verset n'existe pas déjà (éviter les doublons)
-                                const exists = archive.find(v => v.id === verse.id);
-                                if (!exists) {
-                                    archive.unshift(verse); // Ajouter au début
-                                    // Garder seulement les 52 derniers versets (1 an)
-                                    if (archive.length > 52) {
-                                        archive = archive.slice(0, 52);
-                                    }
-                                    try {
-                                        fs.writeFileSync(VERSE_ARCHIVE_FILE, JSON.stringify(archive, null, 2));
-                                    } catch (writeError) {
-                                        console.error('❌ Erreur écriture archive:', writeError);
-                                    }
-                                }
-
-                                console.log('✅ Nouveau verset généré manuellement:', verse.reference, `(${verse.id})`);
-
-                                sendJSON(res, 200, {
-                                    success: true,
-                                    verse: verse,
-                                    message: `Nouveau verset généré: ${verse.reference} (${verse.id})`
-                                });
-                                resolve();
+                    const req = https.request(options, (res2) => {
+                        let data = '';
+                        res2.on('data', chunk => data += chunk);
+                        res2.on('end', () => {
+                            if (res2.statusCode === 200) {
+                                resolve(data);
                             } else {
-                                console.error('❌ Réponse API invalide (pas de candidates):', JSON.stringify(response).substring(0, 500));
-                                sendJSON(res, 500, {
-                                    success: false,
-                                    error: 'Réponse API invalide: pas de candidates dans la réponse'
-                                });
-                                resolve();
+                                // Si erreur 429 (Quota) et qu'il reste des clés, rejeter pour réessayer
+                                if (res2.statusCode === 429 && keyIndex < API_KEYS.length - 1) {
+                                    console.warn(`⚠️ Quota dépassé pour la clé ${keyIndex + 1}, tentative avec la suivante...`);
+                                    reject({ status: 429, message: 'Quota exceeded', nextKey: true });
+                                } else {
+                                    // Sinon, retourner l'erreur finale
+                                    reject({ status: res2.statusCode, data: data, nextKey: false });
+                                }
                             }
-                        } catch (error) {
-                            console.error('❌ Erreur lors du parsing de la réponse:', error, 'Data:', data.substring(0, 500));
-                            sendJSON(res, 500, {
-                                success: false,
-                                error: 'Erreur lors du parsing de la réponse: ' + error.message
-                            });
-                            resolve();
-                        }
+                        });
                     });
+
+                    req.on('error', (e) => reject({ status: 500, message: e.message, nextKey: false }));
+                    req.write(requestBody);
+                    req.end();
+                });
+            };
+
+            // Tentative d'appel avec rotation des clés
+            let responseData;
+            try {
+                responseData = await callApi(0);
+            } catch (error) {
+                if (error.nextKey) {
+                    try {
+                        responseData = await callApi(1);
+                    } catch (finalError) {
+                        throw finalError;
+                    }
+                } else {
+                    throw error;
+                }
+            }
+
+            const response = JSON.parse(responseData);
+
+            if (response.candidates && response.candidates[0] && response.candidates[0].content) {
+                let text = response.candidates[0].content.parts[0].text;
+                text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+                const verse = JSON.parse(text);
+
+                verse.id = crypto.randomUUID();
+                verse.date = new Date().toLocaleDateString('fr-FR', {
+                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
                 });
 
-                req.on('error', (error) => {
-                    console.error('❌ Erreur lors de la requête API:', error);
-                    sendJSON(res, 500, {
-                        success: false,
-                        error: 'Erreur lors de la requête API: ' + error.message
-                    });
-                    resolve();
-                });
+                fs.writeFileSync(VERSE_FILE, JSON.stringify(verse, null, 2));
 
-                req.write(requestBody);
-                req.end();
-            });
+                let archive = [];
+                if (fs.existsSync(VERSE_ARCHIVE_FILE)) {
+                    try { archive = JSON.parse(fs.readFileSync(VERSE_ARCHIVE_FILE, 'utf8')); } catch (e) { archive = []; }
+                }
+                const exists = archive.find(v => v.id === verse.id);
+                if (!exists) {
+                    archive.unshift(verse);
+                    if (archive.length > 52) archive = archive.slice(0, 52);
+                    try { fs.writeFileSync(VERSE_ARCHIVE_FILE, JSON.stringify(archive, null, 2)); } catch (e) { console.error(e); }
+                }
+
+                console.log('✅ Nouveau verset généré (avec succès):', verse.reference);
+                sendJSON(res, 200, { success: true, verse: verse, message: 'Verset généré avec succès' });
+            } else {
+                throw { status: 500, message: 'Format de réponse invalide' };
+            }
+
         } catch (error) {
-            console.error('Erreur génération manuelle verset:', error);
-            sendJSON(res, 500, { success: false, error: error.message });
+            console.error('❌ Erreur finale génération verset:', error);
+            let errorMessage = error.message || 'Erreur inconnue';
+            if (error.status === 429) errorMessage = 'Quota API dépassé sur toutes les clés disponibles.';
+            if (error.data) {
+                try {
+                    const errJson = JSON.parse(error.data);
+                    errorMessage = errJson.error.message || errorMessage;
+                } catch (e) { }
+            }
+
+            sendJSON(res, error.status || 500, { success: false, error: errorMessage });
         }
         return;
     }
