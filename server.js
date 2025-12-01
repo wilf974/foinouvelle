@@ -58,6 +58,17 @@ function initDatabase() {
             )
         `);
         
+        // Créer la table pour le contenu personnalisable du site
+        db.exec(`
+            CREATE TABLE IF NOT EXISTS site_content (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                section_key TEXT UNIQUE NOT NULL,
+                content_json TEXT NOT NULL,
+                language TEXT DEFAULT 'fr',
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+        
         // Initialiser le compteur à 0 s'il n'existe pas
         const existing = db.prepare('SELECT count FROM acceptance_counter WHERE id = 1').get();
         if (!existing) {
@@ -892,10 +903,45 @@ function getAdminDashboardHtml() {
         </div>
         
         <!-- Liste des témoignages -->
-        <div class="bg-white p-6 rounded-lg shadow">
+        <div class="bg-white p-6 rounded-lg shadow mb-8">
             <h2 class="text-xl font-bold mb-4">Gestion des Témoignages</h2>
             <div id="testimonialsList" class="space-y-4">
                 <p class="text-gray-500">Chargement...</p>
+            </div>
+        </div>
+        
+        <!-- Édition du contenu du site -->
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-bold mb-4">Édition du Contenu du Site</h2>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Section à modifier</label>
+                <select id="contentSection" class="w-full px-3 py-2 border rounded-lg mb-4" onchange="loadSectionContent()">
+                    <option value="">Sélectionner une section...</option>
+                    <option value="hero">Hero (Titre principal)</option>
+                    <option value="message_card_1">Message - Carte 1 (Amour de Dieu)</option>
+                    <option value="message_card_2">Message - Carte 2 (Séparation/Péché)</option>
+                    <option value="message_card_3">Message - Carte 3 (Jésus-Christ)</option>
+                    <option value="plan">Plan de Lecture</option>
+                    <option value="explore">Explorateur IA</option>
+                    <option value="community">Communauté</option>
+                    <option value="testimonials">Témoignages</option>
+                    <option value="share">Partage</option>
+                    <option value="steps">Prochaines Étapes</option>
+                    <option value="footer">Footer</option>
+                </select>
+            </div>
+            
+            <div id="contentEditor" class="hidden space-y-4">
+                <div id="editorFields"></div>
+                <div class="flex gap-2">
+                    <button onclick="saveSectionContent()" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">
+                        💾 Enregistrer
+                    </button>
+                    <button onclick="resetSectionContent()" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700">
+                        🔄 Réinitialiser
+                    </button>
+                </div>
+                <div id="contentMessage" class="hidden mt-4 p-3 rounded"></div>
             </div>
         </div>
     </div>
@@ -1078,6 +1124,184 @@ function getAdminDashboardHtml() {
                 btnText.classList.remove('hidden');
                 spinner.classList.add('hidden');
             }
+        }
+        
+        // Charger le contenu d'une section
+        async function loadSectionContent() {
+            const sectionKey = document.getElementById('contentSection').value;
+            if (!sectionKey) {
+                document.getElementById('contentEditor').classList.add('hidden');
+                return;
+            }
+            
+            try {
+                const response = await fetch(\`/api/admin/content/\${sectionKey}\`);
+                const data = await response.json();
+                
+                const editorFields = document.getElementById('editorFields');
+                editorFields.innerHTML = '';
+                
+                const fields = getSectionFields(sectionKey);
+                const content = data.success && data.content ? data.content : {};
+                
+                fields.forEach(field => {
+                    const value = content[field.key] || '';
+                    const div = document.createElement('div');
+                    div.className = 'mb-4';
+                    div.innerHTML = \`
+                        <label class="block text-sm font-medium text-gray-700 mb-2">\${field.label}</label>
+                        \${field.type === 'textarea' 
+                            ? \`<textarea id="field_\${field.key}" class="w-full px-3 py-2 border rounded-lg" rows="4">\${escapeHtml(value)}</textarea>\`
+                            : \`<input type="text" id="field_\${field.key}" class="w-full px-3 py-2 border rounded-lg" value="\${escapeHtml(value)}">\`
+                        }
+                    \`;
+                    editorFields.appendChild(div);
+                });
+                
+                document.getElementById('contentEditor').classList.remove('hidden');
+            } catch (error) {
+                console.error('Erreur chargement contenu:', error);
+                alert('Erreur lors du chargement du contenu');
+            }
+        }
+        
+        // Obtenir les champs pour une section
+        function getSectionFields(sectionKey) {
+            const fieldsMap = {
+                hero: [
+                    { key: 'title', label: 'Titre principal', type: 'text' },
+                    { key: 'subtitle_1', label: 'Sous-titre 1', type: 'textarea' },
+                    { key: 'subtitle_2', label: 'Sous-titre 2', type: 'textarea' },
+                    { key: 'button', label: 'Texte du bouton', type: 'text' }
+                ],
+                message_card_1: [
+                    { key: 'title', label: 'Titre', type: 'text' },
+                    { key: 'text', label: 'Texte', type: 'textarea' },
+                    { key: 'footer', label: 'Pied de carte', type: 'textarea' }
+                ],
+                message_card_2: [
+                    { key: 'title', label: 'Titre', type: 'text' },
+                    { key: 'text', label: 'Texte', type: 'textarea' },
+                    { key: 'footer', label: 'Pied de carte', type: 'textarea' }
+                ],
+                message_card_3: [
+                    { key: 'title', label: 'Titre', type: 'text' },
+                    { key: 'text', label: 'Texte', type: 'textarea' },
+                    { key: 'footer', label: 'Pied de carte', type: 'textarea' }
+                ],
+                plan: [
+                    { key: 'title', label: 'Titre', type: 'text' },
+                    { key: 'days_1_3_title', label: 'Titre Jours 1-3', type: 'text' },
+                    { key: 'days_4_7_title', label: 'Titre Jours 4-7', type: 'text' },
+                    { key: 'footer', label: 'Pied de section', type: 'textarea' }
+                ],
+                explore: [
+                    { key: 'title', label: 'Titre', type: 'text' },
+                    { key: 'subtitle', label: 'Sous-titre', type: 'textarea' },
+                    { key: 'placeholder', label: 'Placeholder', type: 'text' },
+                    { key: 'button', label: 'Texte du bouton', type: 'text' }
+                ],
+                community: [
+                    { key: 'title', label: 'Titre', type: 'text' },
+                    { key: 'subtitle', label: 'Sous-titre', type: 'textarea' },
+                    { key: 'placeholder', label: 'Placeholder', type: 'text' },
+                    { key: 'button', label: 'Texte du bouton', type: 'text' }
+                ],
+                testimonials: [
+                    { key: 'title', label: 'Titre', type: 'text' },
+                    { key: 'submit_title', label: 'Titre soumission', type: 'text' },
+                    { key: 'submit_subtitle', label: 'Sous-titre soumission', type: 'textarea' }
+                ],
+                share: [
+                    { key: 'title', label: 'Titre', type: 'text' },
+                    { key: 'subtitle', label: 'Sous-titre', type: 'textarea' }
+                ],
+                steps: [
+                    { key: 'title', label: 'Titre', type: 'text' },
+                    { key: 'subtitle', label: 'Sous-titre', type: 'textarea' },
+                    { key: 'button_prayer', label: 'Bouton Prière', type: 'text' },
+                    { key: 'button_contact', label: 'Bouton Contact', type: 'text' }
+                ],
+                footer: [
+                    { key: 'subtitle', label: 'Sous-titre', type: 'textarea' }
+                ]
+            };
+            
+            return fieldsMap[sectionKey] || [];
+        }
+        
+        // Sauvegarder le contenu d'une section
+        async function saveSectionContent() {
+            const sectionKey = document.getElementById('contentSection').value;
+            if (!sectionKey) return;
+            
+            const fields = getSectionFields(sectionKey);
+            const content = {};
+            
+            fields.forEach(field => {
+                const input = document.getElementById(\`field_\${field.key}\`);
+                if (input) {
+                    content[field.key] = input.value;
+                }
+            });
+            
+            try {
+                const response = await fetch(\`/api/admin/content/\${sectionKey}\`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content })
+                });
+                
+                const data = await response.json();
+                const messageDiv = document.getElementById('contentMessage');
+                
+                if (data.success) {
+                    messageDiv.className = 'mt-4 p-3 bg-green-100 border-l-4 border-green-500 rounded text-green-800';
+                    messageDiv.textContent = '✅ Contenu enregistré avec succès !';
+                    messageDiv.classList.remove('hidden');
+                } else {
+                    messageDiv.className = 'mt-4 p-3 bg-red-100 border-l-4 border-red-500 rounded text-red-800';
+                    messageDiv.textContent = '❌ Erreur: ' + (data.error || 'Impossible d\'enregistrer');
+                    messageDiv.classList.remove('hidden');
+                }
+                
+                setTimeout(() => messageDiv.classList.add('hidden'), 3000);
+            } catch (error) {
+                alert('Erreur lors de l\'enregistrement: ' + error.message);
+            }
+        }
+        
+        // Réinitialiser le contenu d'une section
+        async function resetSectionContent() {
+            if (!confirm('Êtes-vous sûr de vouloir réinitialiser cette section aux valeurs par défaut ?')) return;
+            
+            const sectionKey = document.getElementById('contentSection').value;
+            if (!sectionKey) return;
+            
+            try {
+                const response = await fetch(\`/api/admin/content/\${sectionKey}\`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    loadSectionContent();
+                    const messageDiv = document.getElementById('contentMessage');
+                    messageDiv.className = 'mt-4 p-3 bg-green-100 border-l-4 border-green-500 rounded text-green-800';
+                    messageDiv.textContent = '✅ Section réinitialisée aux valeurs par défaut';
+                    messageDiv.classList.remove('hidden');
+                    setTimeout(() => messageDiv.classList.add('hidden'), 3000);
+                }
+            } catch (error) {
+                alert('Erreur lors de la réinitialisation: ' + error.message);
+            }
+        }
+        
+        // Fonction utilitaire pour échapper le HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
         
         // Déconnexion
@@ -2142,6 +2366,80 @@ Le verset doit être :
             });
         } catch (error) {
             console.error('Erreur génération manuelle verset:', error);
+            sendJSON(res, 500, { success: false, error: error.message });
+        }
+        return;
+    }
+    
+    // API admin - Récupérer le contenu d'une section
+    const contentMatch = parsedUrl.pathname.match(/^\/api\/admin\/content\/(.+)$/);
+    if (contentMatch && req.method === 'GET') {
+        if (!requireAuth(req, res)) return;
+        
+        try {
+            const sectionKey = contentMatch[1];
+            const result = db.prepare('SELECT content_json FROM site_content WHERE section_key = ? AND language = ?').get(sectionKey, 'fr');
+            
+            if (result) {
+                const content = JSON.parse(result.content_json);
+                sendJSON(res, 200, { success: true, content: content });
+            } else {
+                sendJSON(res, 200, { success: true, content: null });
+            }
+        } catch (error) {
+            sendJSON(res, 500, { success: false, error: error.message });
+        }
+        return;
+    }
+    
+    // API admin - Sauvegarder le contenu d'une section
+    if (contentMatch && req.method === 'POST') {
+        if (!requireAuth(req, res)) return;
+        
+        let body = '';
+        req.on('data', chunk => {
+            body += chunk.toString();
+        });
+        
+        req.on('end', () => {
+            try {
+                const sectionKey = contentMatch[1];
+                const data = JSON.parse(body);
+                const { content } = data;
+                
+                const contentJson = JSON.stringify(content);
+                
+                // Insérer ou mettre à jour (SQLite syntax)
+                const existing = db.prepare('SELECT id FROM site_content WHERE section_key = ? AND language = ?').get(sectionKey, 'fr');
+                if (existing) {
+                    db.prepare('UPDATE site_content SET content_json = ?, updated_at = CURRENT_TIMESTAMP WHERE section_key = ? AND language = ?')
+                        .run(contentJson, sectionKey, 'fr');
+                } else {
+                    db.prepare('INSERT INTO site_content (section_key, content_json, language, updated_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)')
+                        .run(sectionKey, contentJson, 'fr');
+                }
+                
+                console.log(`✅ Contenu sauvegardé pour section: ${sectionKey}`);
+                sendJSON(res, 200, { success: true, message: 'Contenu enregistré avec succès' });
+            } catch (error) {
+                console.error('Erreur sauvegarde contenu:', error);
+                sendJSON(res, 500, { success: false, error: error.message });
+            }
+        });
+        return;
+    }
+    
+    // API admin - Supprimer/Réinitialiser le contenu d'une section
+    if (contentMatch && req.method === 'DELETE') {
+        if (!requireAuth(req, res)) return;
+        
+        try {
+            const sectionKey = contentMatch[1];
+            db.prepare('DELETE FROM site_content WHERE section_key = ? AND language = ?').run(sectionKey, 'fr');
+            
+            console.log(`✅ Contenu réinitialisé pour section: ${sectionKey}`);
+            sendJSON(res, 200, { success: true, message: 'Section réinitialisée' });
+        } catch (error) {
             sendJSON(res, 500, { success: false, error: error.message });
         }
         return;
