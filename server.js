@@ -1245,6 +1245,21 @@ const server = http.createServer(async (req, res) => {
     // Servir les autres fichiers statiques si nécessaire
     const filePath = path.join(__dirname, req.url);
     
+    // Sécurité : empêcher l'accès aux fichiers sensibles
+    const sensitiveFiles = ['.env', '.env.local', '.env.production', 'package.json', 'node_modules'];
+    const requestedFile = path.basename(req.url);
+    const requestedPath = req.url.toLowerCase();
+    
+    // Bloquer l'accès aux fichiers sensibles
+    if (sensitiveFiles.some(file => requestedPath.includes(file)) || 
+        requestedPath.includes('/.env') || 
+        requestedPath.includes('/node_modules/') ||
+        requestedPath.includes('/package.json')) {
+        res.writeHead(403, { 'Content-Type': 'text/plain' });
+        res.end('Accès interdit');
+        return;
+    }
+    
     // Sécurité : empêcher l'accès aux fichiers en dehors du répertoire
     if (!filePath.startsWith(__dirname)) {
         res.writeHead(403, { 'Content-Type': 'text/plain' });
