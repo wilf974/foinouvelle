@@ -1,5 +1,77 @@
 # Historique des Modifications
 
+## 2025-01-27 - Création du système d'administration /admin
+
+### Modifications apportées
+
+**Fichier modifié :** `server.js`
+
+### Fonctionnalités implémentées
+
+1. **Système d'authentification sécurisé**
+   - Page de connexion `/admin` avec identifiants : `administrateur` / `@dm1n1str@t3uR!`
+   - Sessions avec tokens cryptographiques (crypto.randomBytes)
+   - Cookies HttpOnly et SameSite=Strict pour la sécurité
+   - Durée de session : 24 heures
+   - Nettoyage automatique des sessions expirées
+
+2. **Dashboard d'administration** (`/admin/dashboard`)
+   - Interface complète avec Tailwind CSS
+   - Statistiques en temps réel :
+     - Compteur d'acceptations de Jésus (modifiable)
+     - Nombre de témoignages approuvés
+     - Nombre de témoignages en attente
+     - Verset de la semaine actuel
+
+3. **Gestion des témoignages**
+   - Liste complète de tous les témoignages
+   - Approuver/Rejeter des témoignages
+   - Supprimer des témoignages
+   - Affichage du statut IA et Admin
+   - Rafraîchissement automatique toutes les 30 secondes
+
+4. **Endpoints API protégés**
+   - `POST /api/admin/login` : Connexion
+   - `GET /api/admin/check` : Vérification de session
+   - `GET /api/admin/stats` : Statistiques
+   - `GET /api/admin/testimonials` : Liste des témoignages
+   - `POST /api/admin/testimonials` : Modifier un témoignage (approve/reject/delete)
+   - `POST /api/admin/counter` : Modifier le compteur d'acceptations
+   - `POST /api/admin/logout` : Déconnexion
+
+5. **Base de données étendue**
+   - Table `testimonials` côté serveur avec colonnes :
+     - `id`, `name`, `story`, `userId`, `timestamp`
+     - `aiApproved` : Statut d'approbation par l'IA
+     - `adminApproved` : Statut d'approbation par l'administrateur
+
+### Sécurité
+
+- ✅ Protection par authentification obligatoire
+- ✅ Sessions sécurisées avec tokens aléatoires
+- ✅ Cookies HttpOnly (non accessibles en JavaScript)
+- ✅ Middleware de vérification pour toutes les routes admin
+- ✅ Redirection automatique vers `/admin` si non authentifié
+- ✅ Pas de lien public vers `/admin` (accès direct uniquement)
+
+### Utilisation
+
+1. Accéder à `https://foinouvelle.woutils.com/admin`
+2. Se connecter avec :
+   - **Nom d'utilisateur** : `administrateur`
+   - **Mot de passe** : `@dm1n1str@t3uR!`
+3. Gérer les témoignages, modifier le compteur, voir les statistiques
+
+### Résultat
+
+✅ **Interface d'administration complète** : Tous les éléments du site peuvent être gérés depuis `/admin`
+
+✅ **Sécurité renforcée** : Authentification obligatoire avec sessions sécurisées
+
+✅ **Gestion facilitée** : Interface intuitive pour approuver/rejeter/supprimer les témoignages
+
+---
+
 ## 2025-01-27 - Sécurisation de l'API Google Gemini : déplacement côté serveur
 
 ### Modifications apportées

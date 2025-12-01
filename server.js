@@ -9,6 +9,7 @@ const fs = require('fs');
 const path = require('path');
 const url = require('url');
 const querystring = require('querystring');
+const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const Database = require('better-sqlite3');
 require('dotenv').config();
@@ -23,6 +24,12 @@ const VERSE_ARCHIVE_FILE = path.join(__dirname, 'verses-archive.json');
 const DB_FILE = path.join(__dirname, 'foi-nouvelle.db');
 let db = null;
 
+// Authentification admin
+const ADMIN_USERNAME = 'administrateur';
+const ADMIN_PASSWORD = '@dm1n1str@t3uR!';
+const ADMIN_SESSIONS = new Map(); // Stockage des sessions actives (en production, utiliser Redis ou une DB)
+const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 heures
+
 /**
  * Initialise la base de données SQLite côté serveur
  */
@@ -35,6 +42,19 @@ function initDatabase() {
             CREATE TABLE IF NOT EXISTS acceptance_counter (
                 id INTEGER PRIMARY KEY CHECK (id = 1),
                 count INTEGER DEFAULT 0
+            )
+        `);
+        
+        // Créer la table pour les témoignages côté serveur (pour l'admin)
+        db.exec(`
+            CREATE TABLE IF NOT EXISTS testimonials (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                story TEXT NOT NULL,
+                userId TEXT,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                aiApproved INTEGER DEFAULT 0,
+                adminApproved INTEGER DEFAULT 0
             )
         `);
         
@@ -659,6 +679,289 @@ async function sendEmail({ to, subject, html, text }) {
 }
 
 /**
+ * Génère la page HTML de connexion admin
+ * @returns {string} HTML de la page de connexion
+ */
+function getAdminLoginHtml() {
+    return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - Foi Nouvelle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-r from-indigo-50 to-purple-50 min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-xl max-w-md w-full">
+        <h1 class="text-3xl font-bold text-indigo-800 mb-6 text-center">Administration</h1>
+        <form id="loginForm" class="space-y-4">
+            <div>
+                <label for="username" class="block text-sm font-medium text-gray-700 mb-2">Nom d'utilisateur</label>
+                <input type="text" id="username" name="username" required 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+            </div>
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Mot de passe</label>
+                <input type="password" id="password" name="password" required 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+            </div>
+            <div id="errorMessage" class="hidden text-red-600 text-sm"></div>
+            <button type="submit" 
+                class="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-200 font-semibold">
+                Se connecter
+            </button>
+        </form>
+    </div>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('errorMessage');
+            
+            try {
+                const response = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    window.location.href = '/admin/dashboard';
+                } else {
+                    errorDiv.textContent = data.error || 'Erreur de connexion';
+                    errorDiv.classList.remove('hidden');
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Erreur de connexion au serveur';
+                errorDiv.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>`;
+}
+
+/**
+ * Génère la page HTML du dashboard admin
+ * @returns {string} HTML du dashboard
+ */
+function getAdminDashboardHtml() {
+    return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - Foi Nouvelle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <nav class="bg-indigo-800 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Administration Foi Nouvelle</h1>
+            <button id="logoutBtn" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition">
+                Déconnexion
+            </button>
+        </div>
+    </nav>
+    
+    <div class="container mx-auto p-6">
+        <!-- Statistiques -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h3 class="text-gray-600 text-sm font-medium mb-2">Compteur d'acceptations</h3>
+                <p class="text-3xl font-bold text-indigo-600" id="acceptanceCounter">0</p>
+                <input type="number" id="counterInput" class="mt-2 w-full px-3 py-2 border rounded" placeholder="Nouvelle valeur">
+                <button onclick="updateCounter()" class="mt-2 w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700">
+                    Mettre à jour
+                </button>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h3 class="text-gray-600 text-sm font-medium mb-2">Témoignages approuvés</h3>
+                <p class="text-3xl font-bold text-green-600" id="approvedTestimonials">0</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h3 class="text-gray-600 text-sm font-medium mb-2">Témoignages en attente</h3>
+                <p class="text-3xl font-bold text-orange-600" id="pendingTestimonials">0</p>
+            </div>
+        </div>
+        
+        <!-- Verset de la semaine -->
+        <div class="bg-white p-6 rounded-lg shadow mb-8">
+            <h2 class="text-xl font-bold mb-4">Verset de la Semaine</h2>
+            <div id="weeklyVerse" class="text-gray-700"></div>
+        </div>
+        
+        <!-- Liste des témoignages -->
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-bold mb-4">Gestion des Témoignages</h2>
+            <div id="testimonialsList" class="space-y-4">
+                <p class="text-gray-500">Chargement...</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Vérifier l'authentification au chargement
+        async function checkAuth() {
+            const response = await fetch('/api/admin/check');
+            const data = await response.json();
+            if (!data.authenticated) {
+                window.location.href = '/admin';
+            }
+        }
+        
+        // Charger les statistiques
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/admin/stats');
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('acceptanceCounter').textContent = data.stats.acceptanceCounter;
+                    document.getElementById('approvedTestimonials').textContent = data.stats.testimonials.approved;
+                    document.getElementById('pendingTestimonials').textContent = data.stats.testimonials.pending;
+                    
+                    const verse = data.stats.weeklyVerse;
+                    document.getElementById('weeklyVerse').innerHTML = \`
+                        <p class="font-semibold">\${verse.reference || 'N/A'}</p>
+                        <p class="italic">"\${verse.text || 'N/A'}"</p>
+                        <p class="text-sm text-gray-500 mt-2">\${verse.date || 'N/A'}</p>
+                    \`;
+                }
+            } catch (error) {
+                console.error('Erreur chargement stats:', error);
+            }
+        }
+        
+        // Charger les témoignages
+        async function loadTestimonials() {
+            try {
+                const response = await fetch('/api/admin/testimonials');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const list = document.getElementById('testimonialsList');
+                    if (data.testimonials.length === 0) {
+                        list.innerHTML = '<p class="text-gray-500">Aucun témoignage</p>';
+                        return;
+                    }
+                    
+                    list.innerHTML = data.testimonials.map(t => \`
+                        <div class="border-l-4 \${t.adminApproved ? 'border-green-500' : 'border-orange-500'} p-4 bg-gray-50 rounded">
+                            <p class="font-semibold text-indigo-600">\${t.name}</p>
+                            <p class="text-gray-700 my-2">"\${t.story}"</p>
+                            <div class="flex gap-2 mt-3">
+                                <span class="text-xs text-gray-500">ID: \${t.id} | \${new Date(t.timestamp).toLocaleString('fr-FR')}</span>
+                                <span class="text-xs px-2 py-1 rounded \${t.aiApproved ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                    IA: \${t.aiApproved ? 'Approuvé' : 'Rejeté'}
+                                </span>
+                                <span class="text-xs px-2 py-1 rounded \${t.adminApproved ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'}">
+                                    Admin: \${t.adminApproved ? 'Approuvé' : 'En attente'}
+                                </span>
+                            </div>
+                            <div class="flex gap-2 mt-3">
+                                \${!t.adminApproved ? \`<button onclick="approveTestimonial(\${t.id})" class="bg-green-600 text-white px-4 py-1 rounded text-sm hover:bg-green-700">Approuver</button>\` : ''}
+                                \${t.adminApproved ? \`<button onclick="rejectTestimonial(\${t.id})" class="bg-orange-600 text-white px-4 py-1 rounded text-sm hover:bg-orange-700">Désapprouver</button>\` : ''}
+                                <button onclick="deleteTestimonial(\${t.id})" class="bg-red-600 text-white px-4 py-1 rounded text-sm hover:bg-red-700">Supprimer</button>
+                            </div>
+                        </div>
+                    \`).join('');
+                }
+            } catch (error) {
+                console.error('Erreur chargement témoignages:', error);
+            }
+        }
+        
+        // Mettre à jour le compteur
+        async function updateCounter() {
+            const newValue = parseInt(document.getElementById('counterInput').value);
+            if (isNaN(newValue) || newValue < 0) {
+                alert('Valeur invalide');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/admin/counter', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ count: newValue })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    loadStats();
+                    document.getElementById('counterInput').value = '';
+                    alert('Compteur mis à jour');
+                } else {
+                    alert('Erreur: ' + data.error);
+                }
+            } catch (error) {
+                alert('Erreur de connexion');
+            }
+        }
+        
+        // Approuver un témoignage
+        async function approveTestimonial(id) {
+            await updateTestimonial(id, 'approve');
+        }
+        
+        // Rejeter un témoignage
+        async function rejectTestimonial(id) {
+            await updateTestimonial(id, 'reject');
+        }
+        
+        // Supprimer un témoignage
+        async function deleteTestimonial(id) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer ce témoignage ?')) return;
+            await updateTestimonial(id, 'delete');
+        }
+        
+        // Mettre à jour un témoignage
+        async function updateTestimonial(id, action) {
+            try {
+                const response = await fetch('/api/admin/testimonials', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, action })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    loadTestimonials();
+                    loadStats();
+                } else {
+                    alert('Erreur: ' + data.error);
+                }
+            } catch (error) {
+                alert('Erreur de connexion');
+            }
+        }
+        
+        // Déconnexion
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await fetch('/api/admin/logout', { method: 'POST' });
+            window.location.href = '/admin';
+        });
+        
+        // Initialisation
+        checkAuth();
+        loadStats();
+        loadTestimonials();
+        
+        // Rafraîchir toutes les 30 secondes
+        setInterval(() => {
+            loadStats();
+            loadTestimonials();
+        }, 30000);
+    </script>
+</body>
+</html>`;
+}
+
+/**
  * Lit le fichier index.html et injecte les variables d'environnement
  */
 function getIndexHtml() {
@@ -757,6 +1060,71 @@ function getContentType(filePath) {
         '.xml': 'application/xml'
     };
     return mimeTypes[ext] || 'application/octet-stream';
+}
+
+/**
+ * Génère un token de session aléatoire
+ * @returns {string} Token de session
+ */
+function generateSessionToken() {
+    return crypto.randomBytes(32).toString('hex');
+}
+
+/**
+ * Vérifie si une session est valide
+ * @param {string} token - Token de session
+ * @returns {boolean} True si la session est valide
+ */
+function isValidSession(token) {
+    if (!token || !ADMIN_SESSIONS.has(token)) {
+        return false;
+    }
+    const session = ADMIN_SESSIONS.get(token);
+    if (Date.now() > session.expires) {
+        ADMIN_SESSIONS.delete(token);
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Crée une nouvelle session admin
+ * @returns {string} Token de session
+ */
+function createAdminSession() {
+    const token = generateSessionToken();
+    ADMIN_SESSIONS.set(token, {
+        createdAt: Date.now(),
+        expires: Date.now() + SESSION_DURATION
+    });
+    // Nettoyer les sessions expirées toutes les heures
+    if (ADMIN_SESSIONS.size === 1) {
+        setInterval(() => {
+            const now = Date.now();
+            for (const [t, s] of ADMIN_SESSIONS.entries()) {
+                if (now > s.expires) {
+                    ADMIN_SESSIONS.delete(t);
+                }
+            }
+        }, 60 * 60 * 1000);
+    }
+    return token;
+}
+
+/**
+ * Extrait le token de session depuis les cookies
+ * @param {string} cookieHeader - En-tête Cookie de la requête
+ * @returns {string|null} Token de session ou null
+ */
+function getSessionToken(cookieHeader) {
+    if (!cookieHeader) return null;
+    const cookies = cookieHeader.split(';').map(c => c.trim());
+    for (const cookie of cookies) {
+        if (cookie.startsWith('admin_session=')) {
+            return cookie.substring('admin_session='.length);
+        }
+    }
+    return null;
 }
 
 /**
@@ -1227,6 +1595,195 @@ const server = http.createServer(async (req, res) => {
         }
         return;
     }
+    
+    // =====================================================================
+    // 🔐 ADMINISTRATION - Routes protégées
+    // =====================================================================
+    
+    // Page de connexion admin
+    if (parsedUrl.pathname === '/admin' && req.method === 'GET') {
+        const cookieHeader = req.headers.cookie || '';
+        const sessionToken = getSessionToken(cookieHeader);
+        
+        // Si déjà connecté, rediriger vers le dashboard
+        if (sessionToken && isValidSession(sessionToken)) {
+            res.writeHead(302, { 'Location': '/admin/dashboard' });
+            res.end();
+            return;
+        }
+        
+        // Afficher la page de connexion
+        const loginHtml = getAdminLoginHtml();
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+        res.end(loginHtml);
+        return;
+    }
+    
+    // API de connexion admin
+    if (parsedUrl.pathname === '/api/admin/login' && req.method === 'POST') {
+        try {
+            const data = await parseBody(req);
+            const { username, password } = data;
+            
+            if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+                const token = createAdminSession();
+                res.writeHead(200, {
+                    'Content-Type': 'application/json; charset=utf-8',
+                    'Set-Cookie': `admin_session=${token}; HttpOnly; Path=/; Max-Age=${SESSION_DURATION / 1000}; SameSite=Strict`
+                });
+                sendJSON(res, 200, { success: true, token: token });
+            } else {
+                sendJSON(res, 401, { success: false, error: 'Identifiants incorrects' });
+            }
+        } catch (error) {
+            sendJSON(res, 500, { success: false, error: error.message });
+        }
+        return;
+    }
+    
+    // API de vérification de session
+    if (parsedUrl.pathname === '/api/admin/check' && req.method === 'GET') {
+        const cookieHeader = req.headers.cookie || '';
+        const sessionToken = getSessionToken(cookieHeader);
+        
+        if (sessionToken && isValidSession(sessionToken)) {
+            sendJSON(res, 200, { success: true, authenticated: true });
+        } else {
+            sendJSON(res, 401, { success: false, authenticated: false });
+        }
+        return;
+    }
+    
+    // Middleware de vérification d'authentification pour les routes admin
+    function requireAuth(req, res, next) {
+        const cookieHeader = req.headers.cookie || '';
+        const sessionToken = getSessionToken(cookieHeader);
+        
+        if (!sessionToken || !isValidSession(sessionToken)) {
+            res.writeHead(302, { 'Location': '/admin' });
+            res.end();
+            return false;
+        }
+        return true;
+    }
+    
+    // Dashboard admin (protégé)
+    if (parsedUrl.pathname === '/admin/dashboard' && req.method === 'GET') {
+        if (!requireAuth(req, res)) return;
+        
+        const dashboardHtml = getAdminDashboardHtml();
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+        res.end(dashboardHtml);
+        return;
+    }
+    
+    // API admin - Récupérer les statistiques
+    if (parsedUrl.pathname === '/api/admin/stats' && req.method === 'GET') {
+        if (!requireAuth(req, res)) return;
+        
+        try {
+            const counter = getAcceptanceCounter();
+            const testimonials = db.prepare('SELECT COUNT(*) as total, SUM(CASE WHEN adminApproved = 1 THEN 1 ELSE 0 END) as approved, SUM(CASE WHEN adminApproved = 0 AND aiApproved = 1 THEN 1 ELSE 0 END) as pending FROM testimonials').get();
+            const weeklyVerse = loadWeeklyVerse();
+            
+            sendJSON(res, 200, {
+                success: true,
+                stats: {
+                    acceptanceCounter: counter,
+                    testimonials: {
+                        total: testimonials?.total || 0,
+                        approved: testimonials?.approved || 0,
+                        pending: testimonials?.pending || 0
+                    },
+                    weeklyVerse: weeklyVerse
+                }
+            });
+        } catch (error) {
+            sendJSON(res, 500, { success: false, error: error.message });
+        }
+        return;
+    }
+    
+    // API admin - Récupérer tous les témoignages
+    if (parsedUrl.pathname === '/api/admin/testimonials' && req.method === 'GET') {
+        if (!requireAuth(req, res)) return;
+        
+        try {
+            const testimonials = db.prepare('SELECT * FROM testimonials ORDER BY timestamp DESC').all();
+            sendJSON(res, 200, { success: true, testimonials: testimonials });
+        } catch (error) {
+            sendJSON(res, 500, { success: false, error: error.message });
+        }
+        return;
+    }
+    
+    // API admin - Approuver/Rejeter un témoignage
+    if (parsedUrl.pathname === '/api/admin/testimonials' && req.method === 'POST') {
+        if (!requireAuth(req, res)) return;
+        
+        try {
+            const data = await parseBody(req);
+            const { id, action } = data; // action: 'approve' ou 'reject' ou 'delete'
+            
+            if (action === 'approve') {
+                db.prepare('UPDATE testimonials SET adminApproved = 1 WHERE id = ?').run(id);
+            } else if (action === 'reject') {
+                db.prepare('UPDATE testimonials SET adminApproved = 0 WHERE id = ?').run(id);
+            } else if (action === 'delete') {
+                db.prepare('DELETE FROM testimonials WHERE id = ?').run(id);
+            } else {
+                sendJSON(res, 400, { success: false, error: 'Action invalide' });
+                return;
+            }
+            
+            sendJSON(res, 200, { success: true });
+        } catch (error) {
+            sendJSON(res, 500, { success: false, error: error.message });
+        }
+        return;
+    }
+    
+    // API admin - Modifier le compteur d'acceptations
+    if (parsedUrl.pathname === '/api/admin/counter' && req.method === 'POST') {
+        if (!requireAuth(req, res)) return;
+        
+        try {
+            const data = await parseBody(req);
+            const { count } = data;
+            
+            if (typeof count !== 'number' || count < 0) {
+                sendJSON(res, 400, { success: false, error: 'Valeur invalide' });
+                return;
+            }
+            
+            db.prepare('UPDATE acceptance_counter SET count = ? WHERE id = 1').run(count);
+            sendJSON(res, 200, { success: true, count: count });
+        } catch (error) {
+            sendJSON(res, 500, { success: false, error: error.message });
+        }
+        return;
+    }
+    
+    // API admin - Déconnexion
+    if (parsedUrl.pathname === '/api/admin/logout' && req.method === 'POST') {
+        const cookieHeader = req.headers.cookie || '';
+        const sessionToken = getSessionToken(cookieHeader);
+        
+        if (sessionToken) {
+            ADMIN_SESSIONS.delete(sessionToken);
+        }
+        
+        res.writeHead(200, {
+            'Content-Type': 'application/json; charset=utf-8',
+            'Set-Cookie': 'admin_session=; HttpOnly; Path=/; Max-Age=0'
+        });
+        sendJSON(res, 200, { success: true });
+        return;
+    }
+    
+    // =====================================================================
+    // FIN ADMINISTRATION
+    // =====================================================================
     
     // Gérer la racine et index.html
     if (req.url === '/' || req.url === '/index.html') {
