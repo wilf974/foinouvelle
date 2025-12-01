@@ -718,25 +718,47 @@ function getAdminLoginHtml() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const errorDiv = document.getElementById('errorMessage');
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            
+            // Désactiver le bouton pendant la requête
+            submitButton.disabled = true;
+            submitButton.textContent = 'Connexion...';
+            errorDiv.classList.add('hidden');
             
             try {
                 const response = await fetch('/api/admin/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin',
                     body: JSON.stringify({ username, password })
                 });
                 
-                const data = await response.json();
+                let data;
+                try {
+                    data = await response.json();
+                } catch (parseError) {
+                    const text = await response.text();
+                    console.error('Erreur parsing réponse:', parseError, 'Réponse:', text);
+                    throw new Error('Réponse invalide du serveur');
+                }
                 
                 if (data.success) {
-                    window.location.href = '/admin/dashboard';
+                    // Redirection après un court délai pour laisser le cookie se définir
+                    setTimeout(() => {
+                        window.location.href = '/admin/dashboard';
+                    }, 100);
                 } else {
                     errorDiv.textContent = data.error || 'Erreur de connexion';
                     errorDiv.classList.remove('hidden');
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Se connecter';
                 }
             } catch (error) {
-                errorDiv.textContent = 'Erreur de connexion au serveur';
+                console.error('Erreur connexion:', error);
+                errorDiv.textContent = 'Erreur de connexion au serveur: ' + error.message;
                 errorDiv.classList.remove('hidden');
+                submitButton.disabled = false;
+                submitButton.textContent = 'Se connecter';
             }
         });
     </script>
@@ -1621,23 +1643,39 @@ const server = http.createServer(async (req, res) => {
     
     // API de connexion admin
     if (parsedUrl.pathname === '/api/admin/login' && req.method === 'POST') {
-        try {
-            const data = await parseBody(req);
-            const { username, password } = data;
-            
-            if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-                const token = createAdminSession();
-                res.writeHead(200, {
+        let body = '';
+        req.on('data', chunk => {
+            body += chunk.toString();
+        });
+        
+        req.on('end', () => {
+            try {
+                const data = JSON.parse(body);
+                const { username, password } = data;
+                
+                if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+                    const token = createAdminSession();
+                    res.writeHead(200, {
+                        'Content-Type': 'application/json; charset=utf-8',
+                        'Access-Control-Allow-Origin': '*',
+                        'Set-Cookie': `admin_session=${token}; HttpOnly; Path=/; Max-Age=${SESSION_DURATION / 1000}; SameSite=Strict`
+                    });
+                    res.end(JSON.stringify({ success: true, token: token }));
+                } else {
+                    res.writeHead(401, {
+                        'Content-Type': 'application/json; charset=utf-8',
+                        'Access-Control-Allow-Origin': '*'
+                    });
+                    res.end(JSON.stringify({ success: false, error: 'Identifiants incorrects' }));
+                }
+            } catch (error) {
+                res.writeHead(500, {
                     'Content-Type': 'application/json; charset=utf-8',
-                    'Set-Cookie': `admin_session=${token}; HttpOnly; Path=/; Max-Age=${SESSION_DURATION / 1000}; SameSite=Strict`
+                    'Access-Control-Allow-Origin': '*'
                 });
-                sendJSON(res, 200, { success: true, token: token });
-            } else {
-                sendJSON(res, 401, { success: false, error: 'Identifiants incorrects' });
+                res.end(JSON.stringify({ success: false, error: error.message }));
             }
-        } catch (error) {
-            sendJSON(res, 500, { success: false, error: error.message });
-        }
+        });
         return;
     }
     
