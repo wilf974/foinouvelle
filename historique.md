@@ -1888,3 +1888,25 @@ Cette fonction :
 
 ✅ **Propreté** : L'archive est automatiquement nettoyée au démarrage, supprimant les doublons historiques.
 
+---
+
+## 2025-12-02 - Renforcement de la suppression des doublons
+
+### Modifications apportées
+
+**Fichier modifié :** `server.js`
+
+### Problème identifié
+
+Des doublons persistaient dans l'archive car la vérification lors de l'ajout ne se basait que sur l'ID (qui est toujours unique car généré aléatoirement) et non sur la référence biblique. De plus, le nettoyage ne se faisait qu'au démarrage.
+
+### Solution implémentée
+
+1.  **Vérification stricte lors de l'ajout** : Avant d'ajouter un nouveau verset à l'archive, le système vérifie maintenant si la **référence biblique** (ex: "Matthieu 11:28") existe déjà, et pas seulement l'ID.
+2.  **Nettoyage immédiat** : La fonction `cleanVerseDuplicates()` est appelée immédiatement après chaque génération de verset, garantissant que l'archive reste propre sans redémarrage.
+
+### Résultat
+
+✅ **Intégrité** : Plus aucun doublon de verset ne peut être ajouté à l'archive, et les doublons existants sont supprimés à chaque nouvelle génération.
+
+

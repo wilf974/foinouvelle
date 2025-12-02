@@ -2399,12 +2399,17 @@ ${previousReferences.join(', ')}`;
                 if (fs.existsSync(VERSE_ARCHIVE_FILE)) {
                     try { archive = JSON.parse(fs.readFileSync(VERSE_ARCHIVE_FILE, 'utf8')); } catch (e) { archive = []; }
                 }
-                const exists = archive.find(v => v.id === verse.id);
+                const exists = archive.find(v => v.id === verse.id || v.reference.trim() === verse.reference.trim());
                 if (!exists) {
                     archive.unshift(verse);
                     if (archive.length > 52) archive = archive.slice(0, 52);
                     try { fs.writeFileSync(VERSE_ARCHIVE_FILE, JSON.stringify(archive, null, 2)); } catch (e) { console.error(e); }
+                } else {
+                    console.log('⚠️ Verset déjà présent dans l\'archive (doublon évité):', verse.reference);
                 }
+
+                // Nettoyage de sécurité
+                cleanVerseDuplicates();
 
                 console.log('✅ Nouveau verset généré (avec succès):', verse.reference);
                 sendJSON(res, 200, { success: true, verse: verse, message: 'Verset généré avec succès' });
