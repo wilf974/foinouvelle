@@ -2030,8 +2030,8 @@ const server = http.createServer(async (req, res) => {
         return;
     }
 
-    // Gérer les pages individuelles de versets (/verset/YYYY-MM-DD)
-    const verseMatch = parsedUrl.pathname.match(/^\/verset\/(\d{4}-\d{2}-\d{2})$/);
+    // Gérer les pages individuelles de versets (/verset/ID ou /verset/YYYY-MM-DD)
+    const verseMatch = parsedUrl.pathname.match(/^\/verset\/([a-zA-Z0-9-]+)$/);
     if (verseMatch) {
         const verseId = verseMatch[1];
         const verse = getVerseById(verseId);

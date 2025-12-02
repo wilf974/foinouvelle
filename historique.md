@@ -1822,5 +1822,27 @@ Modification de la logique de `loadWeeklyVerse()` :
 
 ✅ **Stabilité** : Le dashboard admin ne plante plus, même si le cache des versets est corrompu ou vide. Il affiche toujours au moins le verset par défaut.
 
+---
+
+## 2025-12-02 - Correction de la route des versets (Support des UUID)
+
+### Modifications apportées
+
+**Fichier modifié :** `server.js`
+
+### Problème identifié
+
+Erreur 404 "Fichier non trouvé" lors du clic sur "Lire ce verset en détail".
+La route `/verset/:id` utilisait une expression régulière stricte `^\/verset\/(\d{4}-\d{2}-\d{2})$` qui n'acceptait que les dates au format YYYY-MM-DD. Or, les nouveaux versets générés par l'admin utilisent des UUID (ex: `1ca5da12-44c0...`) comme identifiants.
+
+### Solution implémentée
+
+Mise à jour de la regex de la route pour accepter tous les identifiants alphanumériques avec tirets : `^\/verset\/([a-zA-Z0-9-]+)$`.
+
+### Résultat
+
+✅ **Accessibilité** : Les pages de détails des versets sont maintenant accessibles, quel que soit le format de leur ID (Date ou UUID).
+
+
 
 
