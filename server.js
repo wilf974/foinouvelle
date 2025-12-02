@@ -157,39 +157,31 @@ function loadWeeklyVerse() {
             if (stats.isDirectory()) {
                 console.log('⚠️ weekly-verse.json est un dossier, suppression...');
                 fs.rmSync(VERSE_CACHE_FILE, { recursive: true, force: true });
-                return null;
-            }
+                // Continue to default verse
+            } else {
 
-            const data = fs.readFileSync(VERSE_CACHE_FILE, 'utf8');
+                const data = fs.readFileSync(VERSE_CACHE_FILE, 'utf8');
 
-            // Vérifier que le fichier n'est pas vide
-            if (!data || data.trim().length === 0) {
-                console.log('⚠️ Fichier weekly-verse.json vide, génération d\'un nouveau verset...');
-                return null; // Retourner null pour forcer la génération
-            }
+                // Vérifier que le fichier n'est pas vide
+                if (data && data.trim().length > 0) {
+                    try {
+                        const verse = JSON.parse(data);
 
-            const verse = JSON.parse(data);
-
-            // Vérifier que le verset a les propriétés nécessaires
-            if (!verse || !verse.dateISO || !verse.text || !verse.reference) {
-                console.log('⚠️ Verset invalide dans le cache, génération d\'un nouveau verset...');
-                return null;
-            }
-
-            // Vérifier si le verset est encore valide (pour la semaine en cours)
-            const verseDate = new Date(verse.dateISO + 'T00:00:00');
-            const now = new Date();
-
-            // Calculer le début de la semaine actuelle (lundi)
-            const dayOfWeek = now.getDay();
-            const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-            const currentWeekStart = new Date(now);
-            currentWeekStart.setDate(now.getDate() - daysToMonday);
-            currentWeekStart.setHours(0, 0, 0, 0);
-
-            // Si le verset est pour la semaine en cours, le retourner
-            if (verseDate.getTime() === currentWeekStart.getTime()) {
-                return verse;
+                        // Vérifier que le verset a les propriétés nécessaires
+                        if (verse && (verse.dateISO || verse.date) && verse.text && verse.reference) {
+                            // Vérifier si le verset est encore valide (pour la semaine en cours)
+                            // Note: On retourne le verset même s'il est ancien, c'est checkAndUpdateWeeklyVerse qui décidera de le régénérer
+                            // Mais pour l'affichage immédiat (admin), on veut voir ce qu'il y a dans le cache
+                            return verse;
+                        } else {
+                            console.log('⚠️ Verset invalide dans le cache (propriétés manquantes)');
+                        }
+                    } catch (parseError) {
+                        console.error('⚠️ Erreur parsing JSON weekly-verse.json:', parseError);
+                    }
+                } else {
+                    console.log('⚠️ Fichier weekly-verse.json vide');
+                }
             }
         }
     } catch (error) {

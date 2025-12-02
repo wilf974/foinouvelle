@@ -1797,4 +1797,30 @@ Cette erreur est causée par le montage de fichiers individuels dans Docker (`- 
 ✅ **Stabilité** : Plus de conflits de montage Docker. Les fichiers sont correctement gérés à l'intérieur du volume `data`.
 ✅ **Persistance** : Les données sont toujours persistées sur l'hôte dans le dossier `./data`.
 
+---
+
+## 2025-12-02 - Correction du chargement du verset (TypeError: verse is null)
+
+### Modifications apportées
+
+**Fichier modifié :** `server.js`
+
+### Problème identifié
+
+Erreur `TypeError: can't access property "reference", verse is null` dans le dashboard admin.
+Cette erreur survenait car la fonction `loadWeeklyVerse()` retournait `null` lorsque le fichier de cache était vide, invalide ou contenait un verset expiré. L'API `/api/admin/stats` renvoyait alors `null` pour `weeklyVerse`, faisant planter le frontend qui s'attendait à un objet.
+
+### Solution implémentée
+
+Modification de la logique de `loadWeeklyVerse()` :
+- La fonction ne retourne **jamais** `null`.
+- Si le cache est valide (fichier existant, JSON valide, propriétés présentes), elle retourne le verset du cache (même s'il est ancien).
+- Si le cache est invalide (fichier manquant, vide, erreur de parsing), elle retourne un **verset par défaut** (Jean 3:16).
+- La vérification de la date pour la régénération automatique est maintenant gérée entièrement par `checkAndUpdateWeeklyVerse()`, qui compare la date du verset retourné avec la date actuelle.
+
+### Résultat
+
+✅ **Stabilité** : Le dashboard admin ne plante plus, même si le cache des versets est corrompu ou vide. Il affiche toujours au moins le verset par défaut.
+
+
 
