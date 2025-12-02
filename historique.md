@@ -1843,6 +1843,23 @@ Mise à jour de la regex de la route pour accepter tous les identifiants alphanu
 
 ✅ **Accessibilité** : Les pages de détails des versets sont maintenant accessibles, quel que soit le format de leur ID (Date ou UUID).
 
+---
 
+## 2025-12-02 - Amélioration de la diversité des versets générés
 
+### Modifications apportées
 
+**Fichier modifié :** `server.js`
+
+### Problème identifié
+
+Le générateur de versets produisait souvent le même verset (ex: Matthieu 11:28) lors de générations successives, car le prompt était statique et la "température" du modèle trop basse.
+
+### Solution implémentée
+
+1.  **Injection de contexte négatif** : Avant chaque génération, le serveur lit les 20 derniers versets de l'archive et les ajoute au prompt avec l'instruction `IMPORTANT : Ne génère PAS les versets suivants`.
+2.  **Augmentation de la créativité** : La température du modèle Gemini a été augmentée de `0.7` à `0.9` pour favoriser des réponses plus variées.
+
+### Résultat
+
+✅ **Variété** : Les versets générés sont maintenant plus diversifiés et ne répètent plus les sélections récentes.

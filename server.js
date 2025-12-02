@@ -2279,6 +2279,17 @@ const server = http.createServer(async (req, res) => {
                 return;
             }
 
+            // Charger l'archive pour éviter les doublons
+            let previousReferences = [];
+            try {
+                if (fs.existsSync(VERSE_ARCHIVE_FILE)) {
+                    const archiveData = JSON.parse(fs.readFileSync(VERSE_ARCHIVE_FILE, 'utf8'));
+                    previousReferences = archiveData.slice(0, 20).map(v => v.reference);
+                }
+            } catch (e) {
+                console.warn('Impossible de lire l\'archive pour les exclusions:', e);
+            }
+
             const systemInstruction = `Tu es un assistant spirituel. Génère un verset biblique inspirant et approprié pour l'évangélisation, qui encourage les gens à découvrir la foi en Jésus-Christ. 
 
 Réponds UNIQUEMENT au format JSON suivant (sans markdown, sans code blocks) :
@@ -2292,7 +2303,10 @@ Le verset doit être :
 - Inspirant et encourageant
 - Adapté pour l'évangélisation
 - Provenant de la Bible (Ancien ou Nouveau Testament)
-- Complet et fidèle au texte biblique`;
+- Complet et fidèle au texte biblique
+
+IMPORTANT : Ne génère PAS les versets suivants (déjà utilisés récemment) :
+${previousReferences.join(', ')}`;
 
             const requestBody = JSON.stringify({
                 contents: [{
@@ -2301,7 +2315,7 @@ Le verset doit être :
                     }]
                 }],
                 generationConfig: {
-                    temperature: 0.7,
+                    temperature: 0.9,
                     topK: 40,
                     topP: 0.95,
                     maxOutputTokens: 1024
