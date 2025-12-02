@@ -2661,6 +2661,47 @@ ${previousReferences.join(', ')}`;
     });
 });
 
+/**
+ * Nettoie les doublons dans l'archive des versets
+ */
+function cleanVerseDuplicates() {
+    try {
+        if (fs.existsSync(VERSE_ARCHIVE_FILE)) {
+            const data = fs.readFileSync(VERSE_ARCHIVE_FILE, 'utf8');
+            let archive = JSON.parse(data);
+
+            if (!Array.isArray(archive)) return;
+
+            const uniqueReferences = new Set();
+            const uniqueArchive = [];
+            let duplicatesFound = 0;
+
+            for (const verse of archive) {
+                // Clé unique basée sur la référence (ex: "Jean 3:16")
+                // On normalise pour éviter les différences mineures (espaces)
+                const key = verse.reference.trim();
+
+                if (!uniqueReferences.has(key)) {
+                    uniqueReferences.add(key);
+                    uniqueArchive.push(verse);
+                } else {
+                    duplicatesFound++;
+                }
+            }
+
+            if (duplicatesFound > 0) {
+                console.log(`🧹 Nettoyage de l'archive : ${duplicatesFound} doublons supprimés.`);
+                fs.writeFileSync(VERSE_ARCHIVE_FILE, JSON.stringify(uniqueArchive, null, 2));
+            }
+        }
+    } catch (error) {
+        console.error('Erreur lors du nettoyage de l\'archive:', error);
+    }
+}
+
+// Nettoyer les doublons au démarrage
+cleanVerseDuplicates();
+
 // Vérifier et mettre à jour le verset hebdomadaire au démarrage
 checkAndUpdateWeeklyVerse().then(() => {
     console.log('✅ Vérification du verset hebdomadaire terminée');

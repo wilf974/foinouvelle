@@ -1863,3 +1863,28 @@ Le générateur de versets produisait souvent le même verset (ex: Matthieu 11:2
 ### Résultat
 
 ✅ **Variété** : Les versets générés sont maintenant plus diversifiés et ne répètent plus les sélections récentes.
+
+---
+
+## 2025-12-02 - Nettoyage automatique des doublons dans l'archive
+
+### Modifications apportées
+
+**Fichier modifié :** `server.js`
+
+### Problème identifié
+
+L'archive des versets contenait des doublons (plusieurs fois le même verset "Matthieu 11:28") dus aux générations précédentes répétitives.
+
+### Solution implémentée
+
+Ajout d'une fonction `cleanVerseDuplicates()` qui s'exécute au démarrage du serveur.
+Cette fonction :
+1.  Lit le fichier `verses-archive.json`.
+2.  Parcourt les versets et ne garde que la **première occurrence** de chaque référence biblique.
+3.  Sauvegarde l'archive nettoyée si des doublons ont été trouvés.
+
+### Résultat
+
+✅ **Propreté** : L'archive est automatiquement nettoyée au démarrage, supprimant les doublons historiques.
+
