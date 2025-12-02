@@ -1772,3 +1772,29 @@ Ajout de vérifications `fs.statSync()` avant chaque lecture ou écriture de `VE
 
 ✅ **Robustesse** : Le serveur gère maintenant automatiquement le cas où le fichier de cache est corrompu ou transformé en dossier.
 
+---
+
+## 2025-12-02 - Migration des données vers un dossier `data/` pour résoudre les conflits Docker
+
+### Modifications apportées
+
+**Fichiers modifiés :** `server.js`, `docker-compose.prod.yml`, `.gitignore`
+
+### Problème identifié
+
+Erreur `EBUSY: resource busy or locked, rmdir '/app/weekly-verse.json'` persistante.
+Cette erreur est causée par le montage de fichiers individuels dans Docker (`- ./weekly-verse.json:/app/weekly-verse.json`). Si le fichier n'existe pas sur l'hôte au démarrage, Docker le crée comme un **dossier**, ce qui cause des conflits avec l'application qui attend un fichier. De plus, on ne peut pas supprimer un point de montage depuis le conteneur.
+
+### Solution implémentée
+
+1.  **Modification de l'architecture de fichiers** : Déplacement de tous les fichiers de données persistants (`weekly-verse.json`, `verses-archive.json`, `foi-nouvelle.db`) dans un sous-dossier `data/`.
+2.  **Mise à jour de `server.js`** : Le serveur utilise maintenant `path.join(__dirname, 'data', ...)` et crée le dossier s'il n'existe pas.
+3.  **Mise à jour de Docker** : Montage du dossier complet `./data:/app/data` au lieu de fichiers individuels. Cela garantit que Docker monte un dossier (ce qui est correct) et que l'application gère les fichiers à l'intérieur.
+4.  **Git** : Ajout de `data/` au `.gitignore`.
+
+### Résultat
+
+✅ **Stabilité** : Plus de conflits de montage Docker. Les fichiers sont correctement gérés à l'intérieur du volume `data`.
+✅ **Persistance** : Les données sont toujours persistées sur l'hôte dans le dossier `./data`.
+
+

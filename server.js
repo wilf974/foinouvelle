@@ -16,12 +16,22 @@ require('dotenv').config();
 
 const PORT = process.env.PORT || 2000;
 
+// Dossier de données pour la persistance (monté via Docker volume)
+const DATA_DIR = path.join(__dirname, 'data');
+if (!fs.existsSync(DATA_DIR)) {
+    try {
+        fs.mkdirSync(DATA_DIR);
+    } catch (error) {
+        console.error('Erreur lors de la création du dossier data:', error);
+    }
+}
+
 // Fichiers pour stocker les versets
-const VERSE_CACHE_FILE = path.join(__dirname, 'weekly-verse.json');
-const VERSE_ARCHIVE_FILE = path.join(__dirname, 'verses-archive.json');
+const VERSE_CACHE_FILE = path.join(DATA_DIR, 'weekly-verse.json');
+const VERSE_ARCHIVE_FILE = path.join(DATA_DIR, 'verses-archive.json');
 
 // Base de données SQLite côté serveur
-const DB_FILE = path.join(__dirname, 'foi-nouvelle.db');
+const DB_FILE = path.join(DATA_DIR, 'foi-nouvelle.db');
 let db = null;
 
 // Authentification admin

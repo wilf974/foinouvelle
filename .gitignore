@@ -36,3 +36,6 @@ foi-nouvelle.db-journal
 # Cache du verset hebdomadaire
 weekly-verse.json
 
+
+# Dossier de données persistantes
+data/
